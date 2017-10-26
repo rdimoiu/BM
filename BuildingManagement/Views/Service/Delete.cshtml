@@ -1,0 +1,98 @@
+﻿@model BuildingManagement.Models.Service
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Service</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Unit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Unit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ValueWithoutTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ValueWithoutTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QuotaTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QuotaTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fixed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fixed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Inhabited)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Inhabited)
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>

@@ -1,0 +1,127 @@
+﻿@model BuildingManagement.ViewModels.InvoiceIndexData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Client
+        </th>
+        <th>
+            Provider
+        </th>
+        <th>
+            InvoiceType
+        </th>
+        <th>
+            Number
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            DueDate
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            CheckQuantity
+        </th>
+        <th>
+            Unit
+        </th>
+        <th>
+            TotalValueWithoutTVA
+        </th>
+        <th>
+            CheckTotalValueWithoutTVA
+        </th>
+        <th>
+            TotalTVA
+        </th>
+        <th>
+            CheckTotalTVA
+        </th>
+        <th>
+            DiscountMonth
+        </th>
+        <th>
+            Services
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Invoices)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Client.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Provider.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceType.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalValueWithoutTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckTotalValueWithoutTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckTotalTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscountMonth)
+            </td>
+            <td>
+                @{
+                    foreach (var service in item.Services)
+                    {
+                        @service.Name
+                        <br />
+                    }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID}) |
+                @Html.ActionLink("Finalize", "Finalize", new { id = item.ID })
+            </td>
+        </tr>
+                    }
+
+</table>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>

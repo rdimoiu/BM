@@ -1,0 +1,134 @@
+﻿@model BuildingManagement.Models.Space
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Space</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ID)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ClientID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetLevels(this.value)" })
+                @Html.ValidationMessageFor(model => model.ClientID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Level, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("LevelID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.LevelID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SpaceType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("SpaceTypeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SpaceTypeID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Number, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Number, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Number, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SubClient, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("SubClientID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SubClientID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Surface, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Surface, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Surface, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.People, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.People, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.People, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Inhabited, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Inhabited, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Inhabited, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script>
+    $(document).ready(function() {
+        GetLevels(@Model.ClientID);
+    });
+
+    function GetLevels(idClient) {
+        var levelList = $("#LevelID");
+        if (idClient === "") {
+            levelList.empty();
+            var firstItem = new Option("Select...", "0");
+            levelList.append(firstItem);
+            return;
+        }
+        var url = "/Space/GetLevelsByClient/";
+        $.ajax({
+            url: url,
+            data: { clientId: idClient, levelId: @Model.LevelID },
+            cache: false,
+            type: "POST",
+            success: function(data) {
+                levelList.empty();
+                var first = new Option("Select...", "0");
+                levelList.append(first);
+                for (var i = 0; i < data.length; i++) {
+                    var item = new Option(data[i].Text, data[i].Value, false, data[i].Selected);
+                    levelList.append(item);
+                }
+            },
+            error: function(reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,150 @@
+﻿@model BuildingManagement.Models.Meter
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+<style type="text/css">
+    .demo {
+        overflow: auto;
+        border: 1px solid silver;
+        min-height: 100px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/themes/default/style.min.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Meter</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Details, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.InitialIndex, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.InitialIndex, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.InitialIndex, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Defect, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Defect, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Defect, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MeterTypes, htmlAttributes: new { @class = "control-label col-md-2", @style = "float: left" })
+        <br />
+        <div id="meterTypesTree" class="form-group" style="float: left"></div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Spaces, htmlAttributes: new { @class = "control-label col-md-2", @style = "float: left" })
+        <br />
+        <div id="spacesTree" class="form-group" style="float: left"></div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" onclick="SubmitMeter()" />
+        </div>
+    </div>
+</div>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script type="text/javascript">
+    $('#meterTypesTree')
+        .jstree({
+            'plugins': ["defaults", "checkbox"],
+            'core': {
+                'data': {
+                    'themes': {
+                        "responsive": true
+                    },
+                    'url': "../GetMeterTypesTreeData/?meterId=" + @Model.ID,
+                    'dataType': "json"
+                }
+            }
+        });
+
+    $('#spacesTree')
+        .jstree({
+            'plugins': ["defaults", "checkbox"],
+            'core': {
+                'data': {
+                    'themes': {
+                        "responsive": true
+                    },
+                    'url': "../GetSpacesTreeData/?meterId=" + @Model.ID,
+                    'dataType': "json"
+                }
+            }
+        });
+
+    function SubmitMeter() {
+        var meterData = {
+            ID: document.getElementById('ID').value,
+            Code: document.getElementById('Code').value,
+            Details: document.getElementById('Details').value,
+            InitialIndex: document.getElementById('InitialIndex').value,
+            Defect: document.getElementById('Defect').checked,
+            DistributionModeID: document.getElementById('DistributionModeID').value,
+            MeterTypesSelected: $('#meterTypesTree').jstree('get_selected'),
+            MeterSLSSelected: $('#spacesTree').jstree('get_selected')
+        };
+        $.ajax({
+            type: "POST",
+            url: "../EditMeter",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(meterData),
+            success: function() {
+                window.location.href = "../Index";
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    };
+</script>

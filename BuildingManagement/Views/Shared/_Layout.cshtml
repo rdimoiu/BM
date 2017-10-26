@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+
+    <nav class="menu" style="float: left">
+        <button class="accordion">Adiministration</button>
+        <div class="panel">
+            <ul>
+                <li>@Html.ActionLink("Client", "Index", "Client")</li>
+                <li>@Html.ActionLink("SubClient", "Index", "SubClient")</li>
+                <li>@Html.ActionLink("DistributionMode", "Index", "DistributionMode")</li>
+                <li>@Html.ActionLink("Meter", "Index", "Meter")</li>
+                <li>@Html.ActionLink("SubMeter", "Index", "SubMeter")</li>
+                <li>@Html.ActionLink("MeterReading", "Index", "MeterReading")</li>
+                <li>@Html.ActionLink("MeterType", "Index", "MeterType")</li>
+                <li>@Html.ActionLink("Provider", "Index", "Provider")</li>
+                <li>@Html.ActionLink("Service", "Index", "Service")</li>
+                <li>@Html.ActionLink("Invoice", "Index", "Invoice")</li>
+                <li>@Html.ActionLink("InvoiceType", "Index", "InvoiceType")</li>
+                <li>@Html.ActionLink("Section", "Index", "Section")</li>
+                <li>@Html.ActionLink("Level", "Index", "Level")</li>
+                <li>@Html.ActionLink("Space", "Index", "Space")</li>
+                <li>@Html.ActionLink("SpaceType", "Index", "SpaceType")</li>
+            </ul>
+        </div>
+        <button class="accordion">Operation</button>
+        <div class="panel">
+            <ul>
+                <li>@Html.ActionLink("InvoiceDistribution", "Index", "InvoiceDistribution")</li>
+                <li>@Html.ActionLink("SubClient", "Index", "SubClient")</li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container body-content" style="float: left">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+<link href="~/Content/menu.css" rel="stylesheet" />
+<script src="~/Scripts/menu.js"></script>

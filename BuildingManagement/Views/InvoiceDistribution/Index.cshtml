@@ -1,0 +1,222 @@
+﻿@model BuildingManagement.ViewModels.InvoiceDistributionIndexData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>InvoiceDistribution</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new {@class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()" } })
+                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Client, "ClientID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ClientID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetInvoices()" })
+                @Html.ValidationMessageFor(model => model.ClientID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Provider, "ProviderID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ProviderID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetInvoices()" })
+                @Html.ValidationMessageFor(model => model.ProviderID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.Invoices != null)
+{
+    <table class="table">
+        <tr>
+            <th>
+                Client
+            </th>
+            <th>
+                Provider
+            </th>
+            <th>
+                Number
+            </th>
+            <th>
+                TotalValueWithoutTVA
+            </th>
+            <th>
+                CheckTotalValueWithoutTVA
+            </th>
+            <th>
+                TotalTVA
+            </th>
+            <th>
+                CheckTotalTVA
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                DueDate
+            </th>
+            <th></th>
+        </tr>
+        @foreach (var invoice in Model.Invoices)
+        {
+            ViewBag.backgroundColor = "#ddcdf4";
+            if (!invoice.Closed)
+            {
+                ViewBag.backgroundColor = "#cddcf4";
+            }
+            <tr onclick="javascript:GetInvoices(@invoice.ID);" style="background-color: @ViewBag.backgroundColor">
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.Client.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.Provider.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.TotalValueWithoutTVA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.CheckTotalValueWithoutTVA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.TotalTVA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.CheckTotalTVA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => invoice.DueDate)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "Invoice", new { invoiceId = invoice.ID }, null) |
+                    @Html.ActionLink("Details", "Details", "Invoice", new { invoiceId = invoice.ID }, null) |
+                    @Html.ActionLink("Delete", "Delete", "Invoice", new { invoiceId = invoice.ID}, null) |
+                    @if (!invoice.Closed)
+                    {
+                        @Html.ActionLink("Close", "Close", "Invoice", new { invoiceId = invoice.ID}, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Open", "Open", "Invoice", new { invoiceId = invoice.ID }, null)
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td colspan="10">
+                    <details>
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Invoice
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Quantity
+                                </th>
+                                <th>
+                                    Unit
+                                </th>
+                                <th>
+                                    Price
+                                </th>
+                                <th>
+                                    TVA
+                                </th>
+                                <th>
+                                    ValueWithoutTVA
+                                </th>
+                                <th>
+                                    QuotaTVA
+                                </th>
+                                <th>
+                                    Fixed
+                                </th>
+                                <th></th>
+                            </tr>
+                            @foreach (var service in invoice.Services)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Invoice.Number)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Quantity)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Unit)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.TVA)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.ValueWithoutTVA)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.QuotaTVA)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => service.Fixed)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "Edit", "Service", new {serviceId = service.ID}, null) |
+                                        @Html.ActionLink("Details", "Details", "Service", new { serviceId = service.ID}, null) |
+                                        @Html.ActionLink("Delete", "Delete", "Service", new { serviceId = service.ID}, null)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        @if (!invoice.Closed)
+                        {
+                            <p>
+                                @Html.ActionLink("Create Service", "Create", "Service", new {invoiceId = invoice.ID}, null)
+                            </p>
+                        }
+                    </details>
+                </td>
+            </tr>
+        }
+    </table>
+}
+<p>
+    @Html.ActionLink("Create Invoice", "Create", "Invoice", new { clientId = @Model.ClientID, providerId = @Model.ProviderID }, null)
+</p>
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script>
+    function GetInvoices() {
+        var discountMonth = document.getElementById('DiscountMonth').value;
+        var clientId = document.getElementById('ClientID').value;
+        var providerId = document.getElementById('ProviderID').value;
+        window.location.href = "/InvoiceDistribution/Index/?discountMonth=" + discountMonth + "&clientId=" + clientId + "&providerId=" + providerId;
+    }
+</script>

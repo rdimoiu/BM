@@ -1,0 +1,131 @@
+﻿@model BuildingManagement.Models.Invoice
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Invoice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Provider)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Provider.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvoiceType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InvoiceType.Type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Number)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Number)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DueDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DueDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CheckQuantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CheckQuantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Unit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Unit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalValueWithoutTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalValueWithoutTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CheckTotalValueWithoutTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CheckTotalValueWithoutTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CheckTotalTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CheckTotalTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DiscountMonth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DiscountMonth)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>

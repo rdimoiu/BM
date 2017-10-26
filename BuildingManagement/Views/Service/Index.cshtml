@@ -1,0 +1,126 @@
+﻿@model BuildingManagement.ViewModels.ServiceIndexData
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Invoice
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Unit
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            ValueWithoutTVA
+        </th>
+        <th>
+            TVA
+        </th>
+        <th>
+            QuotaTVA
+        </th>
+        <th>
+            Fixed
+        </th>
+        <th>
+            Inhabited
+        </th>
+        <th>
+            DistributionMode
+        </th>
+        <th>
+            Counted
+        </th>
+        <th>
+            Space
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Services)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Invoice.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ValueWithoutTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuotaTVA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fixed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inhabited)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DistributionMode.Mode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Counted)
+            </td>
+            <td>
+                @{
+                    foreach (var sct in item.Sections)
+                    {
+                        @sct.Number
+                        <br />
+                    }
+                }
+                @{
+                    foreach (var lvl in item.Levels)
+                    {
+                        @lvl.Number
+                        <br />
+                    }
+                }
+                @{
+                    foreach (var spc in item.Spaces)
+                    {
+                        @spc.Number
+                        <br/>
+                    }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+</table>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>

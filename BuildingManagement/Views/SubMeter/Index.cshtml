@@ -1,0 +1,104 @@
+﻿@model BuildingManagement.ViewModels.SubMeterIndexData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Code
+        </th>
+        <th>
+            Details
+        </th>
+        <th>
+            InitialIndex
+        </th>
+        <th>
+            Defect
+        </th>
+        <th>
+            Meter
+        </th>
+        <th>
+            Distribution Mode
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Space
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.SubMeters)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Details)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InitialIndex)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Defect)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Meter.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DistributionMode.Mode)
+            </td>
+            <td>
+                @{
+                    foreach (var meterType in item.MeterTypes)
+                    {
+                        @meterType.Type
+                        <br />
+                    }
+                }
+            </td>
+            <td>
+                @{
+                    foreach (var sct in item.Sections)
+                    {
+                        @sct.Number
+                        <br />
+                    }
+                }
+                @{
+                    foreach (var lvl in item.Levels)
+                    {
+                        @lvl.Number
+                        <br />
+                    }
+                }
+                @{
+                    foreach (var spc in item.Spaces)
+                    {
+                        @spc.Number
+                        <br/>
+                    }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+                    }
+
+</table>
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>

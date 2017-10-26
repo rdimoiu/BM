@@ -1,0 +1,206 @@
+﻿@model BuildingManagement.Models.Service
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+<style type="text/css">
+    .demo {
+        overflow: auto;
+        border: 1px solid silver;
+        min-height: 100px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/themes/default/style.min.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Service</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Invoice, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("InvoiceID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetSpacesByClient(this.value)" })
+            @Html.ValidationMessageFor(model => model.InvoiceID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Unit, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Unit, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ValueWithoutTVA, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ValueWithoutTVA, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ValueWithoutTVA, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TVA, htmlAttributes: new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.TVA, new {htmlAttributes = new {@class = "form-control"}})
+            @Html.ValidationMessageFor(model => model.TVA, "", new {@class = "text-danger"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.QuotaTVA, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.QuotaTVA, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.QuotaTVA, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Fixed, htmlAttributes: new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Fixed)
+                @Html.ValidationMessageFor(model => model.Fixed, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Inhabited, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Inhabited)
+                @Html.ValidationMessageFor(model => model.Inhabited, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Counted, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Counted)
+                @Html.ValidationMessageFor(model => model.Counted, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Spaces, htmlAttributes: new { @class = "control-label col-md-2", @style = "float: left" })
+        <br />
+        <div id="spacesTree" class="form-group" style="float: left"></div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" onclick="SubmitService()" />
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        if (@Model.InvoiceID === 0) {
+        } else {
+            GetSpacesByClient(@Model.InvoiceID);
+        }
+    });
+    function GetSpacesByClient(invoiceId) {
+        $('#spacesTree').jstree("destroy").empty();
+        $('#spacesTree')
+            .jstree({
+                'plugins': ["defaults", "checkbox"],
+                'core': {
+                    'data': {
+                        'themes': {
+                            "responsive": true
+                        },
+                        'url': "../GetSpacesTreeData/?serviceId=" + @Model.ID + "&invoiceId=" + invoiceId,
+                        'dataType': "json"
+                    }
+                }
+            });
+    };
+
+    function SubmitService() {
+        var serviceData = {
+            ID: document.getElementById('ID').value,
+            InvoiceID: document.getElementById('InvoiceID').value,
+            Name: document.getElementById('Name').value,
+            Quantity: document.getElementById('Quantity').value,
+            Unit: document.getElementById('Unit').value,
+            Price: document.getElementById('Price').value,
+            TVA: document.getElementById('TVA').value,
+            ValueWithoutTVA: document.getElementById('ValueWithoutTVA').value,
+            QuotaTVA: document.getElementById('QuotaTVA').value,
+            Fixed: document.getElementById('Fixed').checked,
+            Inhabited: document.getElementById('Inhabited').checked,
+            DistributionModeID: document.getElementById('DistributionModeID').value,
+            Counted: document.getElementById('Counted').checked,
+            ServiceSLSSelected: $('#spacesTree').jstree('get_selected')
+        };
+        $.ajax({
+            type: "POST",
+            url: "../EditService",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(serviceData),
+            success: function() {
+                window.location.href = "../Index";
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    };
+</script>

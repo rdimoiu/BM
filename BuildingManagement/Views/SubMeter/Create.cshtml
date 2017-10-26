@@ -1,0 +1,151 @@
+﻿@model BuildingManagement.Models.SubMeter
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+<style type="text/css">
+    .demo {
+        overflow: auto;
+        border: 1px solid silver;
+        min-height: 100px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/themes/default/style.min.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>SubMeter</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Details, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.InitialIndex, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.InitialIndex, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.InitialIndex, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Defect, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Defect)
+                @Html.ValidationMessageFor(model => model.Defect, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Meter, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("MeterID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetMeterTypesSpacesByMeter(this.value)" })
+            @Html.ValidationMessageFor(model => model.MeterID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control", required = "required" })
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div id="meterTypesTree" class="form-group"></div>
+
+    <div id="spacesTree" class="form-group"></div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" onclick="SubmitSubMeter()" />
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script type="text/javascript">
+    function SubmitSubMeter() {
+        var subMeterData = {
+            Code: document.getElementById('Code').value,
+            Details: document.getElementById('Details').value,
+            InitialIndex: document.getElementById('InitialIndex').value,
+            Defect: document.getElementById('Defect').checked,
+            MeterID: document.getElementById('MeterID').value,
+            DistributionModeID: document.getElementById('DistributionModeID').value,
+            SubMeterTypesSelected: $('#meterTypesTree').jstree('get_selected'),
+            SubMeterSLSSelected: $('#spacesTree').jstree('get_selected')
+        };
+        $.ajax({
+            type: "POST",
+            url: "/SubMeter/CreateSubMeter",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(subMeterData),
+            success: function () {
+                window.location.href = "/SubMeter/Index";
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    };
+
+    function GetMeterTypesSpacesByMeter(meterId) {
+        $('#meterTypesTree')
+            .jstree({
+                'plugins': ["defaults", "checkbox"],
+                'core': {
+                    'data': {
+                        'themes': {
+                            "responsive": true
+                        },
+                        'url': "../SubMeter/GetMeterTypesTreeData/?meterId=" + meterId,
+                        'dataType': "json"
+                    }
+                }
+            });
+
+        $('#spacesTree')
+            .jstree({
+                'plugins': ["defaults", "checkbox"],
+                'core': {
+                    'data': {
+                        'themes': {
+                            "responsive": true
+                        },
+                        'url': "../SubMeter/GetSpacesTreeData/?meterId=" + meterId,
+                        'dataType': "json"
+                    }
+                }
+            });
+    }
+</script>

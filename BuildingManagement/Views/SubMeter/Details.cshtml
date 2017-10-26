@@ -1,0 +1,68 @@
+﻿@model BuildingManagement.Models.SubMeter
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>SubMeter</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DistributionMode.Mode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DistributionMode.Mode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Meter.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Meter.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Details)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Details)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InitialIndex)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InitialIndex)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Defect)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Defect)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>

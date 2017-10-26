@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BuildingManagement.Models.DistributionMode>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Mode)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        @Html.HiddenFor(modelItem => item.ID, new { id = "ID" })
+        <tr onclick="javascript:Edit();">
+            <td>
+                <span >@Html.DisplayFor(modelItem => item.Mode)</span>
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script>
+    function Edit() {
+        var id = document.getElementById('ID').value;
+        window.location.href = "/DistributionMode/Edit/" + id;
+    }
+</script>
