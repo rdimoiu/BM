@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -8,6 +8,7 @@ using PagedList;
 
 namespace BuildingManagement.Controllers
 {
+    [Authorize]
     public class ClientController : Controller
     {
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();

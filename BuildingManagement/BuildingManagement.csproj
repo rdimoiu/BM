@@ -243,6 +243,7 @@
     <Compile Include="Models\UserRole.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\SessionForm.cs" />
     <Compile Include="ViewModels\InvoiceDistributionIndexData.cs" />
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
