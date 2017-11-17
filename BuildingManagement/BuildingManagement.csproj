@@ -222,7 +222,9 @@
     <Compile Include="Controllers\SpaceTypeController.cs" />
     <Compile Include="Controllers\SubClientController.cs" />
     <Compile Include="Controllers\SubMeterController.cs" />
+    <Compile Include="Controllers\UserManagementController.cs" />
     <Compile Include="Controllers\Utils.cs" />
+    <Compile Include="Cryptography\SimpleAes.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\MainContext.cs" />
     <Compile Include="DAL\MainContextInitializer.cs" />
@@ -238,6 +240,9 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\InvoiceType.cs" />
+    <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Utils\Constants.cs" />
     <Compile Include="ViewModels\InvoiceDistributionIndexData.cs" />
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -420,6 +425,9 @@
     <Content Include="Views\InvoiceType\Index.cshtml" />
     <Content Include="Views\Invoice\Close.cshtml" />
     <Content Include="Views\Invoice\Open.cshtml" />
+    <Content Include="Views\UserManagement\Index.cshtml" />
+    <Content Include="Views\UserManagement\Delete.cshtml" />
+    <Content Include="Views\UserManagement\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

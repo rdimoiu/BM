@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using BuildingManagement.Models;
 
@@ -30,6 +30,10 @@ namespace BuildingManagement.DAL
         public DbSet<SpaceType> SpaceTypes { get; set; }
 
         public DbSet<Cost> Costs { get; set; }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

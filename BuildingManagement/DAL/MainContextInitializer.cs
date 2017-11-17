@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using Antlr.Runtime;
 using BuildingManagement.Models;
+using BuildingManagement.Utils;
 
 namespace BuildingManagement.DAL
 {
@@ -511,6 +514,32 @@ namespace BuildingManagement.DAL
             var subMeters = new List<SubMeter> {subMeter1};
             subMeters.ForEach(sm => context.SubMeters.Add(sm));
             context.SaveChanges();
+
+            var userSysadmin = new User
+            {
+                AccountConfirmed = false,
+                Email = "sysadmin@bm.com",
+                FirstName = "System",
+                LastName = "Admin",
+                Password = Cryptography.SimpleAes.Encrypt("demo123")
+            };
+            context.Users.Add(userSysadmin);
+
+            var sysadminRole = new UserRole
+            {
+                UserId = userSysadmin.Id,
+                UserRoleType = (int) Constants.RoleTypes.Sysadmin
+            };
+            context.UserRoles.Add(sysadminRole);
+
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new EarlyExitException("hmmm", ex);
+            }
 
             //var meterReadings = new List<MeterReading>();
             //var meterReading1 = new MeterReading {ID = 1, Index = 0, Date = new DateTime(2017, 01, 01), MeterID = 1};

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
@@ -27,6 +27,9 @@ namespace BuildingManagement.DAL
         private GenericRepository<Invoice> _invoiceRepository;
 
         private GenericRepository<Cost> _costRepository; 
+
+        private GenericRepository<User> _userRepository; 
+        private GenericRepository<UserRole> _userRoleRepository; 
 
         public GenericRepository<MeterType> MeterTypeRepository
         {
@@ -220,6 +223,9 @@ namespace BuildingManagement.DAL
                 return _costRepository;
             }
         }
+
+        public GenericRepository<User> UserRepository => _userRepository ?? (_userRepository = new GenericRepository<User>(_context));
+        public GenericRepository<UserRole> UserRoleRepository => _userRoleRepository ?? (_userRoleRepository = new GenericRepository<UserRole>(_context));
 
         public void Save()
         {
