@@ -20,7 +20,8 @@ namespace BuildingManagement.Controllers
             var viewModel = new MeterIndexData
             {
                 Meters =
-                    _unitOfWork.MeterRepository.Get(includeProperties: "Client, DistributionMode, MeterTypes, Sections, Levels, Spaces")
+                    _unitOfWork.MeterRepository.Get(
+                        includeProperties: "DistributionMode, MeterTypes, Sections, Levels, Spaces")
             };
             return View(viewModel);
         }
@@ -44,7 +45,6 @@ namespace BuildingManagement.Controllers
         public ActionResult Create()
         {
             var model = new Meter();
-            PopulateClientsDropDownList();
             PopulateDistributionModesDropDownList();
             return View(model);
         }
@@ -53,14 +53,6 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult CreateMeter(Meter meter)
         {
-            if (meter.ClientID != 0)
-            {
-                var client = _unitOfWork.ClientRepository.GetById(meter.ClientID);
-                if (client != null)
-                {
-                    meter.Client = client;
-                }
-            }
             //uniqueness condition check
             if (meter.Code != null)
             {
@@ -68,7 +60,6 @@ namespace BuildingManagement.Controllers
                 if (duplicateMeter != null)
                 {
                     ModelState.AddModelError("Code", "A meter with this code already exists.");
-                    PopulateClientsDropDownList(meter.ClientID);
                     PopulateDistributionModesDropDownList(meter.DistributionModeID);
                     return View("Create", meter);
                 }
@@ -145,7 +136,6 @@ namespace BuildingManagement.Controllers
                         "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateClientsDropDownList(meter.ClientID);
             PopulateDistributionModesDropDownList(meter.DistributionModeID);
             return View("Create", meter);
         }
@@ -164,7 +154,6 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            PopulateClientsDropDownList(meter.ClientID);
             PopulateDistributionModesDropDownList(meter.DistributionModeID);
             return View(meter);
         }
@@ -175,14 +164,14 @@ namespace BuildingManagement.Controllers
         {
             var meterToUpdate =
                 _unitOfWork.MeterRepository.Get(
-                    includeProperties: "Client, DistributionMode, MeterTypes, Sections, Levels, Spaces")
+                    includeProperties: "DistributionMode, MeterTypes, Sections, Levels, Spaces")
                     .FirstOrDefault(m => m.ID == meter.ID);
             if (meterToUpdate == null)
             {
                 return HttpNotFound();
             }
             if (TryUpdateModel(meterToUpdate, "",
-                new[] {"ClientID", "Code", "Details", "InitialIndex", "Defect", "DistributionModeID"}))
+                new[] {"Code", "Details", "InitialIndex", "Defect", "DistributionModeID"}))
             {
                 try
                 {
@@ -192,7 +181,6 @@ namespace BuildingManagement.Controllers
                     if (duplicateMeter != null && duplicateMeter.ID != meterToUpdate.ID)
                     {
                         ModelState.AddModelError("", "A meter with this code already exists.");
-                        PopulateClientsDropDownList(meterToUpdate.ClientID);
                         PopulateDistributionModesDropDownList(meterToUpdate.DistributionModeID);
                         return View("Edit", meterToUpdate);
                     }
@@ -240,7 +228,6 @@ namespace BuildingManagement.Controllers
                         "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateClientsDropDownList(meterToUpdate.ClientID);
             PopulateDistributionModesDropDownList(meterToUpdate.DistributionModeID);
             return View("Edit", meterToUpdate);
         }
@@ -291,12 +278,6 @@ namespace BuildingManagement.Controllers
                 _unitOfWork.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private void PopulateClientsDropDownList(object selectedClient = null)
-        {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
-            ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
@@ -375,7 +356,7 @@ namespace BuildingManagement.Controllers
         }
 
         [HttpGet]
-        public string GetSpacesTreeData(int? meterId, int clientId)
+        public string GetSpacesTreeData(int? meterId)
         {
             var root = new TreeNode
             {
@@ -388,7 +369,7 @@ namespace BuildingManagement.Controllers
             HashSet<int> selectedSpacesIDs = new HashSet<int>();
             HashSet<int> selectedLevelsIDs = new HashSet<int>();
             HashSet<int> selectedSectionsIDs = new HashSet<int>();
-            if (meterId != 0)
+            if (meterId != null)
             {
                 var meter =
                     _unitOfWork.MeterRepository.Get(includeProperties: "Sections, Levels, Spaces")
@@ -401,7 +382,7 @@ namespace BuildingManagement.Controllers
                 }
             }
 
-            var sections = _unitOfWork.SectionRepository.Get().Where(s => s.ClientID == clientId).ToList();
+            var sections = _unitOfWork.SectionRepository.Get().ToList();
             if (sections.Any())
             {
                 foreach (var section in sections)

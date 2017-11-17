@@ -12,9 +12,6 @@
 <table class="table">
     <tr>
         <th>
-            Client
-        </th>
-        <th>
             Code
         </th>
         <th>
@@ -42,9 +39,6 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Code)
             </td>
             <td>
@@ -64,7 +58,7 @@
                     foreach (var meterType in item.MeterTypes)
                     {
                         @meterType.Type
-                        <br/>
+                        <br />
                     }
                 }
             </td>
@@ -73,14 +67,14 @@
                     foreach (var sct in item.Sections)
                     {
                         @sct.Number
-                        <br/>
+                        <br />
                     }
                 }
                 @{
                     foreach (var lvl in item.Levels)
                     {
                         @lvl.Number
-                        <br/>
+                        <br />
                     }
                 }
                 @{
@@ -92,9 +86,9 @@
                 }
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
-                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
-                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
                     }
