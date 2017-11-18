@@ -18,6 +18,9 @@ namespace BuildingManagement.Models
         public bool Defect { get; set; }
         //consumption
 
+        public int ClientID { get; set; }
+        public virtual Client Client { get; set; }
+
         public int DistributionModeID { get; set; }
         public virtual DistributionMode DistributionMode { get; set; }
 

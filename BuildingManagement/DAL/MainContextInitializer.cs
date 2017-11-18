@@ -473,6 +473,7 @@ namespace BuildingManagement.DAL
 
             var meter1 = new Meter
             {
+                ClientID = client1.ID,
                 ID = 1,
                 Code = "12345",
                 Details = "detail 1",
@@ -482,6 +483,7 @@ namespace BuildingManagement.DAL
             };
             var meter2 = new Meter
             {
+                ClientID = client1.ID,
                 ID = 2,
                 Code = "23456",
                 DistributionModeID = 2,
@@ -490,6 +492,7 @@ namespace BuildingManagement.DAL
             };
             var meter3 = new Meter
             {
+                ClientID = client1.ID,
                 ID = 3,
                 Code = "34567",
                 Details = "detail 3",

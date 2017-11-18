@@ -166,8 +166,7 @@ namespace BuildingManagement.Controllers
         public ActionResult EditService(Service service)
         {
             var serviceToUpdate =
-                _unitOfWork.ServiceRepository.Get(includeProperties: "Invoice, DistributionMode, Sections, Levels, Spaces")
-                    .FirstOrDefault(s => s.ID == service.ID);
+                _unitOfWork.ServiceRepository.Get(includeProperties: "Invoice, DistributionMode, Sections, Levels, Spaces").FirstOrDefault(s => s.ID == service.ID);
             if (serviceToUpdate == null)
             {
                 return HttpNotFound();

@@ -120,6 +120,7 @@
     };
 
     function GetMeterTypesSpacesByMeter(meterId) {
+        $('#meterTypesTree').jstree("destroy").empty();
         $('#meterTypesTree')
             .jstree({
                 'plugins': ["defaults", "checkbox"],
@@ -133,7 +134,7 @@
                     }
                 }
             });
-
+        $('#spacesTree').jstree("destroy").empty();
         $('#spacesTree')
             .jstree({
                 'plugins': ["defaults", "checkbox"],
