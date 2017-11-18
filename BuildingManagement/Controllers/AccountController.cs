@@ -74,34 +74,10 @@ namespace BuildingManagement.Controllers
         {
             if (IsValid(model.Email, model.Password))
             {
-                var user =
-                _unitOfWork.UserRepository.Get()
-                    .SingleOrDefault(
-                        item =>
-                            item.Email == model.Email &&
-                            item.Password == Cryptography.SimpleAes.Encrypt(model.Password));
-
-                // Set global employee data at login
-                HttpContext.Session.Add("_User", user);
-
-                var ident = new ClaimsIdentity(
-                  new[] { 
-              // adding following 2 claim just for supporting default antiforgery provider
-              new Claim(ClaimTypes.NameIdentifier, model.Email),
-              new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string"),
-
-              new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-
-              // optionally you could add roles if any
-              new Claim(ClaimTypes.Role, user.UserRoles.First().UserRoleType.ToString()),
-
-                  },
-                  DefaultAuthenticationTypes.ApplicationCookie);
-
-                HttpContext.GetOwinContext().Authentication.SignIn(
-                   new AuthenticationProperties { IsPersistent = false }, ident);
-                return RedirectToAction("Index", "Client"); // auth succeed 
+                AuthenticateUser(model);
+                return RedirectToAction("Index", "Client");
             }
+                
             // invalid username or password
             ModelState.AddModelError("", "invalid username or password");
             return View();
@@ -117,6 +93,61 @@ namespace BuildingManagement.Controllers
                             item.Password == Cryptography.SimpleAes.Encrypt(password));
 
             return user != null;
+        }
+
+        [AllowAnonymous, HttpPost]
+        public ActionResult ConfirmAccount(string username)
+        {
+            var user = _unitOfWork.UserRepository.Get().SingleOrDefault(item => item.Email == username);
+            if (user != null && !user.AccountConfirmed)
+            {
+                ViewBag.UserName = user.FirstName + " " + user.LastName;
+                return View("LoginConfirmAccount", new LoginViewModel {Email = username});
+            }
+            return null;
+        }
+
+        [AllowAnonymous]
+        public ActionResult SetAccountPassword(LoginViewModel model)
+        {
+            var user = _unitOfWork.UserRepository.Get().Single(item => item.Email == model.Email);
+            user.Password = Cryptography.SimpleAes.Encrypt(model.Password);
+            user.AccountConfirmed = true;
+            _unitOfWork.Save();
+
+            AuthenticateUser(model);
+
+            return RedirectToAction("Index", "Client");
+        }
+
+        private void AuthenticateUser(LoginViewModel model)
+        {
+            var user =
+                _unitOfWork.UserRepository.Get()
+                    .SingleOrDefault(
+                        item =>
+                            item.Email == model.Email &&
+                            item.Password == Cryptography.SimpleAes.Encrypt(model.Password));
+
+            // Set global employee data at login
+            HttpContext.Session.Add("_User", user);
+
+            var ident = new ClaimsIdentity(
+              new[] { 
+              // adding following 2 claim just for supporting default antiforgery provider
+              new Claim(ClaimTypes.NameIdentifier, model.Email),
+              new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string"),
+
+              new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
+
+              // optionally you could add roles if any
+              new Claim(ClaimTypes.Role, user.UserRoles.First().UserRoleType.ToString()),
+
+              },
+              DefaultAuthenticationTypes.ApplicationCookie);
+
+            HttpContext.GetOwinContext().Authentication.SignIn(
+               new AuthenticationProperties { IsPersistent = false }, ident);
         }
 
         //

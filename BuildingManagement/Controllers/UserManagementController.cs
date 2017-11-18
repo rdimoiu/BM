@@ -8,9 +8,11 @@ using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using BuildingManagement.Utils;
+using Microsoft.Ajax.Utilities;
 
 namespace BuildingManagement.Controllers
 {
+    [Authorize(Roles = "3")]
     public class UserManagementController : Controller
     {
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
@@ -88,7 +90,7 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Level/Delete/5
+        // GET: ../Delete/5
         public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -107,7 +109,7 @@ namespace BuildingManagement.Controllers
             return View(user);
         }
 
-        // POST: Level/Delete/5
+        // POST: ../Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -122,6 +124,22 @@ namespace BuildingManagement.Controllers
             catch (DataException)
             {
                 return RedirectToAction("Delete", new { id, saveChangesError = true });
+            }
+            return RedirectToAction("Index");
+        }
+
+        [ActionName("Reactivate")]
+        public ActionResult ReactivateAccount(int id)
+        {
+            try
+            {
+                var user=_unitOfWork.UserRepository.GetById(id);
+                user.AccountConfirmed = false;
+                _unitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("hmmm", ex);
             }
             return RedirectToAction("Index");
         }
