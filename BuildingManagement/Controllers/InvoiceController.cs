@@ -1,37 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class InvoiceController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public InvoiceController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Invoice
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var viewModel = new InvoiceIndexData
+            IEnumerable<Invoice> invoices;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
             {
-                Invoices = _unitOfWork.InvoiceRepository.Get(includeProperties: "Provider, Client, Services")
-            };
-            return View(viewModel);
+                pageNumber = 1;
+                invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString);
+                }
+                else
+                {
+                    invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.ClientSortParm = string.IsNullOrEmpty(sortOrder) ? "client_desc" : "";
+            ViewBag.ProviderSortParm = sortOrder == "Provider" ? "provider_desc" : "Provider";
+            ViewBag.InvoiceTypeSortParm = sortOrder == "InvoiceType" ? "invoiceType_desc" : "InvoiceType";
+            ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.DueDateSortParm = sortOrder == "DueDate" ? "dueDate_desc" : "DueDate";
+            ViewBag.QuantitySortParm = sortOrder == "Quantity" ? "quantity_desc" : "Quantity";
+            ViewBag.CheckQuantitySortParm = sortOrder == "CheckQuantity" ? "checkQuantity_desc" : "CheckQuantity";
+            ViewBag.TotalValueWithoutTVASortParm = sortOrder == "TotalValueWithoutTVA" ? "totalValueWithoutTVA_desc" : "TotalValueWithoutTVA";
+            ViewBag.CheckTotalValueWithoutTVASortParm = sortOrder == "CheckTotalValueWithoutTVA" ? "checkTotalValueWithoutTVA_desc" : "CheckTotalValueWithoutTVA";
+            ViewBag.TotalTVASortParm = sortOrder == "TotalTVA" ? "totalTVA_desc" : "TotalTVA";
+            ViewBag.CheckTotalTVASortParm = sortOrder == "CheckTotalTVA" ? "checkTotalTVA_desc" : "CheckTotalTVA";
+            ViewBag.DiscountMonthSortParm = sortOrder == "DiscountMonth" ? "discountMonth_desc" : "DiscountMonth";
+            invoices = _unitOfWork.InvoiceRepository.OrderInvoices(invoices, sortOrder);
+            ViewBag.OnePageOfInvoices = invoices.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfInvoices);
         }
 
         // GET: Invoice/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var invoice = _unitOfWork.InvoiceRepository.GetById(id);
+            var invoice = _unitOfWork.InvoiceRepository.Get(id);
             if (invoice == null)
             {
                 return HttpNotFound();
@@ -70,27 +103,17 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(
-            [Bind(
-                Include =
-                    "Number,CheckTotalValueWithoutTVA,CheckTotalTVA,Date,DueDate,CheckQuantity,Unit,DiscountMonth,InvoiceTypeID,ProviderID,ClientID,PreviousPage"
-                )] Invoice invoice)
+        public ActionResult Create([Bind(Include = "Number,CheckTotalValueWithoutTVA,CheckTotalTVA,Date,DueDate,CheckQuantity,DiscountMonth,InvoiceTypeID,ProviderID,ClientID,PreviousPage")] Invoice invoice)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateInvoice =
-                        _unitOfWork.InvoiceRepository.Get(
-                            filter:
-                                i =>
-                                    i.Number == invoice.Number && i.Date == invoice.Date &&
-                                    i.ProviderID == invoice.ProviderID).FirstOrDefault();
+                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
                     if (duplicateInvoice != null)
                     {
-                        ModelState.AddModelError("Number",
-                            "An invoice with this number, on this date, from this provider, already exists.");
+                        ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
                         PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
                         PopulateClientsDropDownList(invoice.ClientID);
                         PopulateProvidersDropDownList(invoice.ProviderID);
@@ -107,8 +130,9 @@ namespace BuildingManagement.Controllers
                     invoice.Quantity = 0.0m;
                     invoice.TotalValueWithoutTVA = 0.0m;
                     invoice.TotalTVA = 0.0m;
-                    _unitOfWork.InvoiceRepository.Insert(invoice);
+                    _unitOfWork.InvoiceRepository.Add(invoice);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Invoice {0} has been created.", invoice.Number);
                     if (invoice.PreviousPage.Equals("Invoice"))
                     {
                         return RedirectToAction("Index", "Invoice");
@@ -117,8 +141,7 @@ namespace BuildingManagement.Controllers
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
             PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
@@ -128,13 +151,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: Invoice/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var invoice = _unitOfWork.InvoiceRepository.GetById(id);
+            var invoice = _unitOfWork.InvoiceRepository.Get(id);
             if (invoice == null)
             {
                 return HttpNotFound();
@@ -150,79 +169,58 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var invoiceToUpdate = _unitOfWork.InvoiceRepository.GetById(id);
-            if (invoiceToUpdate == null)
+            var invoice = _unitOfWork.InvoiceRepository.Get(id);
+            if (invoice == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(invoiceToUpdate, "",
-                new[]
-                {
-                    "Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "Unit", "DiscountMonth",
-                    "InvoiceTypeID", "ProviderID", "ClientID"
-                }))
+            if (TryUpdateModel(invoice, "", new[]{"Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID"}))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateInvoice =
-                        _unitOfWork.InvoiceRepository.Get(
-                            filter:
-                                i =>
-                                    i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date &&
-                                    i.ProviderID == invoiceToUpdate.ProviderID).FirstOrDefault();
-                    if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
+                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
+                    if (duplicateInvoice != null && duplicateInvoice.ID != invoice.ID)
                     {
-                        ModelState.AddModelError("Number",
-                            "An invoice with this number, on this date, from this provider, already exists.");
-                        PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-                        PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-                        return View(invoiceToUpdate);
+                        ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
+                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
+                        PopulateClientsDropDownList(invoice.ClientID);
+                        PopulateProvidersDropDownList(invoice.ProviderID);
+                        return View(invoice);
                     }
-                    if (invoiceToUpdate.Date > invoiceToUpdate.DueDate)
+                    if (invoice.Date > invoice.DueDate)
                     {
                         ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
-                        PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-                        PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-                        return View(invoiceToUpdate);
+                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
+                        PopulateClientsDropDownList(invoice.ClientID);
+                        PopulateProvidersDropDownList(invoice.ProviderID);
+                        return View(invoice);
                     }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Invoice {0} has been edited.", invoice.Number);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-            PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-            PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-            return View(invoiceToUpdate);
+            PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
+            PopulateClientsDropDownList(invoice.ClientID);
+            PopulateProvidersDropDownList(invoice.ProviderID);
+            return View(invoice);
         }
 
         // GET: Invoice/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage =
-                    "Delete failed. Try again, and if the problem persists see your system administrator.";
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var invoice =
-                _unitOfWork.InvoiceRepository.Get(includeProperties: "Client, Provider").Single(s => s.ID == id);
+            var invoice = _unitOfWork.InvoiceRepository.GetInvoiceIncludingClientAndProviderAndInvoiceTypeAndServices(id);
             if (invoice == null)
             {
                 return HttpNotFound();
@@ -237,8 +235,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.InvoiceRepository.Delete(id);
+                var invoice = _unitOfWork.InvoiceRepository.Get(id);
+                if (invoice == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.InvoiceRepository.Remove(invoice);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Invoice {0} has been deleted.", invoice.Number);
             }
             catch (DataException)
             {
@@ -247,40 +251,35 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
-        
-        public ActionResult Close(int? invoiceId)
+
+        public ActionResult Close(int id)
         {
-            if (invoiceId == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //if (saveChangesError.GetValueOrDefault())
-            //{
-            //    ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
-            //}
-            var invoice =
-                _unitOfWork.InvoiceRepository.Get(includeProperties: "Client, Provider, Services")
-                    .Single(s => s.ID == invoiceId);
+            var invoice = _unitOfWork.InvoiceRepository.SingleOrDefault(s => s.ID == id);
             if (invoice == null)
             {
                 return HttpNotFound();
             }
-            
+
             var checkTotalValueWithoutTVA = invoice.Services.Sum(service => service.ValueWithoutTVA);
             if (checkTotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA)
             {
                 ModelState.AddModelError("", "Sum of values without TVA from services is wrong.");
                 return RedirectToAction("Index", "InvoiceDistribution",
-                    new {discountMonth = invoice.DiscountMonth, clientId = invoice.ClientID, providerId = invoice.ProviderID});
+                    new
+                    {
+                        discountMonth = invoice.DiscountMonth,
+                        clientId = invoice.ClientID,
+                        providerId = invoice.ProviderID
+                    });
             }
-            
+
             foreach (var service in invoice.Services)
             {
                 List<Space> spaces = new List<Space>();
                 List<Level> levels = new List<Level>();
                 foreach (var section in service.Sections)
                 {
-                    var sectionLevels = _unitOfWork.LevelRepository.Get().Where(l => l.SectionID == section.ID).ToList();
+                    var sectionLevels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
                     foreach (var level in sectionLevels)
                     {
                         levels.Add(level);
@@ -289,7 +288,7 @@ namespace BuildingManagement.Controllers
                 levels.AddRange(service.Levels);
                 foreach (var level in levels)
                 {
-                    var levelSpaces = _unitOfWork.SpaceRepository.Get().Where(s => s.LevelID == level.ID).ToList();
+                    var levelSpaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
                     foreach (var space in levelSpaces)
                     {
                         spaces.Add(space);
@@ -317,10 +316,10 @@ namespace BuildingManagement.Controllers
                             if (!space.Inhabited)
                             {
                                 var quota = space.Surface/totalSurface;
-                                cost.Value = quota * valueWithTVA;
+                                cost.Value = quota*valueWithTVA;
                                 cost.ServiceID = service.ID;
                                 cost.SpaceID = space.ID;
-                                _unitOfWork.CostRepository.Insert(cost);
+                                _unitOfWork.CostRepository.Add(cost);
                             }
                         }
                     }
@@ -335,10 +334,10 @@ namespace BuildingManagement.Controllers
                             if (!space.Inhabited)
                             {
                                 var cota = space.People/totalPeople;
-                                cost.Value = cota * valueWithTVA;
+                                cost.Value = cota*valueWithTVA;
                                 cost.ServiceID = service.ID;
                                 cost.SpaceID = space.ID;
-                                _unitOfWork.CostRepository.Insert(cost);
+                                _unitOfWork.CostRepository.Add(cost);
                             }
                         }
                     }
@@ -349,19 +348,15 @@ namespace BuildingManagement.Controllers
             return View(invoice);
         }
 
-        public ActionResult Open(int? invoiceId)
+        public ActionResult Open(int invoiceId)
         {
-            if (invoiceId == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var invoice = _unitOfWork.InvoiceRepository.GetById(invoiceId);
+            var invoice = _unitOfWork.InvoiceRepository.Get(invoiceId);
             foreach (var service in invoice.Services)
             {
-                var costs = _unitOfWork.CostRepository.Get().Where(c => c.ServiceID == service.ID);
+                var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
                 foreach (var cost in costs)
                 {
-                    _unitOfWork.CostRepository.Delete(cost.ID);
+                    _unitOfWork.CostRepository.Remove(cost);
                 }
             }
             invoice.Closed = false;
@@ -380,19 +375,19 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoiceTypesDropDownList(object selectedInvoiceType = null)
         {
-            var invoiceTypesQuery = from it in _unitOfWork.InvoiceTypeRepository.Get() select it;
+            var invoiceTypesQuery = from it in _unitOfWork.InvoiceTypeRepository.GetAll() select it;
             ViewBag.InvoiceTypeID = new SelectList(invoiceTypesQuery, "ID", "Type", selectedInvoiceType);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateProvidersDropDownList(object selectedProvider = null)
         {
-            var providersQuery = from p in _unitOfWork.ProviderRepository.Get() select p;
+            var providersQuery = from p in _unitOfWork.ProviderRepository.GetAll() select p;
             ViewBag.ProviderID = new SelectList(providersQuery, "ID", "Name", selectedProvider);
         }
     }

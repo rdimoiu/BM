@@ -1,31 +1,56 @@
-﻿using System.Data;
-using System.Linq;
-using System.Net;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class SpaceTypeController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public SpaceTypeController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: SpaceType
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var spaceTypes = _unitOfWork.SpaceTypeRepository.Get();
-            return View(spaceTypes);
+            IEnumerable<SpaceType> spaceTypes;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString);
+                }
+                else
+                {
+                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetAll();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.TypeSortParm = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            spaceTypes = _unitOfWork.SpaceTypeRepository.OrderSpaceTypes(spaceTypes, sortOrder);
+            ViewBag.OnePageOfSpaceTypes = spaceTypes.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfSpaceTypes);
         }
 
         // GET: SpaceType/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var spaceType = _unitOfWork.SpaceTypeRepository.GetById(id);
+            var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
             if (spaceType == null)
             {
                 return HttpNotFound();
@@ -51,15 +76,15 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpaceType =
-                        _unitOfWork.SpaceTypeRepository.Get(filter: st => st.Type == spaceType.Type).FirstOrDefault();
+                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
                     if (duplicateSpaceType != null)
                     {
                         ModelState.AddModelError("Type", "A space type with this type already exists.");
                         return View(spaceType);
                     }
-                    _unitOfWork.SpaceTypeRepository.Insert(spaceType);
+                    _unitOfWork.SpaceTypeRepository.Add(spaceType);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Space type {0} has been created.", spaceType.Type);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -71,13 +96,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: SpaceType/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var spaceType = _unitOfWork.SpaceTypeRepository.GetById(id);
+            var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
             if (spaceType == null)
             {
                 return HttpNotFound();
@@ -90,30 +111,26 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var spaceTypeToUpdate = _unitOfWork.SpaceTypeRepository.GetById(id);
-            if (spaceTypeToUpdate == null)
+            var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
+            if (spaceType == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(spaceTypeToUpdate, "", new[] { "Type" }))
+            if (TryUpdateModel(spaceType, "", new[] { "Type" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpaceType =
-                        _unitOfWork.SpaceTypeRepository.Get(filter: st => st.Type == spaceTypeToUpdate.Type).FirstOrDefault();
-                    if (duplicateSpaceType != null && duplicateSpaceType.ID != spaceTypeToUpdate.ID)
+                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
+                    if (duplicateSpaceType != null && duplicateSpaceType.ID != spaceType.ID)
                     {
                         ModelState.AddModelError("Type", "A space type with this type already exists.");
-                        return View(spaceTypeToUpdate);
+                        return View(spaceType);
                     }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Space type {0} has been edited.", spaceType.Type);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -121,21 +138,17 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(spaceTypeToUpdate);
+            return View(spaceType);
         }
 
         // GET: SpaceType/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var spaceType = _unitOfWork.SpaceTypeRepository.GetById(id);
+            var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
             if (spaceType == null)
             {
                 return HttpNotFound();
@@ -150,8 +163,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.SpaceTypeRepository.Delete(id);
+                var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
+                if (spaceType == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.SpaceTypeRepository.Remove(spaceType);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Space type {0} has been deleted.", spaceType.Type);
             }
             catch (DataException)
             {

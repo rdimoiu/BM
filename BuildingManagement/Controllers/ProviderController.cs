@@ -1,30 +1,65 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class ProviderController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ProviderController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Provider
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var providers = _unitOfWork.ProviderRepository.Get();
-            return View(providers);
+            IEnumerable<Provider> providers;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString);
+                }
+                else
+                {
+                    providers = _unitOfWork.ProviderRepository.GetAll();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.FiscalCodeSortParm = sortOrder == "FiscalCode" ? "fiscalCode_desc" : "FiscalCode";
+            ViewBag.TradeRegisterSortParm = sortOrder == "TradeRegister" ? "tradeRegister_desc" : "TradeRegister";
+            ViewBag.AddressSortParm = sortOrder == "Address" ? "address_desc" : "Address";
+            ViewBag.PhoneSortParm = sortOrder == "Phone" ? "phone_desc" : "Phone";
+            ViewBag.EmailSortParm = sortOrder == "Email" ? "email_desc" : "Email";
+            ViewBag.BankAccountSortParm = sortOrder == "BankAccount" ? "bankAccount_desc" : "BankAccount";
+            ViewBag.BankSortParm = sortOrder == "Bank" ? "bank_desc" : "Bank";
+            ViewBag.TVAPayerSortParm = sortOrder == "TVAPayer" ? "tvaPayer_desc" : "TVAPayer";
+            providers = _unitOfWork.ProviderRepository.OrderProviders(providers, sortOrder);
+            ViewBag.OnePageOfProviders = providers.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfProviders);
         }
 
         // GET: Provider/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var provider = _unitOfWork.ProviderRepository.GetById(id);
+            var provider = _unitOfWork.ProviderRepository.Get(id);
             if (provider == null)
             {
                 return HttpNotFound();
@@ -49,8 +84,16 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    _unitOfWork.ProviderRepository.Insert(provider);
+                    //uniqueness condition check
+                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
+                    if (duplicateProvider != null)
+                    {
+                        ModelState.AddModelError("FiscalCode", "A provider with this fiscal code already exists.");
+                        return View(provider);
+                    }
+                    _unitOfWork.ProviderRepository.Add(provider);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Provider {0} has been created.", provider.Name);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -62,13 +105,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: Provider/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var provider = _unitOfWork.ProviderRepository.GetById(id);
+            var provider = _unitOfWork.ProviderRepository.Get(id);
             if (provider == null)
             {
                 return HttpNotFound();
@@ -81,22 +120,26 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var providerToUpdate = _unitOfWork.ProviderRepository.GetById(id);
-            if (providerToUpdate == null)
+            var provider = _unitOfWork.ProviderRepository.Get(id);
+            if (provider == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(providerToUpdate, "", new[] { "Name", "FiscalCode", "TradeRegister", "Address", "Phone", "Email", "BankAccount", "Bank", "TVAPayer" }))
+            if (TryUpdateModel(provider, "", new[] { "Name", "FiscalCode", "TradeRegister", "Address", "Phone", "Email", "BankAccount", "Bank", "TVAPayer" }))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
+                    if (duplicateProvider != null && duplicateProvider.ID != provider.ID)
+                    {
+                        ModelState.AddModelError("FiscalCode", "A provider with this fiscal code already exists.");
+                        return View(provider);
+                    }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Provider {0} has been edited.", provider.Name);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -104,21 +147,17 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(providerToUpdate);
+            return View(provider);
         }
 
         // GET: Provider/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var provider = _unitOfWork.ProviderRepository.GetById(id);
+            var provider = _unitOfWork.ProviderRepository.Get(id);
             if (provider == null)
             {
                 return HttpNotFound();
@@ -133,8 +172,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.ProviderRepository.Delete(id);
+                var provider = _unitOfWork.ProviderRepository.Get(id);
+                if (provider == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.ProviderRepository.Remove(provider);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Provider {0} has been deleted.", provider.Name);
             }
             catch (DataException)
             {

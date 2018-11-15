@@ -1,4 +1,6 @@
-﻿@model IEnumerable<BuildingManagement.Models.SubClient>
+﻿@model IPagedList<BuildingManagement.Models.SubClient>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,52 +11,108 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "SubClient", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.ActionLink("Name", "Index", new {sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Phone)
+            @Html.ActionLink("Phone", "Index", new {sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Contact)
+            @Html.ActionLink("Country", "Index", new {sortOrder = ViewBag.CountrySortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.ActionLink("State", "Index", new {sortOrder = ViewBag.StateSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Client)
+            @Html.ActionLink("City", "Index", new {sortOrder = ViewBag.CitySortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("Street", "Index", new { sortOrder = ViewBag.StreetSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Contact", "Index", new {sortOrder = ViewBag.ContactSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("Email", "Index", new {sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("IBAN", "Index", new {sortOrder = ViewBag.IBANSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("Bank", "Index", new {sortOrder = ViewBag.BankSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("CNP", "Index", new {sortOrder = ViewBag.CNPSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("FiscalCode", "Index", new { sortOrder = ViewBag.FiscalCodeSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Client", "Index", new {sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in ViewBag.OnePageOfSubClients)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @item.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Phone)
+                @item.Phone
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Contact)
+                @item.Country
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                @item.State
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
+                @item.City
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @item.Street
+            </td>
+            <td>
+                @item.Contact
+            </td>
+            <td>
+                @item.Email
+            </td>
+            <td>
+                @item.IBAN
+            </td>
+            <td>
+                @item.Bank
+            </td>
+            <td>
+                @item.CNP
+            </td>
+            <td>
+                @item.FiscalCode
+            </td>
+            <td>
+                @item.Client.Name
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
     }
-
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfSubClients, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>

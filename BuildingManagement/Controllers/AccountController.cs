@@ -1,11 +1,8 @@
-using System;
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using BuildingManagement.DAL;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -19,17 +16,13 @@ namespace BuildingManagement.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
-
-        public AccountController()
-        {
-        }
-
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IUnitOfWork unitOfWork)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _unitOfWork = unitOfWork;
         }
 
         public ApplicationSignInManager SignInManager
@@ -85,20 +78,14 @@ namespace BuildingManagement.Controllers
 
         private bool IsValid(string username, string password)
         {
-            var user =
-                _unitOfWork.UserRepository.Get()
-                    .SingleOrDefault(
-                        item =>
-                            item.Email == username &&
-                            item.Password == Cryptography.SimpleAes.Encrypt(password));
-
+            var user = _unitOfWork.UserRepository.GetUserByUsernameAndPassword(username, password);
             return user != null;
         }
 
         [AllowAnonymous, HttpPost]
         public ActionResult ConfirmAccount(string username)
         {
-            var user = _unitOfWork.UserRepository.Get().SingleOrDefault(item => item.Email == username);
+            var user = _unitOfWork.UserRepository.SingleOrDefault(item => item.Email == username);
             if (user != null && !user.AccountConfirmed)
             {
                 ViewBag.UserName = user.FirstName + " " + user.LastName;
@@ -110,44 +97,30 @@ namespace BuildingManagement.Controllers
         [AllowAnonymous]
         public ActionResult SetAccountPassword(LoginViewModel model)
         {
-            var user = _unitOfWork.UserRepository.Get().Single(item => item.Email == model.Email);
+            var user = _unitOfWork.UserRepository.SingleOrDefault(item => item.Email == model.Email);
             user.Password = Cryptography.SimpleAes.Encrypt(model.Password);
             user.AccountConfirmed = true;
             _unitOfWork.Save();
-
             AuthenticateUser(model);
-
             return RedirectToAction("Index", "Client");
         }
 
         private void AuthenticateUser(LoginViewModel model)
         {
-            var user =
-                _unitOfWork.UserRepository.Get()
-                    .SingleOrDefault(
-                        item =>
-                            item.Email == model.Email &&
-                            item.Password == Cryptography.SimpleAes.Encrypt(model.Password));
-
+            var user = _unitOfWork.UserRepository.GetUserByUsernameAndPassword(model.Email, model.Password);
             // Set global employee data at login
             HttpContext.Session.Add("_User", user);
-
             var ident = new ClaimsIdentity(
               new[] { 
               // adding following 2 claim just for supporting default antiforgery provider
               new Claim(ClaimTypes.NameIdentifier, model.Email),
               new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string"),
-
               new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-
               // optionally you could add roles if any
-              new Claim(ClaimTypes.Role, user.UserRoles.First().UserRoleType.ToString()),
-
+              new Claim(ClaimTypes.Role, user.UserRoles.First().UserRoleType.ToString())
               },
               DefaultAuthenticationTypes.ApplicationCookie);
-
-            HttpContext.GetOwinContext().Authentication.SignIn(
-               new AuthenticationProperties { IsPersistent = false }, ident);
+            HttpContext.GetOwinContext().Authentication.SignIn(new AuthenticationProperties { IsPersistent = false }, ident);
         }
 
         //
@@ -174,7 +147,6 @@ namespace BuildingManagement.Controllers
             {
                 return View(model);
             }
-
             // The following code protects for brute force attacks against the two factor codes. 
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
@@ -215,18 +187,15 @@ namespace BuildingManagement.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -267,7 +236,6 @@ namespace BuildingManagement.Controllers
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
-
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
@@ -275,7 +243,6 @@ namespace BuildingManagement.Controllers
                 // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
                 // return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -367,7 +334,6 @@ namespace BuildingManagement.Controllers
             {
                 return View();
             }
-
             // Generate the token and send it
             if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
             {
@@ -386,7 +352,6 @@ namespace BuildingManagement.Controllers
             {
                 return RedirectToAction("Login");
             }
-
             // Sign in the user with this external login provider if the user already has a login
             var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
             switch (result)
@@ -417,7 +382,6 @@ namespace BuildingManagement.Controllers
             {
                 return RedirectToAction("Index", "Manage");
             }
-
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
@@ -471,14 +435,12 @@ namespace BuildingManagement.Controllers
                     _userManager.Dispose();
                     _userManager = null;
                 }
-
                 if (_signInManager != null)
                 {
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
             }
-
             base.Dispose(disposing);
         }
 
@@ -486,13 +448,7 @@ namespace BuildingManagement.Controllers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
         private void AddErrors(IdentityResult result)
         {

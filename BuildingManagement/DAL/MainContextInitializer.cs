@@ -45,7 +45,7 @@ namespace BuildingManagement.DAL
                 Street = "Amforei",
                 Contact = "Titi Aur",
                 Email = "titiaur@gmail.com",
-                Name = "Titi Aur",
+                Name = "SC1",
                 Phone = "0722333444",
                 Client = client1
             };
@@ -60,7 +60,7 @@ namespace BuildingManagement.DAL
                 Street = "Gheorge Lazar",
                 Contact = "Titi Argint",
                 Email = "titiargint@gmail.com",
-                Name = "Titi Argint",
+                Name = "SC2",
                 Phone = "0722444555",
                 Client = client1
             };
@@ -75,7 +75,7 @@ namespace BuildingManagement.DAL
                 Street = "Teiului",
                 Contact = "Titi Bronz",
                 Email = "titibronz@gmail.com",
-                Name = "Titi Bronz",
+                Name = "SC3",
                 Phone = "0722777888",
                 Client = client1
             };
@@ -90,9 +90,9 @@ namespace BuildingManagement.DAL
                 Street = "Gheorge Lazar",
                 Contact = "Baba Cloanta",
                 Email = "babacloanta@gmail.com",
-                Name = "Baba Cloanta",
+                Name = "SC4",
                 Phone = "0744555666",
-                Client = client2
+                Client = client1
             };
             var subClient5 = new SubClient
             {
@@ -105,8 +105,23 @@ namespace BuildingManagement.DAL
                 Street = "Gheorge Cioban",
                 Contact = "Ileana Cosanzeana",
                 Email = "ileana@gmail.com",
-                Name = "Ileana Cosanzeana",
+                Name = "SC5",
                 Phone = "0744666777",
+                Client = client2
+            };
+            var subClient6 = new SubClient
+            {
+                FiscalCode = "4",
+                Bank = "BRD",
+                IBAN = "777776666655555",
+                Country = "Romania",
+                State = "Cluj",
+                City = "Cluj",
+                Street = "Oaie Cioban",
+                Contact = "Bomba Tanase",
+                Email = "bomba@gmail.com",
+                Name = "SC6",
+                Phone = "0744666888",
                 Client = client2
             };
             var subClients = new List<SubClient>
@@ -115,7 +130,8 @@ namespace BuildingManagement.DAL
                 subClient2,
                 subClient3,
                 subClient4,
-                subClient5
+                subClient5,
+                subClient6
             };
             subClients.ForEach(sc => context.SubClients.Add(sc));
             context.SaveChanges();
@@ -179,7 +195,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 0 (PARC)",
                 Surface = 0m,
                 People = 0,
-                Client = client1,
                 Section = section2
             };
             var level2 = new Level
@@ -187,7 +202,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 1 (PARC)",
                 Surface = 0m,
                 People = 0,
-                Client = client1,
                 Section = section2
             };
             var level3 = new Level
@@ -195,7 +209,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 2 (AP)",
                 Surface = 0m,
                 People = 0,
-                Client = client1,
                 Section = section1
             };
             var level4 = new Level
@@ -203,7 +216,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 3 (AP)",
                 Surface = 0m,
                 People = 0,
-                Client = client1,
                 Section = section1
             };
             var level5 = new Level
@@ -211,7 +223,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 0 (PARC)",
                 Surface = 0m,
                 People = 0,
-                Client = client2,
                 Section = section4
             };
             var level6 = new Level
@@ -219,7 +230,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 1 (AP)",
                 Surface = 0m,
                 People = 0,
-                Client = client2,
                 Section = section3
             };
             var level7 = new Level
@@ -227,7 +237,6 @@ namespace BuildingManagement.DAL
                 Number = "Nivel 1.1 (AP)",
                 Surface = 0m,
                 People = 0,
-                Client = client2,
                 Section = section3
             };
             var levels = new List<Level>
@@ -249,7 +258,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client1,
                 SubClient = subClient1,
                 Level = level3
             };
@@ -259,7 +267,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client1,
                 SubClient = subClient2,
                 Level = level3
             };
@@ -269,7 +276,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client1,
                 SubClient = subClient3,
                 Level = level4
             };
@@ -279,7 +285,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client1,
                 SubClient = subClient4,
                 Level = level4
             };
@@ -289,7 +294,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client1,
                 SubClient = subClient1,
                 Level = level1
             };
@@ -299,7 +303,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client1,
                 SubClient = subClient2,
                 Level = level1
             };
@@ -309,7 +312,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client1,
                 SubClient = subClient3,
                 Level = level1
             };
@@ -319,7 +321,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client1,
                 SubClient = subClient4,
                 Level = level2
             };
@@ -329,7 +330,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client1,
                 SubClient = subClient1,
                 Level = level2
             };
@@ -339,8 +339,7 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client2,
-                SubClient = subClient1,
+                SubClient = subClient6,
                 Level = level5
             };
             var space11 = new Space
@@ -349,7 +348,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client2,
                 SubClient = subClient5,
                 Level = level5
             };
@@ -359,7 +357,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client2,
                 SubClient = subClient5,
                 Level = level5
             };
@@ -369,8 +366,7 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType2,
-                Client = client2,
-                SubClient = subClient1,
+                SubClient = subClient6,
                 Level = level5
             };
             var space14 = new Space
@@ -379,8 +375,7 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client2,
-                SubClient = subClient1,
+                SubClient = subClient6,
                 Level = level6
             };
             var space15 = new Space
@@ -389,7 +384,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client2,
                 SubClient = subClient5,
                 Level = level6
             };
@@ -399,8 +393,7 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client2,
-                SubClient = subClient1,
+                SubClient = subClient6,
                 Level = level7
             };
             var space17 = new Space
@@ -409,7 +402,6 @@ namespace BuildingManagement.DAL
                 Surface = 0m,
                 People = 0,
                 SpaceType = spaceType1,
-                Client = client2,
                 SubClient = subClient5,
                 Level = level7
             };
@@ -473,30 +465,30 @@ namespace BuildingManagement.DAL
 
             var meter1 = new Meter
             {
-                ClientID = client1.ID,
                 ID = 1,
                 Code = "12345",
                 Details = "detail 1",
                 DistributionModeID = 1,
+                ClientID = 1,
                 MeterTypes = new List<MeterType> {meterType1, meterType2},
                 Spaces = new List<Space> {space1, space2}
             };
             var meter2 = new Meter
             {
-                ClientID = client1.ID,
                 ID = 2,
                 Code = "23456",
                 DistributionModeID = 2,
+                ClientID = 1,
                 MeterTypes = new List<MeterType> {meterType2, meterType3},
                 Spaces = new List<Space> {space3}
             };
             var meter3 = new Meter
             {
-                ClientID = client1.ID,
                 ID = 3,
                 Code = "34567",
                 Details = "detail 3",
                 DistributionModeID = 2,
+                ClientID = 1,
                 MeterTypes = new List<MeterType> {meterType1, meterType3},
                 Spaces = new List<Space> {space4}
             };

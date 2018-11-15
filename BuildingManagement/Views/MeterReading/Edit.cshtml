@@ -79,9 +79,8 @@
             meterTypeList.append(firstItem);
             return;
         }
-        var url = "/MeterReading/GetMeterTypesByMeter/";
         $.ajax({
-            url: url,
+            url: "/MeterReading/GetMeterTypes/",
             data: { meterId: idMeter, meterTypeId: @Model.MeterTypeID },
             cache: false,
             type: "POST",

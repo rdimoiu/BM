@@ -24,14 +24,6 @@
     @Html.HiddenFor(model => model.ID)
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Client, htmlAttributes: new {@class = "control-label col-md-2"})
-        <div class="col-md-10">
-            @Html.DropDownList("ClientID", null, "Select...", htmlAttributes: new {@class = "form-control", required = "required", onchange = "GetSpacesByClient(this.value)"})
-            @Html.ValidationMessageFor(model => model.ClientID, "", new {@class = "text-danger"})
-        </div>
-    </div>
-
-    <div class="form-group">
         @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
@@ -64,10 +56,18 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new {@class = "control-label col-md-2"})
         <div class="col-md-10">
-            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control", required = "required" })
-            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new { @class = "text-danger" })
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new {@class = "form-control"})
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new {@class = "text-danger"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Client, htmlAttributes: new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            @Html.DropDownList("ClientID", null, "Select...", htmlAttributes: new {@class = "form-control", onchange = "GetSpacesForMeter(document.getElementById('ID').value, this.value, 'Edit')" })
+            @Html.ValidationMessageFor(model => model.ClientID, "", new {@class = "text-danger"})
         </div>
     </div>
 
@@ -85,7 +85,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" onclick="SubmitMeter()" />
+            <input type="submit" value="Save" class="btn btn-default" onclick="MeterValidateAll('Edit')" />
         </div>
     </div>
 </div>
@@ -101,66 +101,10 @@
 
 <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
 <script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script src="@Url.Content("~/Scripts/MeterUtils.js")"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        GetSpacesByClient(@Model.ClientID);
+        GetMeterTypesForMeter(@Model.ID, "Edit");
+        GetSpacesForMeter(@Model.ID, @Model.ClientID, "Edit");
     });
-
-    $('#meterTypesTree')
-        .jstree({
-            'plugins': ["defaults", "checkbox"],
-            'core': {
-                'data': {
-                    'themes': {
-                        "responsive": true
-                    },
-                    'url': "../GetMeterTypesTreeData/?meterId=" + @Model.ID,
-                    'dataType': "json"
-                }
-            }
-        });
-
-    function GetSpacesByClient(clientId) {
-        $('#spacesTree').jstree("destroy").empty();
-        $('#spacesTree')
-            .jstree({
-                'plugins': ["defaults", "checkbox"],
-                'core': {
-                    'data': {
-                        'themes': {
-                            "responsive": true
-                        },
-                        'url': "../GetSpacesTreeData/?meterId=" + @Model.ID + "&clientId=" + clientId,
-                        'dataType': "json"
-                    }
-                }
-            });
-    }
-
-    function SubmitMeter() {
-        var meterData = {
-            ID: document.getElementById('ID').value,
-            ClientID: document.getElementById('ClientID').value,
-            Code: document.getElementById('Code').value,
-            Details: document.getElementById('Details').value,
-            InitialIndex: document.getElementById('InitialIndex').value,
-            Defect: document.getElementById('Defect').checked,
-            DistributionModeID: document.getElementById('DistributionModeID').value,
-            MeterTypesSelected: $('#meterTypesTree').jstree('get_selected'),
-            MeterSLSSelected: $('#spacesTree').jstree('get_selected')
-        };
-        $.ajax({
-            type: "POST",
-            url: "../EditMeter",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(meterData),
-            success: function() {
-                window.location.href = "../Index";
-            },
-            error: function (reponse) {
-                alert("error : " + reponse);
-            }
-        });
-    };
 </script>

@@ -3700,7 +3700,7 @@ function internalRemoveData( elem, name, pvt ) {
 					name = [ name ];
 				} else {
 
-					// split the camel cased version by spaces unless a key with the spaces exists
+					// split the camel cased version by spaces unless a key with the parentSpaces exists
 					name = jQuery.camelCase( name );
 					if ( name in thisCache ) {
 						name = [ name ];

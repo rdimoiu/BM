@@ -1,32 +1,60 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class LevelController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public LevelController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Level
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var levels = _unitOfWork.LevelRepository.Get(includeProperties: "Section, Client");
-            return View(levels);
+            IEnumerable<Level> levels;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString);
+                }
+                else
+                {
+                    levels = _unitOfWork.LevelRepository.GetAllLevelsIncludingSection();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.ClientSortParm = string.IsNullOrEmpty(sortOrder) ? "section_desc" : "";
+            ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
+            ViewBag.SurfaceSortParm = sortOrder == "Surface" ? "surface_desc" : "Surface";
+            ViewBag.PeopleSortParm = sortOrder == "People" ? "people_desc" : "People";
+            levels = _unitOfWork.LevelRepository.OrderLevels(levels, sortOrder);
+            ViewBag.OnePageOfLevels = levels.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfLevels);
         }
 
         // GET: Level/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var level = _unitOfWork.LevelRepository.GetById(id);
+            var level = _unitOfWork.LevelRepository.Get(id);
             if (level == null)
             {
                 return HttpNotFound();
@@ -37,36 +65,40 @@ namespace BuildingManagement.Controllers
         // GET: Level/Create
         public ActionResult Create()
         {
+            var model = new Level();
             PopulateSectionsDropDownList();
             PopulateClientsDropDownList();
-            return View();
+            return View(model);
         }
 
         // POST: Level/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Number,SectionID,ClientID")] Level level)
+        public ActionResult CreateLevel(Level level)
         {
+            //uniqueness condition check
+            var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == level.Number && l.SectionID == level.SectionID);
+            if (duplicateLevel != null)
+            {
+                ModelState.AddModelError("Number", "A level with this number already exists for this section.");
+                PopulateSectionsDropDownList(level.SectionID);
+                PopulateClientsDropDownList(level.ClientID);
+                return View("Create", level);
+            }
+            var section = _unitOfWork.SectionRepository.Get(level.SectionID);
+            if (section != null)
+            {
+                level.Section = section;
+            }
+            level.Surface = 0m;
+            level.People = 0;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateLevel = _unitOfWork.LevelRepository.Get(filter: l => l.Number == level.Number && l.SectionID == level.SectionID).FirstOrDefault();
-                    if (duplicateLevel != null)
-                    {
-                        ModelState.AddModelError("Number", "A level with this number already exists for this section.");
-                        PopulateSectionsDropDownList(level.SectionID);
-                        PopulateClientsDropDownList(level.ClientID);
-                        return View(level);
-                    }
-                    level.Surface = 0m;
-                    level.People = 0;
-                    _unitOfWork.LevelRepository.Insert(level);
+                    _unitOfWork.LevelRepository.Add(level);
                     _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Level {0} has been created.", level.Number);
+                    return Json(level.ID);
                 }
                 catch (DataException)
                 {
@@ -75,63 +107,52 @@ namespace BuildingManagement.Controllers
             }
             PopulateSectionsDropDownList(level.SectionID);
             PopulateClientsDropDownList(level.ClientID);
-            return View(level);
+            return View("Create", level);
         }
 
         // GET: Level/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var level = _unitOfWork.LevelRepository.GetById(id);
+            var level = _unitOfWork.LevelRepository.GetLevelIncludingSection(id);
             if (level == null)
             {
                 return HttpNotFound();
             }
             PopulateSectionsDropDownList(level.SectionID);
-            PopulateClientsDropDownList(level.ClientID);
+            PopulateClientsDropDownList(level.Section.ClientID);
             return View(level);
         }
 
         // POST: Level/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        [HttpPost]
+        public ActionResult EditLevel(Level level)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var levelToUpdate = _unitOfWork.LevelRepository.GetById(id);
+            var levelToUpdate = _unitOfWork.LevelRepository.GetLevelIncludingSection(level.ID);
             if (levelToUpdate == null)
             {
                 return HttpNotFound();
             }
-            var oldSection = _unitOfWork.SectionRepository.GetById(levelToUpdate.SectionID);
+            var oldSection = _unitOfWork.SectionRepository.Get(levelToUpdate.SectionID);
             if (oldSection == null)
             {
                 return HttpNotFound();
             }
             oldSection.Surface = oldSection.Surface - levelToUpdate.Surface;
             oldSection.People = oldSection.People - levelToUpdate.People;
-            if (TryUpdateModel(levelToUpdate, "", new[] { "Number", "SectionID", "ClientID" }))
+            if (TryUpdateModel(levelToUpdate, "", new[] { "Number", "SectionID" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateLevel = _unitOfWork.LevelRepository.Get(filter: l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID).FirstOrDefault();
+                    var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
                     if (duplicateLevel != null && duplicateLevel.ID != levelToUpdate.ID)
                     {
                         ModelState.AddModelError("Number", "A level with this number already exists for this section.");
                         PopulateSectionsDropDownList(levelToUpdate.SectionID);
                         PopulateClientsDropDownList(levelToUpdate.ClientID);
-                        return View(levelToUpdate);
+                        return View("Edit", levelToUpdate);
                     }
-                    var section = _unitOfWork.SectionRepository.GetById(levelToUpdate.SectionID);
+                    var section = _unitOfWork.SectionRepository.Get(levelToUpdate.SectionID);
                     if (section == null)
                     {
                         return HttpNotFound();
@@ -139,7 +160,8 @@ namespace BuildingManagement.Controllers
                     section.Surface = section.Surface + levelToUpdate.Surface;
                     section.People = section.People + levelToUpdate.People;
                     _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Level {0} has been edited.", levelToUpdate.Number);
+                    return Json(levelToUpdate.ID);
                 }
                 catch (DataException)
                 {
@@ -148,21 +170,17 @@ namespace BuildingManagement.Controllers
             }
             PopulateSectionsDropDownList(levelToUpdate.SectionID);
             PopulateClientsDropDownList(levelToUpdate.ClientID);
-            return View(levelToUpdate);
+            return View("Edit", levelToUpdate);
         }
 
         // GET: Level/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var level = _unitOfWork.LevelRepository.Get(includeProperties: "Section, Client").Single(l => l.ID == id);
+            var level = _unitOfWork.LevelRepository.GetLevelIncludingSection(id);
             if (level == null)
             {
                 return HttpNotFound();
@@ -177,8 +195,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.LevelRepository.Delete(id);
+                var level = _unitOfWork.LevelRepository.SingleOrDefault(l => l.ID == id);
+                if (level == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.LevelRepository.Remove(level);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Level {0} has been deleted.", level.Number);
             }
             catch (DataException)
             {
@@ -198,24 +222,24 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSectionsDropDownList(object selectedSection = null)
         {
-            var sectionsQuery = from s in _unitOfWork.SectionRepository.Get() select s;
+            var sectionsQuery = from s in _unitOfWork.SectionRepository.GetAll() select s;
             ViewBag.SectionID = new SelectList(sectionsQuery, "ID", "Number", selectedSection);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         [HttpPost]
-        public ActionResult GetSectionsByClient(int clientId, int? sectionId)
+        public ActionResult GetSectionsByClient(int? clientId, int? sectionId)
         {
             var list = new List<SelectListItem>();
-            var sections = _unitOfWork.SectionRepository.Get().Where(s => s.ClientID == clientId).ToList();
+            var sections = clientId != null ? _unitOfWork.SectionRepository.Find(s => s.ClientID == clientId).ToList() : _unitOfWork.SectionRepository.GetAll().ToList();
             foreach (var section in sections)
             {
-                if (sectionId != null && sectionId == section.ID)
+                if (clientId != null && sectionId != null && sectionId == section.ID)
                 {
                     list.Add(new SelectListItem { Value = section.ID.ToString(), Text = section.Number, Selected = true });
                 }

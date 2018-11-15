@@ -1,4 +1,6 @@
-﻿@model BuildingManagement.ViewModels.InvoiceIndexData
+﻿@model IPagedList<BuildingManagement.Models.Invoice>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,119 +11,167 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "Invoice", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            Client
+            @Html.ActionLink("Client", "Index", new { sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Provider
+            @Html.ActionLink("Provider", "Index", new { sortOrder = ViewBag.ProviderSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            InvoiceType
+            @Html.ActionLink("InvoiceType", "Index", new { sortOrder = ViewBag.InvoiceTypeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Number
+            @Html.ActionLink("Number", "Index", new { sortOrder = ViewBag.NumberSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Date
+            @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            DueDate
+            @Html.ActionLink("DueDate", "Index", new { sortOrder = ViewBag.DueDateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Quantity
+            @Html.ActionLink("Quantity", "Index", new { sortOrder = ViewBag.QuantitySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            CheckQuantity
+            @Html.ActionLink("CheckQuantity", "Index", new { sortOrder = ViewBag.CheckQuantitySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Unit
+            @Html.ActionLink("TotalValueWithoutTVA", "Index", new { sortOrder = ViewBag.TotalValueWithoutTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            TotalValueWithoutTVA
+            @Html.ActionLink("CheckTotalValueWithoutTVA", "Index", new { sortOrder = ViewBag.CheckTotalValueWithoutTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            CheckTotalValueWithoutTVA
+            @Html.ActionLink("TotalTVA", "Index", new { sortOrder = ViewBag.TotalTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            TotalTVA
+            @Html.ActionLink("CheckTotalTVA", "Index", new { sortOrder = ViewBag.CheckTotalTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            CheckTotalTVA
+            @Html.ActionLink("DiscountMonth", "Index", new { sortOrder = ViewBag.DiscountMonthSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
-        <th>
-            DiscountMonth
-        </th>
-        <th>
+        @*<th>
             Services
-        </th>
+        </th>*@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.Invoices)
+    @foreach (var invoice in ViewBag.OnePageOfInvoices)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
+                @invoice.Client.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Provider.Name)
+                @invoice.Provider.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InvoiceType.Type)
+                @invoice.InvoiceType.Type
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Number)
+                @invoice.Number
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
+                @invoice.Date
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
+                @invoice.DueDate
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
+                @invoice.Quantity
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CheckQuantity)
+                @invoice.CheckQuantity
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Unit)
+                @invoice.TotalValueWithoutTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TotalValueWithoutTVA)
+                @invoice.CheckTotalValueWithoutTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CheckTotalValueWithoutTVA)
+                @invoice.TotalTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TotalTVA)
+                @invoice.CheckTotalTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CheckTotalTVA)
+                @invoice.DiscountMonth
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiscountMonth)
-            </td>
-            <td>
+            @*<td>
                 @{
-                    foreach (var service in item.Services)
+                    foreach (var service in invoice.Services)
                     {
                         @service.Name
-                        <br />
+                        <br/>
                     }
                 }
-            </td>
+            </td>*@
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new {id = item.ID}) |
-                @Html.ActionLink("Finalize", "Finalize", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new {id = invoice.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = invoice.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = invoice.ID}) |
+                @if (!invoice.Closed)
+                {
+                    @Html.ActionLink("Close", "Close", "Invoice", new {id = invoice.ID}, null)
+                }
+                else
+                {
+                    @Html.ActionLink("Open", "Open", "Invoice", new {id = invoice.ID}, null)
+                }
             </td>
         </tr>
-                    }
-
+        <tr>
+            <td colspan="13">
+                <details>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Quantity
+                            </th>
+                            <th>
+                                ValueWithoutTVA
+                            </th>
+                            <th>
+                                TVA
+                            </th>
+                        </tr>
+                        @foreach (var service in invoice.Services)
+                        {
+                            <tr>
+                                <td>
+                                    @service.Name
+                                </td>
+                                <td>
+                                    @service.Quantity
+                                </td>
+                                <td>
+                                    @service.ValueWithoutTVA
+                                </td>
+                                <td>
+                                    @service.TVA
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </details>
+            </td>
+        </tr>
+    }
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfInvoices, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>

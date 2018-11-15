@@ -1,39 +1,63 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class MeterController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public MeterController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Meter
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var viewModel = new MeterIndexData
+            IEnumerable<Meter> meters;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
             {
-                Meters =
-                    _unitOfWork.MeterRepository.Get(
-                        includeProperties: "Client, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-            };
-            return View(viewModel);
+                pageNumber = 1;
+                meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
+                }
+                else
+                {
+                    meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CodeSortParm = string.IsNullOrEmpty(sortOrder) ? "code_desc" : "";
+            ViewBag.DetailsSortParm = sortOrder == "Details" ? "details_desc" : "Details";
+            ViewBag.InitialIndexSortParm = sortOrder == "InitialIndex" ? "initialIndex_desc" : "InitialIndex";
+            ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
+            ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
+            ViewBag.ClientSortParm = sortOrder == "Client" ? "client_desc" : "Client";
+            meters = _unitOfWork.MeterRepository.OrderMeters(meters, sortOrder);
+            ViewBag.OnePageOfMeters = meters.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfMeters);
         }
 
         // GET: Meter/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var meter = _unitOfWork.MeterRepository.GetById(id);
+            var meter = _unitOfWork.MeterRepository.Get(id);
             if (meter == null)
             {
                 return HttpNotFound();
@@ -45,8 +69,8 @@ namespace BuildingManagement.Controllers
         public ActionResult Create()
         {
             var model = new Meter();
-            PopulateClientsDropDownList();
             PopulateDistributionModesDropDownList();
+            PopulateClientsDropDownList();
             return View(model);
         }
 
@@ -54,33 +78,24 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult CreateMeter(Meter meter)
         {
-            if (meter.ClientID != 0)
-            {
-                var client = _unitOfWork.ClientRepository.GetById(meter.ClientID);
-                if (client != null)
-                {
-                    meter.Client = client;
-                }
-            }
             //uniqueness condition check
-            if (meter.Code != null)
+            var duplicateMeter = _unitOfWork.MeterRepository.SingleOrDefault(m => m.Code == meter.Code);
+            if (duplicateMeter != null)
             {
-                var duplicateMeter = _unitOfWork.MeterRepository.Get(filter: m => m.Code == meter.Code).FirstOrDefault();
-                if (duplicateMeter != null)
-                {
-                    ModelState.AddModelError("Code", "A meter with this code already exists.");
-                    PopulateClientsDropDownList(meter.ClientID);
-                    PopulateDistributionModesDropDownList(meter.DistributionModeID);
-                    return View("Create", meter);
-                }
+                ModelState.AddModelError("Code", "A meter with this code already exists.");
+                PopulateDistributionModesDropDownList(meter.DistributionModeID);
+                PopulateClientsDropDownList(meter.ClientID);
+                return View("Create", meter);
             }
-            if (meter.DistributionModeID != 0)
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(meter.DistributionModeID);
+            if (distributionMode != null)
             {
-                var distributionMode = _unitOfWork.DistributionModeRepository.GetById(meter.DistributionModeID);
-                if (distributionMode != null)
-                {
-                    meter.DistributionMode = distributionMode;
-                }
+                meter.DistributionMode = distributionMode;
+            }
+            var client = _unitOfWork.ClientRepository.Get(meter.ClientID);
+            if (client != null)
+            {
+                meter.Client = client;
             }
             if (meter.MeterTypesSelected != null)
             {
@@ -89,7 +104,7 @@ namespace BuildingManagement.Controllers
                 {
                     if (meterTypeSelected != "root")
                     {
-                        var meterType = _unitOfWork.MeterTypeRepository.GetById(int.Parse(meterTypeSelected));
+                        var meterType = _unitOfWork.MeterTypeRepository.Get(int.Parse(meterTypeSelected));
                         if (meterType != null)
                         {
                             meter.MeterTypes.Add(meterType);
@@ -101,29 +116,29 @@ namespace BuildingManagement.Controllers
             {
                 #region Add Sections, Levels and Spaces
 
-                var building = Utils.MapSelectedIDsToDatabaseIDs(meter.MeterSLSSelected);
+                var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(meter.MeterSLSSelected);
                 meter.Sections = new List<Section>();
-                foreach (var sectionId in building.SectionIDs)
+                foreach (var sectionId in tree3D.SectionIDs)
                 {
-                    var section = _unitOfWork.SectionRepository.GetById(sectionId);
+                    var section = _unitOfWork.SectionRepository.Get(sectionId);
                     if (section != null)
                     {
                         meter.Sections.Add(section);
                     }
                 }
                 meter.Levels = new List<Level>();
-                foreach (var levelId in building.LevelIDs)
+                foreach (var levelId in tree3D.LevelIDs)
                 {
-                    var level = _unitOfWork.LevelRepository.GetById(levelId);
+                    var level = _unitOfWork.LevelRepository.Get(levelId);
                     if (level != null)
                     {
                         meter.Levels.Add(level);
                     }
                 }
                 meter.Spaces = new List<Space>();
-                foreach (var spaceId in building.SpaceIDs)
+                foreach (var spaceId in tree3D.SpaceIDs)
                 {
-                    var space = _unitOfWork.SpaceRepository.GetById(spaceId);
+                    var space = _unitOfWork.SpaceRepository.Get(spaceId);
                     if (space != null)
                     {
                         meter.Spaces.Add(space);
@@ -136,38 +151,31 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    _unitOfWork.MeterRepository.Insert(meter);
+                    _unitOfWork.MeterRepository.Add(meter);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Meter {0} has been created.", meter.Code);
                     return Json(meter.ID);
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateClientsDropDownList(meter.ClientID);
             PopulateDistributionModesDropDownList(meter.DistributionModeID);
+            PopulateClientsDropDownList(meter.ClientID);
             return View("Create", meter);
         }
 
         // GET: Meter/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var meter =
-                _unitOfWork.MeterRepository.Get(
-                    includeProperties: "Client, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-                    .Single(m => m.ID == id);
+            var meter = _unitOfWork.MeterRepository.Get(id);
             if (meter == null)
             {
                 return HttpNotFound();
             }
-            PopulateClientsDropDownList(meter.ClientID);
             PopulateDistributionModesDropDownList(meter.DistributionModeID);
+            PopulateClientsDropDownList(meter.ClientID);
             return View(meter);
         }
 
@@ -175,56 +183,65 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult EditMeter(Meter meter)
         {
-            var meterToUpdate =
-                _unitOfWork.MeterRepository.Get(
-                    includeProperties: "Client, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-                    .FirstOrDefault(m => m.ID == meter.ID);
+            var meterToUpdate = _unitOfWork.MeterRepository.GetMeterIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(meter.ID);
             if (meterToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(meterToUpdate, "",
-                new[] {"ClientID", "Code", "Details", "InitialIndex", "Defect", "DistributionModeID"}))
+            if (TryUpdateModel(meterToUpdate, "", new[] { "Code", "Details", "InitialIndex", "Defect", "DistributionModeID", "ClientID" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeter =
-                        _unitOfWork.MeterRepository.Get(filter: m => m.Code == meterToUpdate.Code).FirstOrDefault();
+                    var duplicateMeter = _unitOfWork.MeterRepository.SingleOrDefault(m => m.Code == meterToUpdate.Code);
                     if (duplicateMeter != null && duplicateMeter.ID != meterToUpdate.ID)
                     {
-                        ModelState.AddModelError("", "A meter with this code already exists.");
-                        PopulateClientsDropDownList(meterToUpdate.ClientID);
-                        PopulateDistributionModesDropDownList(meterToUpdate.DistributionModeID);
-                        return View("Edit", meterToUpdate);
+                        ModelState.AddModelError("Code", "A meter with this code already exists.");
+                        PopulateDistributionModesDropDownList(meter.DistributionModeID);
+                        PopulateClientsDropDownList(meter.ClientID);
+                        return View("Edit", meter);
                     }
-                    UpdateMeterMeterTypes(meter.MeterTypesSelected, meterToUpdate);
+
+                    #region Update MeterTypes
+
+                    var tree1D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForMeterTypes(meter.MeterTypesSelected);
+                    meterToUpdate.MeterTypes.Clear();
+                    foreach (var meterTypeId in tree1D.MeterTypeIDs)
+                    {
+                        var meterType = _unitOfWork.MeterTypeRepository.Get(meterTypeId);
+                        if (meterType != null)
+                        {
+                            meterToUpdate.MeterTypes.Add(meterType);
+                        }
+                    }
+
+                    #endregion
 
                     #region Update Sections, Levels and Spaces
 
-                    var building = Utils.MapSelectedIDsToDatabaseIDs(meter.MeterSLSSelected);
+                    var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(meter.MeterSLSSelected);
                     meterToUpdate.Sections.Clear();
-                    foreach (var sectionId in building.SectionIDs)
+                    foreach (var sectionId in tree3D.SectionIDs)
                     {
-                        var section = _unitOfWork.SectionRepository.GetById(sectionId);
+                        var section = _unitOfWork.SectionRepository.Get(sectionId);
                         if (section != null)
                         {
                             meterToUpdate.Sections.Add(section);
                         }
                     }
                     meterToUpdate.Levels.Clear();
-                    foreach (var levelId in building.LevelIDs)
+                    foreach (var levelId in tree3D.LevelIDs)
                     {
-                        var level = _unitOfWork.LevelRepository.GetById(levelId);
+                        var level = _unitOfWork.LevelRepository.Get(levelId);
                         if (level != null)
                         {
                             meterToUpdate.Levels.Add(level);
                         }
                     }
                     meterToUpdate.Spaces.Clear();
-                    foreach (var spaceId in building.SpaceIDs)
+                    foreach (var spaceId in tree3D.SpaceIDs)
                     {
-                        var space = _unitOfWork.SpaceRepository.GetById(spaceId);
+                        var space = _unitOfWork.SpaceRepository.Get(spaceId);
                         if (space != null)
                         {
                             meterToUpdate.Spaces.Add(space);
@@ -234,34 +251,27 @@ namespace BuildingManagement.Controllers
                     #endregion
 
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Meter {0} has been edited.", meterToUpdate.Code);
                     return Json(meterToUpdate.ID);
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateClientsDropDownList(meterToUpdate.ClientID);
             PopulateDistributionModesDropDownList(meterToUpdate.DistributionModeID);
+            PopulateClientsDropDownList(meterToUpdate.ClientID);
             return View("Edit", meterToUpdate);
         }
 
         // GET: Meter/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage =
-                    "Delete failed. Try again, and if the problem persists see your system administrator.";
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var meter =
-                _unitOfWork.MeterRepository.Get(includeProperties: "DistributionMode, MeterTypes, Spaces")
-                    .Single(m => m.ID == id);
+            var meter = _unitOfWork.MeterRepository.GetMeterIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(id);
             if (meter == null)
             {
                 return HttpNotFound();
@@ -276,8 +286,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.MeterRepository.Delete(id);
+                var meter = _unitOfWork.MeterRepository.Get(id);
+                if (meter == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.MeterRepository.Remove(meter);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Meter {0} has been deleted.", meter.Code);
             }
             catch (DataException)
             {
@@ -295,44 +311,16 @@ namespace BuildingManagement.Controllers
             base.Dispose(disposing);
         }
 
-        private void PopulateClientsDropDownList(object selectedClient = null)
-        {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
-            ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
-        }
-
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.Get() select dm;
+            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.GetAll() select dm;
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
-        private void UpdateMeterMeterTypes(List<string> meterTypes, Meter meter)
+        private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            if (meterTypes == null)
-            {
-                meter.MeterTypes = new List<MeterType>();
-                return;
-            }
-            var selectedMeterTypes = new HashSet<string>(meterTypes);
-            var meterMeterTypes = new HashSet<int>(meter.MeterTypes.Select(mt => mt.ID));
-            foreach (var meterType in _unitOfWork.MeterTypeRepository.Get())
-            {
-                if (selectedMeterTypes.Contains(meterType.ID.ToString()))
-                {
-                    if (!meterMeterTypes.Contains(meterType.ID))
-                    {
-                        meter.MeterTypes.Add(meterType);
-                    }
-                }
-                else
-                {
-                    if (meterMeterTypes.Contains(meterType.ID))
-                    {
-                        meter.MeterTypes.Remove(meterType);
-                    }
-                }
-            }
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         [HttpGet]
@@ -342,23 +330,21 @@ namespace BuildingManagement.Controllers
             {
                 id = "root",
                 children = {},
-                text = "root",
+                text = "-",
                 state = new TreeNodeState {opened = true}
             };
 
-            HashSet<int> selectedMeterTypes = new HashSet<int>();
-            if (meterId != null)
+            var selectedMeterTypes = new HashSet<int>();
+            if (meterId != null && meterId != 0)
             {
-                var meter =
-                    _unitOfWork.MeterRepository.Get(includeProperties: "MeterTypes")
-                        .FirstOrDefault(m => m.ID == meterId);
+                var meter = _unitOfWork.MeterRepository.GetMeterIncludingMeterTypes((int)meterId);
                 if (meter != null)
                 {
                     selectedMeterTypes = new HashSet<int>(meter.MeterTypes.Select(mt => mt.ID));
                 }
             }
 
-            var meterTypes = _unitOfWork.MeterTypeRepository.Get().ToList();
+            var meterTypes = _unitOfWork.MeterTypeRepository.GetAll().ToList();
             if (meterTypes.Any())
             {
                 foreach (var meterType in meterTypes)
@@ -373,28 +359,27 @@ namespace BuildingManagement.Controllers
                     root.children.Add(meterTypeNode);
                 }
             }
+
             return new JavaScriptSerializer().Serialize(root);
         }
 
         [HttpGet]
-        public string GetSpacesTreeData(int meterId, int clientId)
+        public string GetSpacesTreeData(int? meterId, int? clientId)
         {
             var root = new TreeNode
             {
                 id = "root",
                 children = {},
-                text = "root",
+                text = "-",
                 state = new TreeNodeState {opened = true}
             };
 
-            HashSet<int> selectedSpacesIDs = new HashSet<int>();
-            HashSet<int> selectedLevelsIDs = new HashSet<int>();
-            HashSet<int> selectedSectionsIDs = new HashSet<int>();
-            if (meterId != 0)
+            var selectedSpacesIDs = new HashSet<int>();
+            var selectedLevelsIDs = new HashSet<int>();
+            var selectedSectionsIDs = new HashSet<int>();
+            if (meterId != null && meterId != 0)
             {
-                var meter =
-                    _unitOfWork.MeterRepository.Get(includeProperties: "Sections, Levels, Spaces")
-                        .FirstOrDefault(m => m.ID == meterId);
+                var meter = _unitOfWork.MeterRepository.GetMeterIncludingSectionsAndLevelsAndSpaces((int)meterId);
                 if (meter != null)
                 {
                     selectedSpacesIDs = new HashSet<int>(meter.Spaces.Select(s => s.ID));
@@ -403,56 +388,16 @@ namespace BuildingManagement.Controllers
                 }
             }
 
-            var sections = _unitOfWork.SectionRepository.Get().Where(s => s.ClientID == clientId).ToList();
-            if (sections.Any())
+            if (clientId != null && clientId != 0)
             {
-                foreach (var section in sections)
+                var client = _unitOfWork.ClientRepository.Get((int)clientId);
+                if (client != null)
                 {
-                    var sectionNode = new TreeNode();
-                    sectionNode.id = section.ID.ToString();
-                    sectionNode.text = section.Number;
-                    sectionNode.state = new TreeNodeState();
-                    sectionNode.state.opened = true;
-                    if (selectedSectionsIDs.Count > 0 && selectedSectionsIDs.Contains(section.ID))
-                    {
-                        sectionNode.state.selected = true;
-                    }
-                    root.children.Add(sectionNode);
-                    var levels = _unitOfWork.LevelRepository.Get().Where(l => l.SectionID == section.ID).ToList();
-                    if (levels.Any())
-                    {
-                        foreach (var level in levels)
-                        {
-                            var levelNode = new TreeNode();
-                            levelNode.id = section.ID + "." + level.ID;
-                            levelNode.text = level.Number;
-                            levelNode.state = new TreeNodeState();
-                            levelNode.state.opened = true;
-                            if (selectedLevelsIDs.Count > 0 && selectedLevelsIDs.Contains(level.ID))
-                            {
-                                levelNode.state.selected = true;
-                            }
-                            sectionNode.children.Add(levelNode);
-                            var spaces = _unitOfWork.SpaceRepository.Get().Where(s => s.LevelID == level.ID).ToList();
-                            if (spaces.Any())
-                            {
-                                foreach (var space in spaces)
-                                {
-                                    var spaceNode = new TreeNode();
-                                    spaceNode.id = section.ID + "." + level.ID + "." + space.ID;
-                                    spaceNode.text = space.Number;
-                                    if (selectedSpacesIDs.Count > 0 && selectedSpacesIDs.Contains(space.ID))
-                                    {
-                                        spaceNode.state = new TreeNodeState();
-                                        spaceNode.state.selected = true;
-                                    }
-                                    levelNode.children.Add(spaceNode);
-                                }
-                            }
-                        }
-                    }
+                    var treeHelper = new Utils.TreeHelper(_unitOfWork);
+                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, client.ID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
                 }
             }
+
             return new JavaScriptSerializer().Serialize(root);
         }
     }

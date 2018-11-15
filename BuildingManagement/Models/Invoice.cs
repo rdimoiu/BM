@@ -41,9 +41,6 @@ namespace BuildingManagement.Models
         [Range(0, 9999999999999999.99)]
         public decimal CheckQuantity { get; set; }
 
-        [StringLength(10)]
-        public string Unit { get; set; }
-
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DiscountMonth { get; set; }

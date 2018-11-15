@@ -11,7 +11,12 @@ namespace BuildingManagement.Controllers
 {
     public class InvoiceDistributionController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public InvoiceDistributionController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: InvoiceDistribution
         public ActionResult Index(DateTime? discountMonth, int? clientId, int? providerId)
@@ -31,64 +36,64 @@ namespace BuildingManagement.Controllers
                 if (clientId != null)
                 {
                     invoiceDistributionIndexData.ClientID = (int) clientId;
-                    if (providerId != null)
-                    {
-                        invoiceDistributionIndexData.ProviderID = (int) providerId;
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get()
-                                .Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId && i.ProviderID == providerId);
-                    }
-                    else
-                    {
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId);
-                    }
+                    //if (providerId != null)
+                    //{
+                    //    invoiceDistributionIndexData.ProviderID = (int) providerId;
+                    //    invoiceDistributionIndexData.Invoices =
+                    //        _unitOfWork.InvoiceRepository.Get()
+                    //            .Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId && i.ProviderID == providerId);
+                    //}
+                    //else
+                    //{
+                    //    invoiceDistributionIndexData.Invoices =
+                    //        _unitOfWork.InvoiceRepository.Get().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId);
+                    //}
                 }
                 else
                 {
-                    if (providerId != null)
-                    {
-                        invoiceDistributionIndexData.ProviderID = (int) providerId;
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get()
-                                .Where(
-                                    i =>
-                                        i.DiscountMonth.Month == ((DateTime) discountMonth).Month &&
-                                        i.ProviderID == providerId);
-                    }
-                    else
-                    {
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.Get().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month);
-                    }
+                    //if (providerId != null)
+                    //{
+                    //    invoiceDistributionIndexData.ProviderID = (int) providerId;
+                    //    invoiceDistributionIndexData.Invoices =
+                    //        _unitOfWork.InvoiceRepository.Get()
+                    //            .Where(
+                    //                i =>
+                    //                    i.DiscountMonth.Month == ((DateTime) discountMonth).Month &&
+                    //                    i.ProviderID == providerId);
+                    //}
+                    //else
+                    //{
+                    //    invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.Get().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month);
+                    //}
                 }
             }
             else
             {
-                if (clientId != null)
-                {
-                    invoiceDistributionIndexData.ClientID = (int)clientId;
-                    if (providerId != null)
-                    {
-                        invoiceDistributionIndexData.ProviderID = (int)providerId;
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get()
-                                .Where(i => i.ClientID == clientId && i.ProviderID == providerId);
-                    }
-                    else
-                    {
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get().Where(i => i.ClientID == clientId);
-                    }
-                }
-                else
-                {
-                    if (providerId != null)
-                    {
-                        invoiceDistributionIndexData.ProviderID = (int)providerId;
-                        invoiceDistributionIndexData.Invoices =
-                            _unitOfWork.InvoiceRepository.Get().Where(i => i.ProviderID == providerId);
-                    }
-                }
+                //if (clientId != null)
+                //{
+                //    invoiceDistributionIndexData.ClientID = (int)clientId;
+                //    if (providerId != null)
+                //    {
+                //        invoiceDistributionIndexData.ProviderID = (int)providerId;
+                //        invoiceDistributionIndexData.Invoices =
+                //            _unitOfWork.InvoiceRepository.Get()
+                //                .Where(i => i.ClientID == clientId && i.ProviderID == providerId);
+                //    }
+                //    else
+                //    {
+                //        invoiceDistributionIndexData.Invoices =
+                //            _unitOfWork.InvoiceRepository.Get().Where(i => i.ClientID == clientId);
+                //    }
+                //}
+                //else
+                //{
+                //    if (providerId != null)
+                //    {
+                //        invoiceDistributionIndexData.ProviderID = (int)providerId;
+                //        invoiceDistributionIndexData.Invoices =
+                //            _unitOfWork.InvoiceRepository.Get().Where(i => i.ProviderID == providerId);
+                //    }
+                //}
             }
 
             PopulateClientsDropDownList();
@@ -98,13 +103,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateProvidersDropDownList(object selectedProvider = null)
         {
-            var providersQuery = from p in _unitOfWork.ProviderRepository.Get() select p;
+            var providersQuery = from p in _unitOfWork.ProviderRepository.GetAll() select p;
             ViewBag.ProviderID = new SelectList(providersQuery, "ID", "Name", selectedProvider);
         }
     }

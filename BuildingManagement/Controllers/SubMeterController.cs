@@ -1,39 +1,63 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
 using System.Web.Script.Serialization;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class SubMeterController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public SubMeterController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: SubMeter
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var viewModel = new SubMeterIndexData
+            IEnumerable<SubMeter> subMeters;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
             {
-                SubMeters =
-                    _unitOfWork.SubMeterRepository.Get(
-                        includeProperties: "Meter, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-            };
-            return View(viewModel);
+                pageNumber = 1;
+                subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString);
+                }
+                else
+                {
+                    subMeters = _unitOfWork.SubMeterRepository.GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CodeSortParm = string.IsNullOrEmpty(sortOrder) ? "code_desc" : "";
+            ViewBag.DetailsSortParm = sortOrder == "Details" ? "details_desc" : "Details";
+            ViewBag.InitialIndexSortParm = sortOrder == "InitialIndex" ? "initialIndex_desc" : "InitialIndex";
+            ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
+            ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
+            ViewBag.MeterSortParm = sortOrder == "Meter" ? "meter_desc" : "Meter";
+            subMeters = _unitOfWork.SubMeterRepository.OrderSubMeters(subMeters, sortOrder);
+            ViewBag.OnePageOfSubMeters = subMeters.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfSubMeters);
         }
 
         // GET: SubMeter/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var subMeter = _unitOfWork.SubMeterRepository.GetById(id);
+            var subMeter = _unitOfWork.SubMeterRepository.Get(id);
             if (subMeter == null)
             {
                 return HttpNotFound();
@@ -50,15 +74,14 @@ namespace BuildingManagement.Controllers
             return View(model);
         }
 
-        // POST: Meter/Create
+        // POST: SubMeter/Create
         [HttpPost]
         public ActionResult CreateSubMeter(SubMeter subMeter)
         {
             //uniqueness condition check
             if (subMeter.Code != null)
             {
-                var duplicateSubMeter =
-                    _unitOfWork.SubMeterRepository.Get(filter: sm => sm.Code == subMeter.Code).FirstOrDefault();
+                var duplicateSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(sm => sm.Code == subMeter.Code);
                 if (duplicateSubMeter != null)
                 {
                     ModelState.AddModelError("Code", "A sub meter with this code already exists.");
@@ -67,30 +90,24 @@ namespace BuildingManagement.Controllers
                     return View("Create", subMeter);
                 }
             }
-            if (subMeter.MeterID != 0)
+            var meter = _unitOfWork.MeterRepository.Get(subMeter.MeterID);
+            if (meter != null)
             {
-                var meter = _unitOfWork.MeterRepository.GetById(subMeter.MeterID);
-                if (meter != null)
-                {
-                    subMeter.Meter = meter;
-                }
+                subMeter.Meter = meter;
             }
-            if (subMeter.DistributionModeID != 0)
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(subMeter.DistributionModeID);
+            if (distributionMode != null)
             {
-                var distributionMode = _unitOfWork.DistributionModeRepository.GetById(subMeter.DistributionModeID);
-                if (distributionMode != null)
-                {
-                    subMeter.DistributionMode = distributionMode;
-                }
+                subMeter.DistributionMode = distributionMode;
             }
-            if (subMeter.SubMeterTypesSelected != null)
+            subMeter.MeterTypes = new List<MeterType>();
+            if (subMeter.MeterTypesSelected != null)
             {
-                subMeter.MeterTypes = new List<MeterType>();
-                foreach (var subMeterTypeSelected in subMeter.SubMeterTypesSelected)
+                foreach (var subMeterTypeSelected in subMeter.MeterTypesSelected)
                 {
                     if (subMeterTypeSelected != "root")
                     {
-                        var meterType = _unitOfWork.MeterTypeRepository.GetById(int.Parse(subMeterTypeSelected));
+                        var meterType = _unitOfWork.MeterTypeRepository.Get(int.Parse(subMeterTypeSelected));
                         if (meterType != null)
                         {
                             subMeter.MeterTypes.Add(meterType);
@@ -98,33 +115,33 @@ namespace BuildingManagement.Controllers
                     }
                 }
             }
-            if (subMeter.SubMeterSLSSelected != null)
+            if (subMeter.MeterSLSSelected != null)
             {
                 #region Add Sections, Levels and Spaces
 
-                var building = Utils.MapSelectedIDsToDatabaseIDs(subMeter.SubMeterSLSSelected);
+                var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(subMeter.MeterSLSSelected);
                 subMeter.Sections = new List<Section>();
-                foreach (var sectionId in building.SectionIDs)
+                foreach (var sectionId in tree3D.SectionIDs)
                 {
-                    var section = _unitOfWork.SectionRepository.GetById(sectionId);
+                    var section = _unitOfWork.SectionRepository.Get(sectionId);
                     if (section != null)
                     {
                         subMeter.Sections.Add(section);
                     }
                 }
                 subMeter.Levels = new List<Level>();
-                foreach (var levelId in building.LevelIDs)
+                foreach (var levelId in tree3D.LevelIDs)
                 {
-                    var level = _unitOfWork.LevelRepository.GetById(levelId);
+                    var level = _unitOfWork.LevelRepository.Get(levelId);
                     if (level != null)
                     {
                         subMeter.Levels.Add(level);
                     }
                 }
                 subMeter.Spaces = new List<Space>();
-                foreach (var spaceId in building.SpaceIDs)
+                foreach (var spaceId in tree3D.SpaceIDs)
                 {
-                    var space = _unitOfWork.SpaceRepository.GetById(spaceId);
+                    var space = _unitOfWork.SpaceRepository.Get(spaceId);
                     if (space != null)
                     {
                         subMeter.Spaces.Add(space);
@@ -137,14 +154,14 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    _unitOfWork.SubMeterRepository.Insert(subMeter);
+                    _unitOfWork.SubMeterRepository.Add(subMeter);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("SubMeter {0} has been created.", subMeter.Code);
                     return Json(subMeter.ID);
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
             PopulateMetersDropDownList(subMeter.MeterID);
@@ -153,16 +170,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: SubMeter/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var subMeter =
-                _unitOfWork.SubMeterRepository.Get(
-                    includeProperties: "Meter, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-                    .Single(sm => sm.ID == id);
+            var subMeter = _unitOfWork.SubMeterRepository.Get(id);
             if (subMeter == null)
             {
                 return HttpNotFound();
@@ -172,61 +182,69 @@ namespace BuildingManagement.Controllers
             return View(subMeter);
         }
 
-        // POST: Meter/Edit/5
+        // POST: SubMeter/Edit/5
         [HttpPost]
         public ActionResult EditSubMeter(SubMeter subMeter)
         {
-            var subMeterToUpdate =
-                _unitOfWork.SubMeterRepository.Get(
-                    includeProperties: "Meter, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-                    .FirstOrDefault(sm => sm.ID == subMeter.ID);
+            var subMeterToUpdate = _unitOfWork.SubMeterRepository.GetSubMeterIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(subMeter.ID);
             if (subMeterToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(subMeterToUpdate, "",
-                new[] {"Code", "Details", "InitialIndex", "Defect", "MeterID", "DistributionModeID"}))
+            if (TryUpdateModel(subMeterToUpdate, "", new[] { "Code", "Details", "InitialIndex", "Defect", "MeterID", "DistributionModeID" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSubMeter =
-                        _unitOfWork.SubMeterRepository.Get(filter: sm => sm.Code == subMeterToUpdate.Code)
-                            .FirstOrDefault();
+                    var duplicateSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(sm => sm.Code == subMeterToUpdate.Code);
                     if (duplicateSubMeter != null && duplicateSubMeter.ID != subMeterToUpdate.ID)
                     {
-                        ModelState.AddModelError("", "A sub meter with this code already exists.");
+                        ModelState.AddModelError("Code", "A sub meter with this code already exists.");
                         PopulateMetersDropDownList(subMeterToUpdate.MeterID);
                         PopulateDistributionModesDropDownList(subMeterToUpdate.DistributionModeID);
-                        return View("Edit", subMeterToUpdate);
+                        return View("Edit", subMeter);
                     }
-                    UpdateSubMeterMeterTypes(subMeter.SubMeterTypesSelected, subMeterToUpdate);
+
+                    #region Update MeterTypes
+
+                    var tree1D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForMeterTypes(subMeter.MeterTypesSelected);
+                    subMeterToUpdate.MeterTypes.Clear();
+                    foreach (var meterTypeId in tree1D.MeterTypeIDs)
+                    {
+                        var meterType = _unitOfWork.MeterTypeRepository.Get(meterTypeId);
+                        if (meterType != null)
+                        {
+                            subMeterToUpdate.MeterTypes.Add(meterType);
+                        }
+                    }
+
+                    #endregion
 
                     #region Update Sections, Levels and Spaces
 
-                    var building = Utils.MapSelectedIDsToDatabaseIDs(subMeter.SubMeterSLSSelected);
+                    var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(subMeter.MeterSLSSelected);
                     subMeterToUpdate.Sections.Clear();
-                    foreach (var sectionId in building.SectionIDs)
+                    foreach (var sectionId in tree3D.SectionIDs)
                     {
-                        var section = _unitOfWork.SectionRepository.GetById(sectionId);
+                        var section = _unitOfWork.SectionRepository.Get(sectionId);
                         if (section != null)
                         {
                             subMeterToUpdate.Sections.Add(section);
                         }
                     }
                     subMeterToUpdate.Levels.Clear();
-                    foreach (var levelId in building.LevelIDs)
+                    foreach (var levelId in tree3D.LevelIDs)
                     {
-                        var level = _unitOfWork.LevelRepository.GetById(levelId);
+                        var level = _unitOfWork.LevelRepository.Get(levelId);
                         if (level != null)
                         {
                             subMeterToUpdate.Levels.Add(level);
                         }
                     }
                     subMeterToUpdate.Spaces.Clear();
-                    foreach (var spaceId in building.SpaceIDs)
+                    foreach (var spaceId in tree3D.SpaceIDs)
                     {
-                        var space = _unitOfWork.SpaceRepository.GetById(spaceId);
+                        var space = _unitOfWork.SpaceRepository.Get(spaceId);
                         if (space != null)
                         {
                             subMeterToUpdate.Spaces.Add(space);
@@ -236,12 +254,12 @@ namespace BuildingManagement.Controllers
                     #endregion
 
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("SubMeter {0} has been edited.", subMeterToUpdate.Code);
                     return Json(subMeterToUpdate.ID);
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
             PopulateMetersDropDownList(subMeterToUpdate.MeterID);
@@ -250,21 +268,13 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: SubMeter/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage =
-                    "Delete failed. Try again, and if the problem persists see your system administrator.";
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var subMeter =
-                _unitOfWork.SubMeterRepository.Get(
-                    includeProperties: "Meter, DistributionMode, MeterTypes, Sections, Levels, Spaces")
-                    .Single(sm => sm.ID == id);
+            var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(id);
             if (subMeter == null)
             {
                 return HttpNotFound();
@@ -279,8 +289,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.SubMeterRepository.Delete(id);
+                var subMeter = _unitOfWork.SubMeterRepository.Get(id);
+                if (subMeter == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.SubMeterRepository.Remove(subMeter);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("SubMeter {0} has been deleted.", subMeter.Code);
             }
             catch (DataException)
             {
@@ -300,42 +316,14 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.Get() select dm;
+            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.GetAll() select dm;
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         private void PopulateMetersDropDownList(object selectedMeter = null)
         {
-            var metersQuery = from m in _unitOfWork.MeterRepository.Get() select m;
+            var metersQuery = from m in _unitOfWork.MeterRepository.GetAll() select m;
             ViewBag.MeterID = new SelectList(metersQuery, "ID", "Code", selectedMeter);
-        }
-
-        private void UpdateSubMeterMeterTypes(List<string> meterTypes, SubMeter subMeter)
-        {
-            if (meterTypes == null)
-            {
-                subMeter.MeterTypes = new List<MeterType>();
-                return;
-            }
-            var selectedMeterTypes = new HashSet<string>(meterTypes);
-            var subMeterMeterTypes = new HashSet<int>(subMeter.MeterTypes.Select(mt => mt.ID));
-            foreach (var meterType in _unitOfWork.MeterTypeRepository.Get())
-            {
-                if (selectedMeterTypes.Contains(meterType.ID.ToString()))
-                {
-                    if (!subMeterMeterTypes.Contains(meterType.ID))
-                    {
-                        subMeter.MeterTypes.Add(meterType);
-                    }
-                }
-                else
-                {
-                    if (subMeterMeterTypes.Contains(meterType.ID))
-                    {
-                        subMeter.MeterTypes.Remove(meterType);
-                    }
-                }
-            }
         }
 
         [HttpGet]
@@ -345,37 +333,30 @@ namespace BuildingManagement.Controllers
             {
                 id = "root",
                 children = {},
-                text = "root",
+                text = "-",
                 state = new TreeNodeState {opened = true}
             };
 
-            HashSet<int> selectedMeterTypes = new HashSet<int>();
-            if (subMeterId != null)
+            var selectedMeterTypes = new HashSet<int>();
+            if (subMeterId != null && subMeterId != 0)
             {
-                var subMeter =
-                    _unitOfWork.SubMeterRepository.Get(includeProperties: "MeterTypes")
-                        .FirstOrDefault(sm => sm.ID == subMeterId);
+                var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingMeterTypes((int)subMeterId);
                 if (subMeter != null)
                 {
                     selectedMeterTypes = new HashSet<int>(subMeter.MeterTypes.Select(mt => mt.ID));
                 }
             }
 
-            List<MeterType> meterTypes = new List<MeterType>();
-            if (meterId != null)
+            var meterTypes = new List<MeterType>();
+            if (meterId != null && subMeterId != 0)
             {
-                var meter =
-                    _unitOfWork.MeterRepository.Get(includeProperties: "MeterTypes")
-                        .FirstOrDefault(m => m.ID == meterId);
+                var meter = _unitOfWork.MeterRepository.GetMeterIncludingMeterTypes((int)meterId);
                 if (meter != null)
                 {
                     meterTypes = meter.MeterTypes.ToList();
                 }
             }
-            else
-            {
-                meterTypes = _unitOfWork.MeterTypeRepository.Get().ToList();
-            }
+            
             if (meterTypes.Any())
             {
                 foreach (var meterType in meterTypes)
@@ -390,6 +371,7 @@ namespace BuildingManagement.Controllers
                     root.children.Add(meterTypeNode);
                 }
             }
+
             return new JavaScriptSerializer().Serialize(root);
         }
 
@@ -400,18 +382,16 @@ namespace BuildingManagement.Controllers
             {
                 id = "root",
                 children = {},
-                text = "root",
+                text = "-",
                 state = new TreeNodeState {opened = true}
             };
 
-            HashSet<int> selectedSpacesIDs = new HashSet<int>();
-            HashSet<int> selectedLevelsIDs = new HashSet<int>();
-            HashSet<int> selectedSectionsIDs = new HashSet<int>();
-            if (subMeterId != null)
+            var selectedSpacesIDs = new HashSet<int>();
+            var selectedLevelsIDs = new HashSet<int>();
+            var selectedSectionsIDs = new HashSet<int>();
+            if (subMeterId != null && subMeterId != 0)
             {
-                var subMeter =
-                    _unitOfWork.SubMeterRepository.Get(includeProperties: "Sections, Levels, Spaces")
-                        .FirstOrDefault(sm => sm.ID == subMeterId);
+                var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingSectionsAndLevelsAndSpaces((int)subMeterId);
                 if (subMeter != null)
                 {
                     selectedSpacesIDs = new HashSet<int>(subMeter.Spaces.Select(s => s.ID));
@@ -420,117 +400,16 @@ namespace BuildingManagement.Controllers
                 }
             }
 
-            List<Space> meterSpaces = new List<Space>();
-            List<Level> meterLevels = new List<Level>();
-            List<Section> meterSections = new List<Section>();
-            if (meterId != null)
+            if (meterId != null && meterId != 0)
             {
-                var meter =
-                    _unitOfWork.MeterRepository.Get(includeProperties: "Sections, Levels, Spaces").FirstOrDefault(m => m.ID == meterId);
+                var meter = _unitOfWork.MeterRepository.GetMeterIncludingSectionsAndLevelsAndSpaces((int)meterId);
                 if (meter != null)
                 {
-                    meterSpaces = meter.Spaces.ToList();
-                    meterLevels = meter.Levels.ToList();
-                    meterSections = meter.Sections.ToList();
+                    var treeHelper = new Utils.TreeHelper(_unitOfWork);
+                    root = treeHelper.GetSectionsLevelsSpacesByParent(root, meter.ClientID, meter.Sections, meter.Levels, meter.Spaces, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
                 }
             }
 
-            //add all levels for meter's sections
-            foreach (var section in meterSections)
-            {
-                var levelsToAdd = _unitOfWork.LevelRepository.Get().Where(l => l.SectionID == section.ID);
-                foreach (var level in levelsToAdd)
-                {
-                    if (!meterLevels.Contains(level))
-                    {
-                        meterLevels.Add(level);
-                    }
-                }
-            }
-            //add all spaces for meter's levels
-            foreach (var level in meterLevels)
-            {
-                var spacesToAdd = _unitOfWork.SpaceRepository.Get().Where(s => s.LevelID == level.ID);
-                foreach (var space in spacesToAdd)
-                {
-                    if (!meterSpaces.Contains(space))
-                    {
-                        meterSpaces.Add(space);
-                    }
-                }
-            }
-
-            var sections = _unitOfWork.SectionRepository.Get().ToList();
-            if (sections.Any())
-            {
-                foreach (var section in sections)
-                {
-                    var sectionNode = new TreeNode();
-                    sectionNode.id = section.ID.ToString();
-                    sectionNode.text = section.Number;
-                    sectionNode.state = new TreeNodeState();
-                    sectionNode.state.opened = true;
-                    if (meterSections.Contains(section))
-                    {
-                        if (selectedSectionsIDs.Count > 0 && selectedSectionsIDs.Contains(section.ID))
-                        {
-                            sectionNode.state.selected = true;
-                        }
-                    }
-                    else
-                    {
-                        sectionNode.state.disabled = true;
-                    }
-                    root.children.Add(sectionNode);
-                    var levels = _unitOfWork.LevelRepository.Get().Where(l => l.SectionID == section.ID).ToList();
-                    if (levels.Any())
-                    {
-                        foreach (var level in levels)
-                        {
-                            var levelNode = new TreeNode();
-                            levelNode.id = section.ID + "." + level.ID;
-                            levelNode.text = level.Number;
-                            levelNode.state = new TreeNodeState();
-                            levelNode.state.opened = true;
-                            if (meterLevels.Contains(level))
-                            {
-                                if (selectedLevelsIDs.Count > 0 && selectedLevelsIDs.Contains(level.ID))
-                                {
-                                    levelNode.state.selected = true;
-                                }
-                            }
-                            else
-                            {
-                                levelNode.state.disabled = true;
-                            }
-                            sectionNode.children.Add(levelNode);
-                            var spaces = _unitOfWork.SpaceRepository.Get().Where(s => s.LevelID == level.ID).ToList();
-                            if (spaces.Any())
-                            {
-                                foreach (var space in spaces)
-                                {
-                                    var spaceNode = new TreeNode();
-                                    spaceNode.id = section.ID + "." + level.ID + "." + space.ID;
-                                    spaceNode.text = space.Number;
-                                    spaceNode.state = new TreeNodeState();
-                                    if (meterSpaces.Contains(space))
-                                    {
-                                        if (selectedSpacesIDs.Count > 0 && selectedSpacesIDs.Contains(space.ID))
-                                        {
-                                            spaceNode.state.selected = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        spaceNode.state.disabled = true;
-                                    }
-                                    levelNode.children.Add(spaceNode);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             return new JavaScriptSerializer().Serialize(root);
         }
     }

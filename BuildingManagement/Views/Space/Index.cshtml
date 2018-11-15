@@ -1,4 +1,6 @@
-﻿@model IEnumerable<BuildingManagement.Models.Space>
+﻿@model IPagedList<BuildingManagement.Models.Space>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,70 +11,72 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "Space", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Number)
+            @Html.ActionLink("Level", "Index", new { sortOrder = ViewBag.LevelSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Surface)
+            @Html.ActionLink("Number", "Index", new {sortOrder = ViewBag.NumberSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.People)
+            @Html.ActionLink("Surface", "Index", new {sortOrder = ViewBag.SurfaceSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Inhabited)
+            @Html.ActionLink("People", "Index", new {sortOrder = ViewBag.PeopleSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Level)
+            @Html.ActionLink("Inhabited", "Index", new {sortOrder = ViewBag.InhabitedSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SpaceType)
+            @Html.ActionLink("SpaceType", "Index", new {sortOrder = ViewBag.SpaceTypeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Client)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubClient)
+            @Html.ActionLink("SubClient", "Index", new {sortOrder = ViewBag.SubClientSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in ViewBag.OnePageOfSpaces)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Number)
+                @item.Level.Number
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Surface)
+                @item.Number
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.People)
+                @item.Surface
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Inhabited)
+                @item.People
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Level.Number)
+                @item.Inhabited
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SpaceType.Type)
+                @item.SpaceType.Type
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
+                @item.SubClient.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SubClient.Name)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
     }
-
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfSpaces, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>

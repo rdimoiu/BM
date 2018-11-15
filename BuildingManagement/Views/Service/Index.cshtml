@@ -1,4 +1,7 @@
-﻿@model BuildingManagement.ViewModels.ServiceIndexData
+﻿@model IPagedList<BuildingManagement.Models.Service>
+@using X.PagedList.Mvc;
+@using X.PagedList;
+
 @{
     ViewBag.Title = "Index";
 }
@@ -8,43 +11,50 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "Service", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            Invoice
+            @Html.ActionLink("Invoice", "Index", new { sortOrder = ViewBag.InvoiceSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Name
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Quantity
+            @Html.ActionLink("Quantity", "Index", new { sortOrder = ViewBag.QuantitySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Unit
+            @Html.ActionLink("Unit", "Index", new { sortOrder = ViewBag.UnitSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Price
+            @Html.ActionLink("Price", "Index", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            ValueWithoutTVA
+            @Html.ActionLink("ValueWithoutTVA", "Index", new { sortOrder = ViewBag.ValueWithoutTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            TVA
+            @Html.ActionLink("TVA", "Index", new { sortOrder = ViewBag.TVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            QuotaTVA
+            @Html.ActionLink("QuotaTVA", "Index", new {sortOrder = ViewBag.QuotaTVASortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Fixed
+            @Html.ActionLink("DistributionMode", "Index", new { sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Inhabited
+            @Html.ActionLink("Fixed", "Index", new { sortOrder = ViewBag.FixedSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            DistributionMode
+            @Html.ActionLink("Counted", "Index", new { sortOrder = ViewBag.CountedSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            Counted
+            @Html.ActionLink("Inhabited", "Index", new { sortOrder = ViewBag.InhabitedSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             Space
@@ -52,44 +62,44 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.Services)
+    @foreach (var item in ViewBag.OnePageOfServices)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Invoice.Number)
+                @item.Invoice.Number
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @item.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
+                @item.Quantity
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Unit)
+                @item.Unit
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Price)
+                @item.Price
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ValueWithoutTVA)
+                @item.ValueWithoutTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TVA)
+                @item.TVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.QuotaTVA)
+                @item.QuotaTVA
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Fixed)
+                @item.DistributionMode.Mode
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Inhabited)
+                @item.Fixed
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DistributionMode.Mode)
+                @item.Counted
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Counted)
+                @item.Inhabited
             </td>
             <td>
                 @{
@@ -122,5 +132,7 @@
         </tr>
     }
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfServices, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>

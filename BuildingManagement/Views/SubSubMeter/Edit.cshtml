@@ -1,0 +1,108 @@
+﻿@model BuildingManagement.Models.SubSubMeter
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+<style type="text/css">
+    .demo {
+        overflow: auto;
+        border: 1px solid silver;
+        min-height: 100px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/themes/default/style.min.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>SubSubMeter</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Details, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.InitialIndex, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.InitialIndex, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.InitialIndex, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Defect, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Defect, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Defect, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new {@class = "form-control"})
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new {@class = "text-danger"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SubMeter, htmlAttributes: new { @class = "control-label col-md-2"})
+        <div class="col-md-10">
+            @Html.DropDownList("SubMeterID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetMeterTypesAndSpacesForSubSubMeter(document.getElementById('ID').value, this.value, 'Edit')" })
+            @Html.ValidationMessageFor(model => model.SubMeterID, "", new { @class = "text-danger"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MeterTypes, htmlAttributes: new { @class = "control-label col-md-2", @style = "float: left" })
+        <br />
+        <div id="meterTypesTree" class="form-group" style="float: left"></div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Spaces, htmlAttributes: new { @class = "control-label col-md-2", @style = "float: left" })
+        <br />
+        <div id="spacesTree" class="form-group" style="float: left"></div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" onclick="SubSubMeterValidateAll('Edit')" />
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script src="@Url.Content("~/Scripts/SubSubMeterUtils.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        GetMeterTypesAndSpacesForSubSubMeter(@Model.ID, @Model.SubMeterID, "Edit");
+    });
+</script>

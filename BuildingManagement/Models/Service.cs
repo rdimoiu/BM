@@ -56,7 +56,7 @@ namespace BuildingManagement.Models
         [Required]
         public decimal QuotaTVA { get; set; }
 
-        public bool Fixed { get; set; } //permanent
+        public bool Fixed { get; set; }
 
         public bool Counted { get; set; }
 

@@ -1,37 +1,69 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class ServiceController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ServiceController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Service
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var viewModel = new ServiceIndexData
+            IEnumerable<Service> services;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
             {
-                Services = _unitOfWork.ServiceRepository.Get(includeProperties: "Invoice, DistributionMode, Sections, Levels, Spaces")
-            };
-            return View(viewModel);
+                pageNumber = 1;
+                services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(searchString);
+                }
+                else
+                {
+                    services = _unitOfWork.ServiceRepository.GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.InvoiceSortParm = string.IsNullOrEmpty(sortOrder) ? "invoice_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "Name" ? "name_desc" : "Name";
+            ViewBag.QuantitySortParm = sortOrder == "Quantity" ? "quantity_desc" : "Quantity";
+            ViewBag.UnitSortParm = sortOrder == "Unit" ? "unit_desc" : "Unit";
+            ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
+            ViewBag.ValueWithoutTVASortParm = sortOrder == "ValueWithoutTVA" ? "valueWithoutTVA_desc" : "ValueWithoutTVA";
+            ViewBag.TVASortParm = sortOrder == "TVA" ? "tva_desc" : "TVA";
+            ViewBag.QuotaTVASortParm = sortOrder == "QuotaTVA" ? "quotaTVA_desc" : "QuotaTVA";
+            ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
+            ViewBag.FixedSortParm = sortOrder == "Fixed" ? "fixed_desc" : "Fixed";
+            ViewBag.CountedSortParm = sortOrder == "Counted" ? "counted_desc" : "Counted";
+            ViewBag.InhabitedSortParm = sortOrder == "Inhabited" ? "inhabited_desc" : "Inhabited";
+            services = _unitOfWork.ServiceRepository.OrderServices(services, sortOrder);
+            ViewBag.OnePageOfServices = services.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfServices);
         }
 
         // GET: Service/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var service = _unitOfWork.ServiceRepository.GetById(id);
+            var service = _unitOfWork.ServiceRepository.Get(id);
             if (service == null)
             {
                 return HttpNotFound();
@@ -64,52 +96,56 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult CreateService(Service service)
         {
-            if (service.InvoiceID != 0)
+            //uniqueness condition check
+            var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+            if (duplicateService != null)
             {
-                var invoice = _unitOfWork.InvoiceRepository.GetById(service.InvoiceID);
-                if (invoice != null)
-                {
-                    invoice.Quantity = invoice.Quantity + service.Quantity;
-                    invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.ValueWithoutTVA;
-                    invoice.TotalTVA = invoice.TotalTVA + service.TVA;
-                    service.Invoice = invoice;
-                }
+                //ViewBag.Message = "A service with this name, for this invoice, already exists.";
+                ModelState.AddModelError("Name", "A service with this name, for this invoice, already exists.");
+                PopulateInvoicesDropDownList(service.InvoiceID);
+                PopulateDistributionModesDropDownList(service.DistributionModeID);
+                return View("Create", service);
             }
-            if (service.DistributionModeID != 0)
+            var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
+            if (invoice != null)
             {
-                var distributionMode = _unitOfWork.DistributionModeRepository.GetById(service.DistributionModeID);
-                if (distributionMode != null)
-                {
-                    service.DistributionMode = distributionMode;
-                }
+                invoice.Quantity = invoice.Quantity + service.Quantity;
+                invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.Quantity * service.Price;
+                invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
+                service.Invoice = invoice;
+            }
+            var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
+            if (distributionMode != null)
+            {
+                service.DistributionMode = distributionMode;
             }
             if (service.ServiceSLSSelected != null)
             {
                 #region Add Sections, Levels and Spaces
 
-                var building = Utils.MapSelectedIDsToDatabaseIDs(service.ServiceSLSSelected);
+                var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(service.ServiceSLSSelected);
                 service.Sections = new List<Section>();
-                foreach (var sectionId in building.SectionIDs)
+                foreach (var sectionId in tree3D.SectionIDs)
                 {
-                    var section = _unitOfWork.SectionRepository.GetById(sectionId);
+                    var section = _unitOfWork.SectionRepository.Get(sectionId);
                     if (section != null)
                     {
                         service.Sections.Add(section);
                     }
                 }
                 service.Levels = new List<Level>();
-                foreach (var levelId in building.LevelIDs)
+                foreach (var levelId in tree3D.LevelIDs)
                 {
-                    var level = _unitOfWork.LevelRepository.GetById(levelId);
+                    var level = _unitOfWork.LevelRepository.Get(levelId);
                     if (level != null)
                     {
                         service.Levels.Add(level);
                     }
                 }
                 service.Spaces = new List<Space>();
-                foreach (var spaceId in building.SpaceIDs)
+                foreach (var spaceId in tree3D.SpaceIDs)
                 {
-                    var space = _unitOfWork.SpaceRepository.GetById(spaceId);
+                    var space = _unitOfWork.SpaceRepository.Get(spaceId);
                     if (space != null)
                     {
                         service.Spaces.Add(space);
@@ -122,19 +158,19 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    _unitOfWork.ServiceRepository.Insert(service);
+                    _unitOfWork.ServiceRepository.Add(service);
                     _unitOfWork.Save();
-                    //if (service.PreviousPage.Equals("Invoice"))
-                    //{
-                    //    return RedirectToAction("Index", "Service");
-                    //}
-                    //return RedirectToAction("Index", "InvoiceDistribution", new { service.Invoice.ClientID, service.Invoice.ProviderID });
-                    return Json(service.ID);
+                    TempData["message"] = string.Format("Service {0} has been created.", service.Name);
+                    if (service.PreviousPage.Equals("Invoice"))
+                    {
+                        return Json(service.ID);
+                        //return RedirectToAction("Index", "Invoice");
+                    }
+                    return RedirectToAction("Index", "InvoiceDistribution", new { service.Invoice.ClientID, service.Invoice.ProviderID });
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
@@ -143,15 +179,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: Service/Edit/5
-        public ActionResult Edit(int? id, int? invoiceId)
+        public ActionResult Edit(int id, int? invoiceId)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var service =
-                _unitOfWork.ServiceRepository.Get(includeProperties: "Invoice, DistributionMode, Sections, Levels, Spaces")
-                    .Single(s => s.ID == id);
+            var service = _unitOfWork.ServiceRepository.Get(id);
             if (service == null)
             {
                 return HttpNotFound();
@@ -165,102 +195,98 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult EditService(Service service)
         {
-            var serviceToUpdate =
-                _unitOfWork.ServiceRepository.Get(includeProperties: "Invoice, DistributionMode, Sections, Levels, Spaces").FirstOrDefault(s => s.ID == service.ID);
+            var serviceToUpdate = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(service.ID);
             if (serviceToUpdate == null)
             {
                 return HttpNotFound();
             }
-            var oldService = _unitOfWork.ServiceRepository.GetById(service.ID);
-            if (oldService == null)
-            {
-                return HttpNotFound();
-            }
-            var oldInvoice = _unitOfWork.InvoiceRepository.GetById(service.InvoiceID);
+            var oldInvoice = _unitOfWork.InvoiceRepository.Get(serviceToUpdate.InvoiceID);
             if (oldInvoice == null)
             {
                 return HttpNotFound();
             }
-            oldInvoice.Quantity = oldInvoice.Quantity - oldService.Quantity;
-            oldInvoice.TotalValueWithoutTVA = oldInvoice.TotalValueWithoutTVA - oldService.ValueWithoutTVA;
-            oldInvoice.TotalTVA = oldInvoice.TotalTVA - oldService.TVA;
-            if (TryUpdateModel(serviceToUpdate, "",
-                new[]
-                {
-                    "Name", "Quantity", "Unit", "Price", "TVA", "ValueWithoutTVA", "QuotaTVA", "Fixed", "Inhabited",
-                    "InvoiceID", "DistributionModeID", "Counted"
-                }))
+            oldInvoice.Quantity = oldInvoice.Quantity - serviceToUpdate.Quantity;
+            oldInvoice.TotalValueWithoutTVA = oldInvoice.TotalValueWithoutTVA - serviceToUpdate.ValueWithoutTVA;
+            oldInvoice.TotalTVA = oldInvoice.TotalTVA - serviceToUpdate.TVA;
+            if (TryUpdateModel(serviceToUpdate, "", new[]{"Name", "Quantity", "Unit", "Price", "TVA", "ValueWithoutTVA", "QuotaTVA", "Fixed", "Inhabited", "InvoiceID", "DistributionModeID", "Counted"}))
             {
                 try
                 {
-                    #region Update Sections, Levels and Spaces
-
-                    var building = Utils.MapSelectedIDsToDatabaseIDs(service.ServiceSLSSelected);
-                    serviceToUpdate.Sections.Clear();
-                    foreach (var sectionId in building.SectionIDs)
+                    //uniqueness condition check
+                    var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+                    if (duplicateService != null && duplicateService.ID != service.ID)
                     {
-                        var section = _unitOfWork.SectionRepository.GetById(sectionId);
-                        if (section != null)
-                        {
-                            serviceToUpdate.Sections.Add(section);
-                        }
+                        ModelState.AddModelError("Name", "A service with this name, for this invoice, already exists.");
+                        PopulateInvoicesDropDownList(service.InvoiceID);
+                        PopulateDistributionModesDropDownList(service.DistributionModeID);
+                        return View("Edit", service);
                     }
-                    serviceToUpdate.Levels.Clear();
-                    foreach (var levelId in building.LevelIDs)
+                    if (service.ServiceSLSSelected != null)
                     {
-                        var level = _unitOfWork.LevelRepository.GetById(levelId);
-                        if (level != null)
-                        {
-                            serviceToUpdate.Levels.Add(level);
-                        }
-                    }
-                    serviceToUpdate.Spaces.Clear();
-                    foreach (var spaceId in building.SpaceIDs)
-                    {
-                        var space = _unitOfWork.SpaceRepository.GetById(spaceId);
-                        if (space != null)
-                        {
-                            serviceToUpdate.Spaces.Add(space);
-                        }
-                    }
+                        #region Update Sections, Levels and Spaces
 
-                    #endregion
+                        var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(service.ServiceSLSSelected);
+                        serviceToUpdate.Sections.Clear();
+                        foreach (var sectionId in tree3D.SectionIDs)
+                        {
+                            var section = _unitOfWork.SectionRepository.Get(sectionId);
+                            if (section != null)
+                            {
+                                serviceToUpdate.Sections.Add(section);
+                            }
+                        }
+                        serviceToUpdate.Levels.Clear();
+                        foreach (var levelId in tree3D.LevelIDs)
+                        {
+                            var level = _unitOfWork.LevelRepository.Get(levelId);
+                            if (level != null)
+                            {
+                                serviceToUpdate.Levels.Add(level);
+                            }
+                        }
+                        serviceToUpdate.Spaces.Clear();
+                        foreach (var spaceId in tree3D.SpaceIDs)
+                        {
+                            var space = _unitOfWork.SpaceRepository.Get(spaceId);
+                            if (space != null)
+                            {
+                                serviceToUpdate.Spaces.Add(space);
+                            }
+                        }
 
-                    var invoice = _unitOfWork.InvoiceRepository.GetById(serviceToUpdate.InvoiceID);
+                        #endregion
+                    }
+                    var invoice = _unitOfWork.InvoiceRepository.Get(serviceToUpdate.InvoiceID);
                     if (invoice == null)
                     {
                         return HttpNotFound();
                     }
                     invoice.Quantity = invoice.Quantity + service.Quantity;
-                    invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.ValueWithoutTVA;
-                    invoice.TotalTVA = invoice.TotalTVA + service.TVA;
+                    invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.Quantity * service.Price;
+                    invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
                     _unitOfWork.Save();
-                    return Json(serviceToUpdate.ID);
+                    TempData["message"] = string.Format("Service {0} has been edited.", serviceToUpdate.Name);
+                    //return RedirectToAction("Index");
+                    return Json(service.ID);
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateInvoicesDropDownList(serviceToUpdate.InvoiceID);
-            PopulateDistributionModesDropDownList(serviceToUpdate.DistributionModeID);
-            return View("Edit", serviceToUpdate);
+            PopulateInvoicesDropDownList(service.InvoiceID);
+            PopulateDistributionModesDropDownList(service.DistributionModeID);
+            return View("Edit", service);
         }
 
         // GET: Service/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage =
-                    "Delete failed. Try again, and if the problem persists see your system administrator.";
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var service = _unitOfWork.ServiceRepository.GetById(id);
+            var service = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(id);
             if (service == null)
             {
                 return HttpNotFound();
@@ -275,21 +301,22 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                var serviceToDelete = _unitOfWork.ServiceRepository.GetById(id);
-                if (serviceToDelete == null)
+                var service = _unitOfWork.ServiceRepository.Get(id);
+                if (service == null)
                 {
                     return HttpNotFound();
                 }
-                var invoice = _unitOfWork.InvoiceRepository.GetById(serviceToDelete.InvoiceID);
+                var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
                 if (invoice == null)
                 {
                     return HttpNotFound();
                 }
-                invoice.Quantity = invoice.Quantity - serviceToDelete.Quantity;
-                invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA - serviceToDelete.ValueWithoutTVA;
-                invoice.TotalTVA = invoice.TotalTVA - serviceToDelete.TVA;
-                _unitOfWork.ServiceRepository.Delete(id);
+                invoice.Quantity = invoice.Quantity - service.Quantity;
+                invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA - service.ValueWithoutTVA;
+                invoice.TotalTVA = invoice.TotalTVA - service.TVA;
+                _unitOfWork.ServiceRepository.Remove(service);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Service {0} has been deleted.", service.Name);
             }
             catch (DataException)
             {
@@ -309,35 +336,33 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoicesDropDownList(object selectedInvoice = null)
         {
-            var invoicesQuery = from i in _unitOfWork.InvoiceRepository.Get() select i;
+            var invoicesQuery = from i in _unitOfWork.InvoiceRepository.GetAll() select i;
             ViewBag.InvoiceID = new SelectList(invoicesQuery, "ID", "Number", selectedInvoice);
         }
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.Get() select dm;
+            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.GetAll() select dm;
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         [HttpGet]
-        public string GetSpacesTreeData(int? serviceId, int invoiceId)
+        public string GetSpacesTreeData(int? serviceId, int? invoiceId)
         {
             var root = new TreeNode
             {
                 id = "root",
-                children = {},
-                text = "root",
-                state = new TreeNodeState {opened = true}
+                children = { },
+                text = "-",
+                state = new TreeNodeState { opened = true }
             };
 
-            HashSet<int> selectedSpacesIDs = new HashSet<int>();
-            HashSet<int> selectedLevelsIDs = new HashSet<int>();
-            HashSet<int> selectedSectionsIDs = new HashSet<int>();
-            if (serviceId != null)
+            var selectedSpacesIDs = new HashSet<int>();
+            var selectedLevelsIDs = new HashSet<int>();
+            var selectedSectionsIDs = new HashSet<int>();
+            if (serviceId != null && serviceId != 0)
             {
-                var service =
-                    _unitOfWork.ServiceRepository.Get(includeProperties: "Sections, Levels, Spaces")
-                        .FirstOrDefault(s => s.ID == serviceId);
+                var service = _unitOfWork.ServiceRepository.GetServiceIncludingSectionsAndLevelsAndSpaces((int)serviceId);
                 if (service != null)
                 {
                     selectedSpacesIDs = new HashSet<int>(service.Spaces.Select(s => s.ID));
@@ -346,61 +371,16 @@ namespace BuildingManagement.Controllers
                 }
             }
 
-            var invoice = _unitOfWork.InvoiceRepository.Get().FirstOrDefault(i => i.ID == invoiceId);
-            if (invoice != null)
+            if (invoiceId != null && invoiceId != 0)
             {
-                var sections = _unitOfWork.SectionRepository.Get().Where(s => s.ClientID == invoice.ClientID).ToList();
-                if (sections.Any())
+                var invoice = _unitOfWork.InvoiceRepository.Get((int)invoiceId);
+                if (invoice != null)
                 {
-                    foreach (var section in sections)
-                    {
-                        var sectionNode = new TreeNode();
-                        sectionNode.id = section.ID.ToString();
-                        sectionNode.text = section.Number;
-                        sectionNode.state = new TreeNodeState();
-                        sectionNode.state.opened = true;
-                        if (selectedSectionsIDs.Count > 0 && selectedSectionsIDs.Contains(section.ID))
-                        {
-                            sectionNode.state.selected = true;
-                        }
-                        root.children.Add(sectionNode);
-                        var levels = _unitOfWork.LevelRepository.Get().Where(l => l.SectionID == section.ID).ToList();
-                        if (levels.Any())
-                        {
-                            foreach (var level in levels)
-                            {
-                                var levelNode = new TreeNode();
-                                levelNode.id = section.ID + "." + level.ID;
-                                levelNode.text = level.Number;
-                                levelNode.state = new TreeNodeState();
-                                levelNode.state.opened = true;
-                                if (selectedLevelsIDs.Count > 0 && selectedLevelsIDs.Contains(level.ID))
-                                {
-                                    levelNode.state.selected = true;
-                                }
-                                sectionNode.children.Add(levelNode);
-                                var spaces =
-                                    _unitOfWork.SpaceRepository.Get().Where(s => s.LevelID == level.ID).ToList();
-                                if (spaces.Any())
-                                {
-                                    foreach (var space in spaces)
-                                    {
-                                        var spaceNode = new TreeNode();
-                                        spaceNode.id = section.ID + "." + level.ID + "." + space.ID;
-                                        spaceNode.text = space.Number;
-                                        if (selectedSpacesIDs.Count > 0 && selectedSpacesIDs.Contains(space.ID))
-                                        {
-                                            spaceNode.state = new TreeNodeState();
-                                            spaceNode.state.selected = true;
-                                        }
-                                        levelNode.children.Add(spaceNode);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    var treeHelper = new Utils.TreeHelper(_unitOfWork);
+                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, invoice.ClientID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
                 }
             }
+
             return new JavaScriptSerializer().Serialize(root);
         }
     }

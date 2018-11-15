@@ -1,31 +1,56 @@
-﻿using System.Data;
-using System.Linq;
-using System.Net;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class MeterTypeController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public MeterTypeController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: MeterType
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var meterTypes = _unitOfWork.MeterTypeRepository.Get();
-            return View(meterTypes);
+            IEnumerable<MeterType> meterTypes;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString);
+                }
+                else
+                {
+                    meterTypes = _unitOfWork.MeterTypeRepository.GetAll();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.TypeSortParm = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            meterTypes = _unitOfWork.MeterTypeRepository.OrderMeterTypes(meterTypes, sortOrder);
+            ViewBag.OnePageOfMeterTypes = meterTypes.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfMeterTypes);
         }
 
         // GET: MeterType/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var meterType = _unitOfWork.MeterTypeRepository.GetById(id);
+            var meterType = _unitOfWork.MeterTypeRepository.Get(id);
             if (meterType == null)
             {
                 return HttpNotFound();
@@ -51,15 +76,15 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterType =
-                        _unitOfWork.MeterTypeRepository.Get(filter: mt => mt.Type == meterType.Type).FirstOrDefault();
+                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterType.Type);
                     if (duplicateMeterType != null)
                     {
                         ModelState.AddModelError("Type", "A meter type with this type already exists.");
                         return View(duplicateMeterType);
                     }
-                    _unitOfWork.MeterTypeRepository.Insert(meterType);
+                    _unitOfWork.MeterTypeRepository.Add(meterType);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Meter type {0} has been created.", meterType.Type);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -71,13 +96,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: MeterType/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var meterType = _unitOfWork.MeterTypeRepository.GetById(id);
+            var meterType = _unitOfWork.MeterTypeRepository.Get(id);
             if (meterType == null)
             {
                 return HttpNotFound();
@@ -90,30 +111,26 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var meterTypeToUpdate = _unitOfWork.MeterTypeRepository.GetById(id);
-            if (meterTypeToUpdate == null)
+            var meterType = _unitOfWork.MeterTypeRepository.Get(id);
+            if (meterType == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(meterTypeToUpdate, "", new[] {"Type"}))
+            if (TryUpdateModel(meterType, "", new[] {"Type"}))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterType =
-                        _unitOfWork.MeterTypeRepository.Get(filter: mt => mt.Type == meterTypeToUpdate.Type).FirstOrDefault();
-                    if (duplicateMeterType != null && duplicateMeterType.ID != meterTypeToUpdate.ID)
+                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterType.Type);
+                    if (duplicateMeterType != null && duplicateMeterType.ID != meterType.ID)
                     {
                         ModelState.AddModelError("Type", "A meter type with this type already exists.");
                         return View(duplicateMeterType);
                     }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Meter type {0} has been edited.", meterType.Type);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -121,21 +138,17 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(meterTypeToUpdate);
+            return View(meterType);
         }
 
         // GET: MeterType/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError=false)
+        public ActionResult Delete(int id, bool? saveChangesError=false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var meterType = _unitOfWork.MeterTypeRepository.Get(includeProperties: "Meters").Single(mt => mt.ID == id); ;
+            var meterType = _unitOfWork.MeterTypeRepository.Get(id);
             if (meterType == null)
             {
                 return HttpNotFound();
@@ -150,8 +163,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.MeterTypeRepository.Delete(id);
+                var meterType = _unitOfWork.MeterTypeRepository.Get(id);
+                if (meterType == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.MeterTypeRepository.Remove(meterType);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Meter type {0} has been deleted.", meterType.Type);
             }
             catch (DataException)
             {

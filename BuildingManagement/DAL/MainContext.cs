@@ -10,29 +10,30 @@ namespace BuildingManagement.DAL
         {
         }
 
-        public DbSet<Client> Clients { get; set; }
-        public DbSet<SubClient> SubClients { get; set; }
+        public virtual DbSet<Client> Clients { get; set; }
+        public virtual DbSet<SubClient> SubClients { get; set; }
 
-        public DbSet<Service> Services { get; set; }
-        public DbSet<Provider> Providers { get; set; }
-        public DbSet<Invoice> Invoices { get; set; }
-        public DbSet<InvoiceType> InvoiceTypes { get; set; }
+        public virtual DbSet<Service> Services { get; set; }
+        public virtual DbSet<Provider> Providers { get; set; }
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<InvoiceType> InvoiceTypes { get; set; }
 
-        public DbSet<DistributionMode> DistributionModes { get; set; }
-        public DbSet<Meter> Meters { get; set; }
-        public DbSet<MeterReading> MeterReadings { get; set; }
-        public DbSet<MeterType> MeterTypes { get; set; }
-        public DbSet<SubMeter> SubMeters { get; set; }
-        
-        public DbSet<Section> Sections { get; set; }
-        public DbSet<Level> Levels { get; set; }
-        public DbSet<Space> Spaces { get; set; }
-        public DbSet<SpaceType> SpaceTypes { get; set; }
+        public virtual DbSet<DistributionMode> DistributionModes { get; set; }
+        public virtual DbSet<Meter> Meters { get; set; }
+        public virtual DbSet<MeterReading> MeterReadings { get; set; }
+        public virtual DbSet<MeterType> MeterTypes { get; set; }
+        public virtual DbSet<SubMeter> SubMeters { get; set; }
+        public virtual DbSet<SubSubMeter> SubSubMeters { get; set; }
 
-        public DbSet<Cost> Costs { get; set; }
+        public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Level> Levels { get; set; }
+        public virtual DbSet<Space> Spaces { get; set; }
+        public virtual DbSet<SpaceType> SpaceTypes { get; set; }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        public virtual DbSet<Cost> Costs { get; set; }
+
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -96,6 +97,34 @@ namespace BuildingManagement.DAL
                     .MapRightKey("SectionID")
                     .ToTable("SubMeterSection"));
 
+            //many to many SubSubMeter-MeterType
+            modelBuilder.Entity<SubSubMeter>()
+                .HasMany(ssm => ssm.MeterTypes).WithMany(mt => mt.SubSubMeters)
+                .Map(t => t.MapLeftKey("SubSubMeterID")
+                    .MapRightKey("MeterTypeID")
+                    .ToTable("SubSubMeterMeterType"));
+
+            //many to many SubSubMeter-Space
+            modelBuilder.Entity<SubSubMeter>()
+                .HasMany(ssm => ssm.Spaces).WithMany(s => s.SubSubMeters)
+                .Map(t => t.MapLeftKey("SubSubMeterID")
+                    .MapRightKey("SpaceID")
+                    .ToTable("SubSubMeterSpace"));
+
+            //many to many SubSubMeter-Level
+            modelBuilder.Entity<SubSubMeter>()
+                .HasMany(ssm => ssm.Levels).WithMany(s => s.SubSubMeters)
+                .Map(t => t.MapLeftKey("SubSubMeterID")
+                    .MapRightKey("LevelID")
+                    .ToTable("SubSubMeterLevel"));
+
+            //many to many SubSubMeter-Section
+            modelBuilder.Entity<SubSubMeter>()
+                .HasMany(ssm => ssm.Sections).WithMany(s => s.SubSubMeters)
+                .Map(t => t.MapLeftKey("SubSubMeterID")
+                    .MapRightKey("SectionID")
+                    .ToTable("SubSubMeterSection"));
+
             //many to many Service-Section
             modelBuilder.Entity<Service>()
                 .HasMany(m => m.Sections).WithMany(s => s.Services)
@@ -116,6 +145,9 @@ namespace BuildingManagement.DAL
                 .Map(t => t.MapLeftKey("ServiceID")
                     .MapRightKey("SpaceID")
                     .ToTable("ServiceSpace"));
+            
+            //composed primary key for Cost 
+            modelBuilder.Entity<Cost>().HasKey(c => new {c.ServiceID, c.SpaceID});
 
             //unique constraint Number for Space
             //modelBuilder.Entity<Space>()

@@ -1,6 +1,7 @@
-﻿@model PagedList.IPagedList<BuildingManagement.Models.Client>
-@using PagedList.Mvc;
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+﻿@model IPagedList<BuildingManagement.Models.Client>
+@using X.PagedList.Mvc;
+@using X.PagedList;
+
 @{
     ViewBag.Title = "Index";
 }
@@ -37,38 +38,35 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in ViewBag.OnePageOfClients)
     {
-        @Html.HiddenFor(modelItem => item.ID, new { id = "ID" })
+        @*@Html.HiddenFor(modelItem => item.ID, new { id = "ID" })*@
         <tr onclick="Edit();">
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @item.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Phone)
+                @item.Phone
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Address)
+                @item.Address
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Contact)
+                @item.Contact
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                @item.Email
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
     }
 </table>
-<br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfClients, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>
 <script>

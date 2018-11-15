@@ -1,95 +1,61 @@
+using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
-using PagedList;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     [Authorize]
     public class ClientController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ClientController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Client
-        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
+            IEnumerable<Client> clients;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString);
+                }
+                else
+                {
+                    clients = _unitOfWork.ClientRepository.GetAll();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.PhoneSortParm = sortOrder == "Phone" ? "phone_desc" : "Phone";
             ViewBag.AddressSortParm = sortOrder == "Address" ? "address_desc" : "Address";
             ViewBag.ContactSortParm = sortOrder == "Contact" ? "contact_desc" : "Contact";
             ViewBag.EmailSortParm = sortOrder == "Email" ? "email_desc" : "Email";
-            if (searchString != null)
-            {
-                page = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-            ViewBag.CurrentFilter = searchString;
-            var clients = _unitOfWork.ClientRepository.Get();
-            if (!string.IsNullOrWhiteSpace(searchString))
-            {
-                searchString = searchString.ToLower();
-                clients =
-                    clients.Where(
-                        c =>
-                            c.Name.ToLower().Contains(searchString) ||
-                            c.Phone.ToLower().Contains(searchString) ||
-                            c.Address.ToLower().Contains(searchString) ||
-                            c.Contact.ToLower().Contains(searchString) ||
-                            c.Email.ToLower().Contains(searchString));
-            }
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    clients = clients.OrderByDescending(s => s.Name);
-                    break;
-                case "Phone":
-                    clients = clients.OrderBy(s => s.Phone);
-                    break;
-                case "phone_desc":
-                    clients = clients.OrderByDescending(s => s.Phone);
-                    break;
-                case "Address":
-                    clients = clients.OrderBy(s => s.Address);
-                    break;
-                case "address_desc":
-                    clients = clients.OrderByDescending(s => s.Address);
-                    break;
-                case "Contact":
-                    clients = clients.OrderBy(s => s.Contact);
-                    break;
-                case "contact_desc":
-                    clients = clients.OrderByDescending(s => s.Contact);
-                    break;
-                case "Email":
-                    clients = clients.OrderBy(s => s.Email);
-                    break;
-                case "email_desc":
-                    clients = clients.OrderByDescending(s => s.Email);
-                    break;
-                default: // Name ascending 
-                    clients = clients.OrderBy(s => s.Name);
-                    break;
-            }
-            int pageSize = 3;
-            int pageNumber = page ?? 1;
-            return View(clients.ToPagedList(pageNumber, pageSize));
+            clients = _unitOfWork.ClientRepository.OrderClients(clients, sortOrder);
+            ViewBag.OnePageOfClients = clients.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfClients);
         }
 
         // GET: Client/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var client = _unitOfWork.ClientRepository.GetById(id);
+            var client = _unitOfWork.ClientRepository.Get(id);
             if (client == null)
             {
                 return HttpNotFound();
@@ -114,27 +80,30 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    _unitOfWork.ClientRepository.Insert(client);
+                    //uniqueness condition check
+                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
+                    if (duplicateClient != null)
+                    {
+                        ModelState.AddModelError("Name", "A client with this name already exists.");
+                        return View(client);
+                    }
+                    _unitOfWork.ClientRepository.Add(client);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Client {0} has been created.", client.Name);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
             return View(client);
         }
 
         // GET: Client/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var client = _unitOfWork.ClientRepository.GetById(id);
+            var client = _unitOfWork.ClientRepository.Get(id);
             if (client == null)
             {
                 return HttpNotFound();
@@ -147,46 +116,44 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var clientToUpdate = _unitOfWork.ClientRepository.GetById(id);
-            if (clientToUpdate == null)
+            var client = _unitOfWork.ClientRepository.Get(id);
+            if (client == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(clientToUpdate, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
+            if (TryUpdateModel(client, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
+                    if (duplicateClient != null && duplicateClient.ID != client.ID)
+                    {
+                        ModelState.AddModelError("Name", "A client with this name already exists.");
+                        return View(client);
+                    }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Client {0} has been edited.", client.Name);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
                 {
-                    ModelState.AddModelError("",
-                        "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(clientToUpdate);
+            return View(client);
         }
 
         // GET: Client/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage =
-                    "Delete failed. Try again, and if the problem persists see your system administrator.";
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var client = _unitOfWork.ClientRepository.Get().Single(c => c.ID == id);
+            var client = _unitOfWork.ClientRepository.Get(id);
             if (client == null)
             {
                 return HttpNotFound();
@@ -201,8 +168,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.ClientRepository.Delete(id);
+                var client = _unitOfWork.ClientRepository.Get(id);
+                if (client == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.ClientRepository.Remove(client);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Client {0} has been deleted.", client.Name);
             }
             catch (DataException)
             {

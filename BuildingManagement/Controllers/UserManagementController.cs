@@ -20,7 +20,7 @@ namespace BuildingManagement.Controllers
         // GET: UserManagement
         public ActionResult Index()
         {
-            var users = _unitOfWork.UserRepository.Get();
+            var users = _unitOfWork.UserRepository.GetAll();
             return View(users);
         }
 
@@ -28,7 +28,7 @@ namespace BuildingManagement.Controllers
         {
             if (id == 0)
                 return View(new User());
-            var user = _unitOfWork.UserRepository.GetById(id);
+            var user = _unitOfWork.UserRepository.Get(id);
             if (user == null)
                 return HttpNotFound();
 
@@ -42,12 +42,12 @@ namespace BuildingManagement.Controllers
         {
             if (user.Id == 0)
             {
-                _unitOfWork.UserRepository.Insert(user);
+                _unitOfWork.UserRepository.Add(user);
                 _unitOfWork.Save();
                 return RedirectToAction("Index");
             }
 
-            var userToUpdate = _unitOfWork.UserRepository.GetById(user.Id);
+            var userToUpdate = _unitOfWork.UserRepository.Get(user.Id);
             if (userToUpdate == null)
             {
                 return HttpNotFound();
@@ -79,13 +79,13 @@ namespace BuildingManagement.Controllers
         public ActionResult CreatePost(User user)
         {
             user.Password = Cryptography.SimpleAes.Encrypt("bm123");
-            _unitOfWork.UserRepository.Insert(user);
+            _unitOfWork.UserRepository.Add(user);
             var userRole = new UserRole
             {
                 UserId = user.Id,
                 UserRoleType = user.RoleType
             };
-            _unitOfWork.UserRoleRepository.Insert(userRole);
+            _unitOfWork.UserRoleRepository.Add(userRole);
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }
@@ -101,7 +101,7 @@ namespace BuildingManagement.Controllers
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var user = _unitOfWork.UserRepository.Get().Single(l => l.Id == id);
+            var user = _unitOfWork.UserRepository.SingleOrDefault(l => l.Id == id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -116,10 +116,10 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                foreach (var role in _unitOfWork.UserRoleRepository.Get(item => item.UserId == id))
-                    _unitOfWork.UserRoleRepository.Delete(role.Id);
-                _unitOfWork.UserRepository.Delete(id);
-                _unitOfWork.Save();
+                //foreach (var role in _unitOfWork.UserRoleRepository.Get(item => item.UserId == id))
+                //    _unitOfWork.UserRoleRepository.Delete(role.Id);
+                //_unitOfWork.UserRepository.Delete(id);
+                //_unitOfWork.Save();
             }
             catch (DataException)
             {
@@ -133,7 +133,7 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                var user=_unitOfWork.UserRepository.GetById(id);
+                var user=_unitOfWork.UserRepository.Get(id);
                 user.AccountConfirmed = false;
                 _unitOfWork.Save();
             }

@@ -1,32 +1,63 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class SpaceController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public SpaceController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Space
-        public ActionResult Index()
+        public async Task<ActionResult> Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var spaces = _unitOfWork.SpaceRepository.Get(includeProperties: "Level, SpaceType, Client, SubClient");
-            return View(spaces);
+            IEnumerable<Space> spaces;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                spaces = await _unitOfWork.SpaceRepository.GetFilteredSpacesIncludingLevelAndSpaceTypeAndSubClient(searchString, sortOrder).ToListAsync();
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    spaces = await _unitOfWork.SpaceRepository.GetFilteredSpacesIncludingLevelAndSpaceTypeAndSubClient(searchString, sortOrder).ToListAsync();
+                }
+                else
+                {
+                    spaces = await _unitOfWork.SpaceRepository.GetAllSpacesIncludingLevelAndSpaceTypeAndSubClient(sortOrder).ToListAsync();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NumberSortParm = string.IsNullOrEmpty(sortOrder) ? "number_desc" : "";
+            ViewBag.SurfaceSortParm = sortOrder == "Surface" ? "surface_desc" : "Surface";
+            ViewBag.PeopleSortParm = sortOrder == "People" ? "people_desc" : "People";
+            ViewBag.InhabitedSortParm = sortOrder == "Inhabited" ? "inhabited_desc" : "Inhabited";
+            ViewBag.LevelSortParm = sortOrder == "Level" ? "level_desc" : "Level";
+            ViewBag.SpaceTypeSortParm = sortOrder == "SpaceType" ? "spaceType_desc" : "SpaceType";
+            ViewBag.SubClientSortParm = sortOrder == "SubClient" ? "subClient_desc" : "SubClient";
+            ViewBag.OnePageOfSpaces = spaces.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfSpaces);
         }
 
         // GET: Space/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var space = _unitOfWork.SpaceRepository.GetById(id);
+            var space = _unitOfWork.SpaceRepository.Get(id);
             if (space == null)
             {
                 return HttpNotFound();
@@ -38,109 +69,106 @@ namespace BuildingManagement.Controllers
         public ActionResult Create()
         {
             var model = new Space();
+            PopulateClientsDropDownList();
+            PopulateSectionsDropDownList();
             PopulateLevelsDropDownList();
             PopulateSpaceTypesDropDownList();
-            PopulateClientsDropDownList();
             PopulateSubClientsDropDownList();
             return View(model);
         }
 
         // POST: Space/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Number,Surface,People,Inhabited,LevelID,SpaceTypeID,SubClientID")] Space space)
+        public async Task<ActionResult> CreateSpace(Space space)
         {
+            //uniqueness condition check
+            var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID);
+            if (duplicateSpace != null)
+            {
+                ModelState.AddModelError("Number", "A space with this number, of this type, already exists for this level.");
+                PopulateClientsDropDownList(space.ClientID);
+                PopulateSectionsDropDownList(space.SectionID);
+                PopulateLevelsDropDownList(space.LevelID);
+                PopulateSpaceTypesDropDownList(space.SpaceTypeID);
+                PopulateSubClientsDropDownList(space.SubClientID);
+                return View("Create", space);
+            }
+            var level = _unitOfWork.LevelRepository.Get(space.LevelID);
+            if (level == null)
+            {
+                return HttpNotFound();
+            }
+            level.Surface = level.Surface + space.Surface;
+            level.People = level.People + space.People;
+            var section = _unitOfWork.SectionRepository.Get(level.SectionID);
+            if (section == null)
+            {
+                return HttpNotFound();
+            }
+            section.Surface = section.Surface + space.Surface;
+            section.People = section.People + space.People;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateSpace =
-                        _unitOfWork.SpaceRepository.Get(filter: s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID).FirstOrDefault();
-                    if (duplicateSpace != null)
-                    {
-                        ModelState.AddModelError("Number", "A space with this number, of this type, already exists for this level.");
-                        PopulateLevelsDropDownList(space.LevelID);
-                        PopulateSpaceTypesDropDownList(space.SpaceTypeID);
-                        PopulateClientsDropDownList(space.ClientID);
-                        PopulateSubClientsDropDownList(space.SubClientID);
-                        return View(space);
-                    }
-                    var level = _unitOfWork.LevelRepository.GetById(space.LevelID);
-                    if (level == null)
-                    {
-                        return HttpNotFound();
-                    }
-                    level.Surface = level.Surface + space.Surface;
-                    //level.People = level.People + space.People;
-                    var section = _unitOfWork.SectionRepository.GetById(level.SectionID);
-                    if (section == null)
-                    {
-                        return HttpNotFound();
-                    }
-                    section.Surface = section.Surface + space.Surface;
-                    section.People = section.People + space.People;
-                    _unitOfWork.SpaceRepository.Insert(space);
-                    _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    _unitOfWork.SpaceRepository.Add(space);
+                    await _unitOfWork.SaveAsync();
+                    TempData["message"] = string.Format("Space {0} has been created.", space.Number);
+                    return Json(space.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
+            PopulateClientsDropDownList(space.ClientID);
+            PopulateSectionsDropDownList(space.SectionID);
             PopulateLevelsDropDownList(space.LevelID);
             PopulateSpaceTypesDropDownList(space.SpaceTypeID);
-            PopulateClientsDropDownList(space.ClientID);
             PopulateSubClientsDropDownList(space.SubClientID);
-            return View(space);
+            return View("Create", space);
         }
 
         // GET: Space/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var space = _unitOfWork.SpaceRepository.GetById(id);
+            var space = _unitOfWork.SpaceRepository.GetSpaceIncludingLevel(id);
             if (space == null)
             {
                 return HttpNotFound();
             }
+            var level = _unitOfWork.LevelRepository.GetLevelIncludingSection(space.LevelID);
+            if (level == null)
+            {
+                return HttpNotFound();
+            }
+            space.ClientID = level.Section.ClientID;
+            space.SectionID = level.SectionID;
+            PopulateClientsDropDownList(space.ClientID);
+            PopulateSectionsDropDownList(space.Level.SectionID);
             PopulateLevelsDropDownList(space.LevelID);
             PopulateSpaceTypesDropDownList(space.SpaceTypeID);
-            PopulateClientsDropDownList(space.ClientID);
             PopulateSubClientsDropDownList(space.SubClientID);
             return View(space);
         }
 
         // POST: Space/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        [HttpPost]
+        public async Task<ActionResult> EditSpace(Space space)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var spaceToUpdate = _unitOfWork.SpaceRepository.GetById(id);
+            var spaceToUpdate = _unitOfWork.SpaceRepository.GetSpaceIncludingLevel(space.ID);
             if (spaceToUpdate == null)
             {
                 return HttpNotFound();
             }
-            var oldLevel = _unitOfWork.LevelRepository.GetById(spaceToUpdate.LevelID);
+            var oldLevel = _unitOfWork.LevelRepository.Get(spaceToUpdate.LevelID);
             if (oldLevel == null)
             {
                 return HttpNotFound();
             }
             oldLevel.Surface = oldLevel.Surface - spaceToUpdate.Surface;
             oldLevel.People = oldLevel.People - spaceToUpdate.People;
-            var oldSection = _unitOfWork.SectionRepository.GetById(oldLevel.SectionID);
+            var oldSection = _unitOfWork.SectionRepository.Get(oldLevel.SectionID);
             if (oldSection == null)
             {
                 return HttpNotFound();
@@ -152,56 +180,56 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpace = _unitOfWork.SpaceRepository.Get(filter: s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID).FirstOrDefault();
+                    var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
                     if (duplicateSpace != null && duplicateSpace.ID != spaceToUpdate.ID)
                     {
                         ModelState.AddModelError("Number", "A space with this number, of this type, already exists for this level.");
+                        PopulateClientsDropDownList(spaceToUpdate.ClientID);
+                        PopulateSectionsDropDownList(spaceToUpdate.SectionID);
                         PopulateLevelsDropDownList(spaceToUpdate.LevelID);
                         PopulateSpaceTypesDropDownList(spaceToUpdate.SpaceTypeID);
-                        PopulateClientsDropDownList(spaceToUpdate.ClientID);
-                        return View(spaceToUpdate);
+                        PopulateSubClientsDropDownList(spaceToUpdate.SubClientID);
+                        return View("Edit", spaceToUpdate);
                     }
-                    var level = _unitOfWork.LevelRepository.GetById(spaceToUpdate.LevelID);
+                    var level = _unitOfWork.LevelRepository.Get(spaceToUpdate.LevelID);
                     if (level == null)
                     {
                         return HttpNotFound();
                     }
                     level.Surface = level.Surface + spaceToUpdate.Surface;
                     level.People = level.People + spaceToUpdate.People;
-                    var section = _unitOfWork.SectionRepository.GetById(level.SectionID);
+                    var section = _unitOfWork.SectionRepository.Get(level.SectionID);
                     if (section == null)
                     {
                         return HttpNotFound();
                     }
                     section.Surface = section.Surface + spaceToUpdate.Surface;
                     section.People = section.People + spaceToUpdate.People;
-                    _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    await _unitOfWork.SaveAsync();
+                    TempData["message"] = string.Format("Space {0} has been edited.", spaceToUpdate.Number);
+                    return Json(spaceToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
+            PopulateClientsDropDownList(spaceToUpdate.ClientID);
+            PopulateSectionsDropDownList(spaceToUpdate.SectionID);
             PopulateLevelsDropDownList(spaceToUpdate.LevelID);
             PopulateSpaceTypesDropDownList(spaceToUpdate.SpaceTypeID);
-            PopulateClientsDropDownList(spaceToUpdate.ClientID);
             PopulateSubClientsDropDownList(spaceToUpdate.SubClientID);
-            return View(spaceToUpdate);
+            return View("Edit", spaceToUpdate);
         }
 
         // GET: Space/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var space = _unitOfWork.SpaceRepository.Get(includeProperties: "Level, SpaceType, Client, SubClient").Single(s => s.ID == id);
+            var space = _unitOfWork.SpaceRepository.GetSpaceIncludingLevel(id);
             if (space == null)
             {
                 return HttpNotFound();
@@ -212,31 +240,32 @@ namespace BuildingManagement.Controllers
         // POST: Space/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                var spaceToDelete = _unitOfWork.SpaceRepository.GetById(id);
-                if (spaceToDelete == null)
+                var space = _unitOfWork.SpaceRepository.Get(id);
+                if (space == null)
                 {
                     return HttpNotFound();
                 }
-                var level = _unitOfWork.LevelRepository.GetById(spaceToDelete.LevelID);
+                var level = _unitOfWork.LevelRepository.Get(space.LevelID);
                 if (level == null)
                 {
                     return HttpNotFound();
                 }
-                level.Surface = level.Surface - spaceToDelete.Surface;
-                level.People = level.People - spaceToDelete.People;
-                var section = _unitOfWork.SectionRepository.GetById(level.SectionID);
+                level.Surface = level.Surface - space.Surface;
+                level.People = level.People - space.People;
+                var section = _unitOfWork.SectionRepository.Get(level.SectionID);
                 if (section == null)
                 {
                     return HttpNotFound();
                 }
-                section.Surface = section.Surface - spaceToDelete.Surface;
-                section.People = section.People - spaceToDelete.People;
-                _unitOfWork.SpaceRepository.Delete(id);
-                _unitOfWork.Save();
+                section.Surface = section.Surface - space.Surface;
+                section.People = section.People - space.People;
+                _unitOfWork.SpaceRepository.Remove(space);
+                await _unitOfWork.SaveAsync();
+                TempData["message"] = string.Format("Space {0} has been deleted.", space.Number);
             }
             catch (DataException)
             {
@@ -254,38 +283,63 @@ namespace BuildingManagement.Controllers
             base.Dispose(disposing);
         }
 
+        private void PopulateClientsDropDownList(object selectedClient = null)
+        {
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
+        }
+
+        private void PopulateSectionsDropDownList(object selectedSection = null)
+        {
+            var sectionsQuery = from s in _unitOfWork.SectionRepository.GetAll() select s;
+            ViewBag.SectionID = new SelectList(sectionsQuery, "ID", "Number", selectedSection);
+        }
+
         private void PopulateLevelsDropDownList(object selectedLevel = null)
         {
-            var levelsQuery = from l in _unitOfWork.LevelRepository.Get() select l;
+            var levelsQuery = from l in _unitOfWork.LevelRepository.GetAll() select l;
             ViewBag.LevelID = new SelectList(levelsQuery, "ID", "Number", selectedLevel);
         }
 
         private void PopulateSpaceTypesDropDownList(object selectedSpaceType = null)
         {
-            var spaceTypesQuery = from st in _unitOfWork.SpaceTypeRepository.Get() select st;
+            var spaceTypesQuery = from st in _unitOfWork.SpaceTypeRepository.GetAll() select st;
             ViewBag.SpaceTypeID = new SelectList(spaceTypesQuery, "ID", "Type", selectedSpaceType);
-        }
-
-        private void PopulateClientsDropDownList(object selectedClient = null)
-        {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
-            ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateSubClientsDropDownList(object selectedSubClient = null)
         {
-            var subClientsQuery = from sc in _unitOfWork.SubClientRepository.Get() select sc;
+            var subClientsQuery = from sc in _unitOfWork.SubClientRepository.GetAll() select sc;
             ViewBag.SubClientID = new SelectList(subClientsQuery, "ID", "Name", selectedSubClient);
         }
 
         [HttpPost]
-        public ActionResult GetLevelsByClient(int clientId, int? levelId)
+        public ActionResult GetSectionsByClient(int? clientId, int? sectionId)
         {
             var list = new List<SelectListItem>();
-            var levels = _unitOfWork.LevelRepository.Get().Where(l => l.ClientID == clientId).ToList();
+            var sections = clientId != null ? _unitOfWork.SectionRepository.Find(s => s.ClientID == clientId).ToList() : _unitOfWork.SectionRepository.GetAll().ToList();
+            foreach (var section in sections)
+            {
+                if (clientId != null && sectionId != null && sectionId == section.ID)
+                {
+                    list.Add(new SelectListItem { Value = section.ID.ToString(), Text = section.Number, Selected = true });
+                }
+                else
+                {
+                    list.Add(new SelectListItem { Value = section.ID.ToString(), Text = section.Number });
+                }
+            }
+            return Json(list);
+        }
+
+        [HttpPost]
+        public ActionResult GetLevelsBySection(int? sectionId, int? levelId)
+        {
+            var list = new List<SelectListItem>();
+            var levels = sectionId != null ? _unitOfWork.LevelRepository.Find(s => s.SectionID == sectionId).ToList() : _unitOfWork.LevelRepository.GetAll().ToList();
             foreach (var level in levels)
             {
-                if (levelId != null && levelId == level.ID)
+                if (sectionId != null && levelId != null && levelId == level.ID)
                 {
                     list.Add(new SelectListItem { Value = level.ID.ToString(), Text = level.Number, Selected = true });
                 }

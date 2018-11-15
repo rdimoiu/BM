@@ -24,7 +24,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Invoice, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownList("InvoiceID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetSpacesByClient(this.value)" })
+            @Html.DropDownList("InvoiceID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetSpacesForService('', this.value, 'Create')" })
             @Html.ValidationMessageFor(model => model.InvoiceID, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -61,21 +61,21 @@
         </div>
     </div>
 
-    <div class="form-group">
+    @*<div class="form-group">
         @Html.LabelFor(model => model.ValueWithoutTVA, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.EditorFor(model => model.ValueWithoutTVA, new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.ValueWithoutTVA, "", new { @class = "text-danger" })
         </div>
-    </div>
+    </div>*@
 
-    <div class="form-group">
+    @*<div class="form-group">
         @Html.LabelFor(model => model.TVA, htmlAttributes: new {@class = "control-label col-md-2"})
         <div class="col-md-10">
             @Html.EditorFor(model => model.TVA, new {htmlAttributes = new {@class = "form-control"}})
             @Html.ValidationMessageFor(model => model.TVA, "", new {@class = "text-danger"})
         </div>
-    </div>
+    </div>*@
 
     <div class="form-group">
         @Html.LabelFor(model => model.QuotaTVA, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -131,7 +131,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" onclick="SubmitService()" />
+            <input type="submit" value="Create" class="btn btn-default" onclick="ServiceValidateAll('Create')" />
         </div>
     </div>
 </div>
@@ -146,59 +146,9 @@
 
 <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
 <script src="@Url.Content("~/Scripts/jstree.js")"></script>
+<script src="@Url.Content("~/Scripts/ServiceUtils.js")"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        if (@Model.InvoiceID === 0) {
-        } else {
-        GetSpacesByClient(@Model.InvoiceID);
-        }
+        GetSpacesForService(@Model.ID, @Model.InvoiceID, "Create");
     });
-    function GetSpacesByClient(invoiceId) {
-        $('#spacesTree').jstree("destroy").empty();
-        $('#spacesTree')
-            .jstree({
-                'plugins': ["defaults", "checkbox"],
-                'core': {
-                    'data': {
-                        'themes': {
-                            "responsive": true
-                        },
-                        'url': "../Service/GetSpacesTreeData/?serviceId=" + @Model.ID + "&invoiceId=" + invoiceId,
-                        'dataType': "json"
-                    }
-                }
-            });
-    };
-
-    function SubmitService() {
-        var serviceData = {
-            PreviousPage: document.getElementById('PreviousPage').value,
-            InvoiceID: document.getElementById('InvoiceID').value,
-            Name: document.getElementById('Name').value,
-            Quantity: document.getElementById('Quantity').value,
-            Unit: document.getElementById('Unit').value,
-            Price: document.getElementById('Price').value,
-            TVA: document.getElementById('TVA').value,
-            ValueWithoutTVA: document.getElementById('ValueWithoutTVA').value,
-            QuotaTVA: document.getElementById('QuotaTVA').value,
-            Fixed: document.getElementById('Fixed').checked,
-            Inhabited: document.getElementById('Inhabited').checked,
-            DistributionModeID: document.getElementById('DistributionModeID').value,
-            Counted: document.getElementById('Counted').checked,
-            ServiceSLSSelected: $('#spacesTree').jstree('get_selected')
-        };
-        $.ajax({
-            type: "POST",
-            url: "/Service/CreateService",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(serviceData),
-            success: function() {
-                window.location.href = "/Service/Index";
-            },
-            error: function (reponse) {
-                alert("error : " + reponse);
-            }
-        });
-    };
 </script>

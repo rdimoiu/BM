@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\CommonServiceLocator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -77,14 +81,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -138,6 +134,38 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.Configuration, Version=5.0.3.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.2.0.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.Container.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.Interception, Version=5.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.Interception.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.Interception.Configuration, Version=5.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.Interception.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.Mvc5, Version=1.3.0.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Mvc5.1.3.0\lib\net45\Unity.Mvc5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.RegistrationByConvention, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.ServiceLocation, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.2.0\lib\net45\Unity.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -145,6 +173,18 @@
     <Reference Include="Antlr3.Runtime">
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="X.PagedList, Version=7.2.4.0, Culture=neutral, PublicKeyToken=00b6c4f97602e5e8, processorArchitecture=MSIL">
+      <HintPath>..\packages\X.PagedList.7.2.4\lib\net45\X.PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="X.PagedList.Mvc, Version=7.2.0.0, Culture=neutral, PublicKeyToken=c6e0b5b21f916f4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\X.PagedList.Mvc.7.2.0\lib\net452\X.PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="X.PagedList.Mvc.Common, Version=7.2.0.0, Culture=neutral, PublicKeyToken=00b6c4f97602e5e8, processorArchitecture=MSIL">
+      <HintPath>..\packages\X.PagedList.Mvc.7.2.0\lib\net452\X.PagedList.Mvc.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +243,7 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\DistributionModeController.cs" />
@@ -222,18 +263,59 @@
     <Compile Include="Controllers\SpaceTypeController.cs" />
     <Compile Include="Controllers\SubClientController.cs" />
     <Compile Include="Controllers\SubMeterController.cs" />
+    <Compile Include="Controllers\SubSubMeterController.cs" />
     <Compile Include="Controllers\UserManagementController.cs" />
-    <Compile Include="Controllers\Utils.cs" />
+    <Compile Include="DAL\CostRepository.cs" />
+    <Compile Include="DAL\DistributionModeRepository.cs" />
+    <Compile Include="DAL\ICostRepository.cs" />
+    <Compile Include="DAL\IDistributionModeRepository.cs" />
+    <Compile Include="DAL\IInvoiceRepository.cs" />
+    <Compile Include="DAL\IInvoiceTypeRepository.cs" />
+    <Compile Include="DAL\ILevelRepository.cs" />
+    <Compile Include="DAL\IMeterReadingRepository.cs" />
+    <Compile Include="DAL\IMeterRepository.cs" />
+    <Compile Include="DAL\IMeterTypeRepository.cs" />
+    <Compile Include="DAL\InvoiceRepository.cs" />
+    <Compile Include="DAL\InvoiceTypeRepository.cs" />
+    <Compile Include="DAL\IProviderRepository.cs" />
+    <Compile Include="DAL\ISectionRepository.cs" />
+    <Compile Include="DAL\IServiceRepository.cs" />
+    <Compile Include="DAL\ISpaceRepository.cs" />
+    <Compile Include="DAL\ISpaceTypeRepository.cs" />
+    <Compile Include="DAL\ISubClientRepository.cs" />
+    <Compile Include="DAL\ISubMeterRepository.cs" />
+    <Compile Include="DAL\ISubSubMeterRepository.cs" />
+    <Compile Include="DAL\LevelRepository.cs" />
+    <Compile Include="DAL\MeterReadingRepository.cs" />
+    <Compile Include="DAL\MeterRepository.cs" />
+    <Compile Include="DAL\MeterTypeRepository.cs" />
+    <Compile Include="DAL\ProviderRepository.cs" />
+    <Compile Include="DAL\SectionRepository.cs" />
+    <Compile Include="DAL\ServiceRepository.cs" />
+    <Compile Include="DAL\SpaceRepository.cs" />
+    <Compile Include="DAL\SpaceTypeRepository.cs" />
+    <Compile Include="DAL\SubClientRepository.cs" />
+    <Compile Include="DAL\SubMeterRepository.cs" />
+    <Compile Include="DAL\SubSubMeterRepository.cs" />
+    <Compile Include="Models\SubSubMeter.cs" />
+    <Compile Include="Models\Tree1D.cs" />
+    <Compile Include="Utils\TreeHelper.cs" />
     <Compile Include="Cryptography\SimpleAes.cs" />
+    <Compile Include="DAL\ClientRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\IClientRepository.cs" />
+    <Compile Include="DAL\IGenericRepository.cs" />
+    <Compile Include="DAL\IUnitOfWork.cs" />
+    <Compile Include="DAL\IUserRepository.cs" />
     <Compile Include="DAL\MainContext.cs" />
     <Compile Include="DAL\MainContextInitializer.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="DAL\UserRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Building.cs" />
+    <Compile Include="Models\Tree3D.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Cost.cs" />
     <Compile Include="Models\DistributionMode.cs" />
@@ -264,12 +346,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\AssignedMeterTypeData.cs" />
     <Compile Include="ViewModels\AssignedSpaceData.cs" />
-    <Compile Include="ViewModels\ClientIndexData.cs" />
-    <Compile Include="ViewModels\InvoiceIndexData.cs" />
-    <Compile Include="ViewModels\MeterIndexData.cs" />
-    <Compile Include="ViewModels\ServiceIndexData.cs" />
-    <Compile Include="ViewModels\SpaceIndexData.cs" />
-    <Compile Include="ViewModels\SubMeterIndexData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -277,7 +353,6 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\menu.css" />
-    <Content Include="Content\PagedList.css" />
     <Content Include="Content\themes\default-dark\32px.png" />
     <Content Include="Content\themes\default-dark\40px.png" />
     <Content Include="Content\themes\default-dark\style.css" />
@@ -303,6 +378,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <None Include="Properties\PublishProfiles\mybuildingmanagement - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -313,10 +389,17 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jstree.js" />
     <Content Include="Scripts\jstree.min.js" />
+    <Content Include="Scripts\LevelUtils.js" />
     <Content Include="Scripts\menu.js" />
+    <Content Include="Scripts\MeterUtils.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\SectionUtils.js" />
+    <Content Include="Scripts\ServiceUtils.js" />
+    <Content Include="Scripts\SpaceUtils.js" />
+    <Content Include="Scripts\SubMeterUtils.js" />
+    <Content Include="Scripts\SubSubMeterUtils.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -438,6 +521,11 @@
     <Content Include="Views\UserManagement\Delete.cshtml" />
     <Content Include="Views\UserManagement\Edit.cshtml" />
     <Content Include="Views\Account\LoginConfirmAccount.cshtml" />
+    <Content Include="Views\SubSubMeter\Create.cshtml" />
+    <Content Include="Views\SubSubMeter\Delete.cshtml" />
+    <Content Include="Views\SubSubMeter\Details.cshtml" />
+    <Content Include="Views\SubSubMeter\Edit.cshtml" />
+    <Content Include="Views\SubSubMeter\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

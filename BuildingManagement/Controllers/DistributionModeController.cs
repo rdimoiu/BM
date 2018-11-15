@@ -1,31 +1,56 @@
-﻿using System.Data;
-using System.Linq;
-using System.Net;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class DistributionModeController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
-        
-        // GET: DistributionMode
-        public ActionResult Index()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public DistributionModeController(IUnitOfWork unitOfWork)
         {
-            var distributionModes = _unitOfWork.DistributionModeRepository.Get();
-            return View(distributionModes);
+            _unitOfWork = unitOfWork;
+        }
+
+        // GET: DistributionMode
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
+        {
+            IEnumerable<DistributionMode> distributionModes;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString);
+                }
+                else
+                {
+                    distributionModes = _unitOfWork.DistributionModeRepository.GetAll();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.ModeSortParm = string.IsNullOrEmpty(sortOrder) ? "mode_desc" : "";
+            distributionModes = _unitOfWork.DistributionModeRepository.OrderDistributionModes(distributionModes, sortOrder);
+            ViewBag.OnePageOfDistributionModes = distributionModes.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfDistributionModes);
         }
 
         // GET: DistributionMode/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var distributionMode = _unitOfWork.DistributionModeRepository.GetById(id);
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
             if (distributionMode == null)
             {
                 return HttpNotFound();
@@ -51,15 +76,15 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateDistributionMode =
-                        _unitOfWork.DistributionModeRepository.Get(filter: dm => dm.Mode == distributionMode.Mode).FirstOrDefault();
+                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
                     if (duplicateDistributionMode != null)
                     {
                         ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
                         return View(distributionMode);
                     }
-                    _unitOfWork.DistributionModeRepository.Insert(distributionMode);
+                    _unitOfWork.DistributionModeRepository.Add(distributionMode);
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Distribution mode {0} has been created.", distributionMode.Mode);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -71,13 +96,9 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: DistributionMode/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var distributionMode = _unitOfWork.DistributionModeRepository.GetById(id);
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
             if (distributionMode == null)
             {
                 return HttpNotFound();
@@ -90,29 +111,26 @@ namespace BuildingManagement.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var distributionModeToUpdate = _unitOfWork.DistributionModeRepository.GetById(id);
-            if (distributionModeToUpdate == null)
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
+            if (distributionMode == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(distributionModeToUpdate, "", new[] { "Mode" }))
+            if (TryUpdateModel(distributionMode, "", new[] {"Mode"}))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.Get(filter: dm => dm.Mode == distributionModeToUpdate.Mode).FirstOrDefault();
-                    if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
+                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
+                    if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionMode.ID)
                     {
                         ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                        return View(distributionModeToUpdate);
+                        return View(distributionMode);
                     }
                     _unitOfWork.Save();
+                    TempData["message"] = string.Format("Distribution mode {0} has been edited.", distributionMode.Mode);
                     return RedirectToAction("Index");
                 }
                 catch (DataException)
@@ -120,21 +138,17 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(distributionModeToUpdate);
+            return View(distributionMode);
         }
 
         // GET: DistributionMode/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError= false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var distributionMode = _unitOfWork.DistributionModeRepository.GetById(id);
+            var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
             if (distributionMode == null)
             {
                 return HttpNotFound();
@@ -149,12 +163,18 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.DistributionModeRepository.Delete(id);
+                var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
+                if (distributionMode == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.DistributionModeRepository.Remove(distributionMode);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Distribution mode {0} has been deleted.", distributionMode.Mode);
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new { id, saveChangesError = true });
+                return RedirectToAction("Delete", new {id, saveChangesError = true});
             }
             return RedirectToAction("Index");
         }

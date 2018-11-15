@@ -1,4 +1,6 @@
-﻿@model BuildingManagement.ViewModels.MeterIndexData
+﻿@model IPagedList<BuildingManagement.Models.Meter>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,25 +11,32 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "Meter", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            Client
+            @Html.ActionLink("Code", "Index", new {sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Code
+            @Html.ActionLink("Details", "Index", new {sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Details
+            @Html.ActionLink("InitialIndex", "Index", new {sortOrder = ViewBag.InitialIndexSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            InitialIndex
+            @Html.ActionLink("Defect", "Index", new {sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Defect
+            @Html.ActionLink("DistributionMode", "Index", new {sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Distribution Mode
+            @Html.ActionLink("Client", "Index", new { sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             Type
@@ -38,26 +47,26 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.Meters)
+    @foreach (var item in ViewBag.OnePageOfMeters)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.Name)
+                @item.Code
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Code)
+                @item.Details
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Details)
+                @item.InitialIndex
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InitialIndex)
+                @item.Defect
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Defect)
+                @item.DistributionMode.Mode
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DistributionMode.Mode)
+                @item.Client.Name
             </td>
             <td>
                 @{
@@ -97,8 +106,9 @@
                 @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
-                    }
-
+    }
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfMeters, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>

@@ -1,4 +1,6 @@
-﻿@model IEnumerable<BuildingManagement.Models.DistributionMode>
+﻿@model IPagedList<BuildingManagement.Models.DistributionMode>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,35 +11,36 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "DistributionMode", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Mode)
+            @Html.ActionLink("Mode", "Index", new { sortOrder = ViewBag.ModeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in ViewBag.OnePageOfDistributionModes)
     {
-        @Html.HiddenFor(modelItem => item.ID, new { id = "ID" })
-        <tr onclick="javascript:Edit();">
+        <tr>
             <td>
-                <span >@Html.DisplayFor(modelItem => item.Mode)</span>
+                @item.Mode
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
     }
-
 </table>
+<br />
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfDistributionModes, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>
-<script>
-    function Edit() {
-        var id = document.getElementById('ID').value;
-        window.location.href = "/DistributionMode/Edit/" + id;
-    }
-</script>

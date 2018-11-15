@@ -1,31 +1,60 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using X.PagedList;
 
 namespace BuildingManagement.Controllers
 {
     public class SectionController : Controller
     {
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IUnitOfWork _unitOfWork;
+
+        public SectionController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // GET: Section
-        public ActionResult Index()
+        public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
-            var sections = _unitOfWork.SectionRepository.Get(includeProperties: "Client");
-            return View(sections);
+            IEnumerable<Section> sections;
+            var pageNumber = page ?? 1;
+            const int pageSize = 3;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+                sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString);
+            }
+            else
+            {
+                if (currentFilter != null)
+                {
+                    searchString = currentFilter;
+                    sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString);
+                }
+                else
+                {
+                    sections = _unitOfWork.SectionRepository.GetAllSectionsIncludingClient();
+                }
+            }
+            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.ClientSortParm = string.IsNullOrEmpty(sortOrder) ? "client_desc" : "";
+            ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
+            ViewBag.SurfaceSortParm = sortOrder == "Surface" ? "surface_desc" : "Surface";
+            ViewBag.PeopleSortParm = sortOrder == "People" ? "people_desc" : "People";
+            sections = _unitOfWork.SectionRepository.OrderSections(sections, sortOrder);
+            ViewBag.OnePageOfSections = sections.ToPagedList(pageNumber, pageSize);
+            return View(ViewBag.OnePageOfSections);
         }
 
         // GET: Section/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var section = _unitOfWork.SectionRepository.GetById(id);
+            var section = _unitOfWork.SectionRepository.Get(id);
             if (section == null)
             {
                 return HttpNotFound();
@@ -36,34 +65,38 @@ namespace BuildingManagement.Controllers
         // GET: Section/Create
         public ActionResult Create()
         {
+            var model = new Section();
             PopulateClientsDropDownList();
-            return View();
+            return View(model);
         }
 
         // POST: Section/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Number,ClientID")] Section section)
+        public ActionResult CreateSection(Section section)
         {
+            //uniqueness condition check
+            var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
+            if (duplicateSection != null)
+            {
+                ModelState.AddModelError("Number", "A section with this number already exists for this client.");
+                PopulateClientsDropDownList(section.ClientID);
+                return View("Create", section);
+            }
+            var client = _unitOfWork.ClientRepository.Get(section.ClientID);
+            if (client != null)
+            {
+                section.Client = client;
+            }
+            section.Surface = 0m;
+            section.People = 0;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateSection = _unitOfWork.SectionRepository.Get(filter: s => s.Number == section.Number && s.ClientID == section.ClientID).FirstOrDefault();
-                    if (duplicateSection != null)
-                    {
-                        ModelState.AddModelError("Number", "A section with this number already exists for this client.");
-                        PopulateClientsDropDownList(section.ClientID);
-                        return View(section);
-                    }
-                    section.Surface = 0m;
-                    section.People = 0;
-                    _unitOfWork.SectionRepository.Insert(section);
+                    _unitOfWork.SectionRepository.Add(section);
                     _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Section {0} has been created.", section.Number);
+                    return Json(section.ID);
                 }
                 catch (DataException)
                 {
@@ -71,17 +104,13 @@ namespace BuildingManagement.Controllers
                 }
             }
             PopulateClientsDropDownList(section.ClientID);
-            return View(section);
+            return View("Create", section);
         }
 
         // GET: Section/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var section = _unitOfWork.SectionRepository.GetById(id);
+            var section = _unitOfWork.SectionRepository.Get(id);
             if (section == null)
             {
                 return HttpNotFound();
@@ -91,17 +120,10 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: Section/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        [HttpPost]
+        public ActionResult EditSection(Section section)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var sectionToUpdate = _unitOfWork.SectionRepository.GetById(id);
+            var sectionToUpdate = _unitOfWork.SectionRepository.GetSectionIncludingClient(section.ID);
             if (sectionToUpdate == null)
             {
                 return HttpNotFound();
@@ -111,15 +133,16 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSection = _unitOfWork.SectionRepository.Get(filter: s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID).FirstOrDefault();
+                    var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
                     if (duplicateSection != null && duplicateSection.ID != sectionToUpdate.ID)
                     {
                         ModelState.AddModelError("Number", "A section with this number already exists for this client.");
                         PopulateClientsDropDownList(sectionToUpdate.ClientID);
-                        return View(sectionToUpdate);
+                        return View("Edit", sectionToUpdate);
                     }
                     _unitOfWork.Save();
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Section {0} has been edited.", sectionToUpdate.Number);
+                    return Json(sectionToUpdate.ID);
                 }
                 catch (DataException)
                 {
@@ -127,21 +150,17 @@ namespace BuildingManagement.Controllers
                 }
             }
             PopulateClientsDropDownList(sectionToUpdate.ClientID);
-            return View(sectionToUpdate);
+            return View("Edit", sectionToUpdate);
         }
 
         // GET: Section/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var section = _unitOfWork.SectionRepository.Get(includeProperties: "Client").Single(s => s.ID == id);
+            var section = _unitOfWork.SectionRepository.GetSectionIncludingClient(id);
             if (section == null)
             {
                 return HttpNotFound();
@@ -156,8 +175,14 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                _unitOfWork.SectionRepository.Delete(id);
+                var section = _unitOfWork.SectionRepository.Get(id);
+                if (section == null)
+                {
+                    return HttpNotFound();
+                }
+                _unitOfWork.SectionRepository.Remove(section);
                 _unitOfWork.Save();
+                TempData["message"] = string.Format("Section {0} has been deleted.", section.Number);
             }
             catch (DataException)
             {
@@ -177,7 +202,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.Get() select c;
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
     }

@@ -1,4 +1,6 @@
-﻿@model BuildingManagement.ViewModels.SubMeterIndexData
+﻿@model IPagedList<BuildingManagement.Models.SubMeter>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,25 +11,32 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "SubMeter", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <tr>
         <th>
-            Code
+            @Html.ActionLink("Code", "Index", new {sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Details
+            @Html.ActionLink("Details", "Index", new {sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            InitialIndex
+            @Html.ActionLink("InitialIndex", "Index", new {sortOrder = ViewBag.InitialIndexSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Defect
+            @Html.ActionLink("Defect", "Index", new {sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Meter
+            @Html.ActionLink("DistributionMode", "Index", new {sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            Distribution Mode
+            @Html.ActionLink("Meter", "Index", new {sortOrder = ViewBag.MeterSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
             Type
@@ -38,33 +47,33 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.SubMeters)
+    @foreach (var item in ViewBag.OnePageOfSubMeters)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Code)
+                @item.Code
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Details)
+                @item.Details
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InitialIndex)
+                @item.InitialIndex
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Defect)
+                @item.Defect
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Meter.Code)
+                @item.DistributionMode.Mode
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DistributionMode.Mode)
+                @item.Meter.Code
             </td>
             <td>
                 @{
                     foreach (var meterType in item.MeterTypes)
                     {
                         @meterType.Type
-                        <br />
+                        <br/>
                     }
                 }
             </td>
@@ -73,14 +82,14 @@
                     foreach (var sct in item.Sections)
                     {
                         @sct.Number
-                        <br />
+                        <br/>
                     }
                 }
                 @{
                     foreach (var lvl in item.Levels)
                     {
                         @lvl.Number
-                        <br />
+                        <br/>
                     }
                 }
                 @{
@@ -92,13 +101,14 @@
                 }
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |
+                @Html.ActionLink("Details", "Details", new {id = item.ID}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
             </td>
         </tr>
-                    }
-
+    }
 </table>
+<br/>
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfSubMeters, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>

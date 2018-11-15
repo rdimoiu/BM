@@ -6,75 +6,53 @@ using System.Linq.Expressions;
 
 namespace BuildingManagement.DAL
 {
-    public class GenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        internal MainContext Context;
-        internal DbSet<TEntity> DbSet;
+        protected readonly DbContext Context;
 
-        public GenericRepository(MainContext context)
+        public GenericRepository(DbContext context)
         {
             Context = context;
-            DbSet = context.Set<TEntity>();
         }
 
-        public virtual IEnumerable<TEntity> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string includeProperties = "")
+        public TEntity Get(int id)
         {
-            IQueryable<TEntity> query = DbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query).ToList();
-            }
-            return query.ToList();
+            return Context.Set<TEntity>().Find(id);
         }
 
-        public virtual TEntity GetById(object id)
+        public IEnumerable<TEntity> GetAll()
         {
-            return DbSet.Find(id);
+            return Context.Set<TEntity>().ToList();
         }
 
-        public virtual IQueryable<TEntity> WhereAsNoTracking(Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return DbSet.AsNoTracking().Where(predicate);
+            return Context.Set<TEntity>().Where(predicate);
         }
 
-        public virtual void Insert(TEntity entity)
+        public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            DbSet.Add(entity);
+            return Context.Set<TEntity>().SingleOrDefault(predicate);
         }
 
-        public virtual void Delete(object id)
+        public void Add(TEntity entity)
         {
-            TEntity entityToDelete = DbSet.Find(id);
-            Delete(entityToDelete);
+            Context.Set<TEntity>().Add(entity);
         }
 
-        public virtual void Delete(TEntity entityToDelete)
+        public void AddRange(IEnumerable<TEntity> entities)
         {
-            if (Context.Entry(entityToDelete).State == EntityState.Detached)
-            {
-                DbSet.Attach(entityToDelete);
-            }
-            DbSet.Remove(entityToDelete);
+            Context.Set<TEntity>().AddRange(entities);
         }
 
-        public virtual void Update(TEntity entityToUpdate)
+        public void Remove(TEntity entity)
         {
-            DbSet.Attach(entityToUpdate);
-            Context.Entry(entityToUpdate).State = EntityState.Modified;
+            Context.Set<TEntity>().Remove(entity);
+        }
+
+        public void RemoveRange(IEnumerable<TEntity> entities)
+        {
+            Context.Set<TEntity>().RemoveRange(entities);
         }
     }
 }

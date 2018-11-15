@@ -1,235 +1,254 @@
 using System;
+using System.Threading.Tasks;
 using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly MainContext _context = new MainContext();
 
-        private GenericRepository<MeterType> _meterTypeRepository;
-        private GenericRepository<DistributionMode> _distributionModeRepository;
-        private GenericRepository<Meter> _meterRepository;
-        private GenericRepository<SubMeter> _subMeterRepository; 
-        private GenericRepository<MeterReading> _meterReadingRepository;
+        private IMeterTypeRepository _meterTypeRepository;
+        private IDistributionModeRepository _distributionModeRepository;
+        private IMeterRepository _meterRepository;
+        private ISubMeterRepository _subMeterRepository;
+        private ISubSubMeterRepository _subSubMeterRepository;
+        private IMeterReadingRepository _meterReadingRepository;
 
-        private GenericRepository<Client> _clientRepository;
-        private GenericRepository<SubClient> _subClientRepository;
+        private IClientRepository _clientRepository;
+        private ISubClientRepository _subClientRepository;
 
-        private GenericRepository<SpaceType> _spaceTypeRepository;
-        private GenericRepository<Section> _sectionRepository;
-        private GenericRepository<Level> _levelRepository;
-        private GenericRepository<Space> _spaceRepository;
+        private ISpaceTypeRepository _spaceTypeRepository;
+        private ISectionRepository _sectionRepository;
+        private ILevelRepository _levelRepository;
+        private ISpaceRepository _spaceRepository;
 
-        private GenericRepository<InvoiceType> _invoiceTypeRepository; 
-        private GenericRepository<Provider> _providerRepository;
-        private GenericRepository<Service> _serviceRepository;
-        private GenericRepository<Invoice> _invoiceRepository;
+        private IInvoiceTypeRepository _invoiceTypeRepository; 
+        private IProviderRepository _providerRepository;
+        private IServiceRepository _serviceRepository;
+        private IInvoiceRepository _invoiceRepository;
 
-        private GenericRepository<Cost> _costRepository; 
+        private ICostRepository _costRepository; 
 
-        private GenericRepository<User> _userRepository; 
+        private IUserRepository _userRepository; 
         private GenericRepository<UserRole> _userRoleRepository; 
 
-        public GenericRepository<MeterType> MeterTypeRepository
+        public IMeterTypeRepository MeterTypeRepository
         {
             get
             {
 
                 if (_meterTypeRepository == null)
                 {
-                    _meterTypeRepository = new GenericRepository<MeterType>(_context);
+                    _meterTypeRepository = new MeterTypeRepository(_context);
                 }
                 return _meterTypeRepository;
             }
         }
 
-        public GenericRepository<DistributionMode> DistributionModeRepository
+        public IDistributionModeRepository DistributionModeRepository
         {
             get
             {
                 if (_distributionModeRepository == null)
                 {
-                    _distributionModeRepository = new GenericRepository<DistributionMode>(_context);
+                    _distributionModeRepository = new DistributionModeRepository(_context);
                 }
                 return _distributionModeRepository;
             }
         }
 
-        public GenericRepository<Meter> MeterRepository
+        public IMeterRepository MeterRepository
         {
             get
             {
                 if (_meterRepository == null)
                 {
-                    _meterRepository = new GenericRepository<Meter>(_context);
+                    _meterRepository = new MeterRepository(_context);
                 }
                 return _meterRepository;
             }
         }
 
-        public GenericRepository<SubMeter> SubMeterRepository
+        public ISubMeterRepository SubMeterRepository
         {
             get
             {
                 if (_subMeterRepository == null)
                 {
-                    _subMeterRepository = new GenericRepository<SubMeter>(_context);
+                    _subMeterRepository = new SubMeterRepository(_context);
                 }
                 return _subMeterRepository;
             }
         }
 
-        public GenericRepository<MeterReading> MeterReadingRepository
+        public ISubSubMeterRepository SubSubMeterRepository
+        {
+            get
+            {
+                if (_subSubMeterRepository == null)
+                {
+                    _subSubMeterRepository = new SubSubMeterRepository(_context);
+                }
+                return _subSubMeterRepository;
+            }
+        }
+
+        public IMeterReadingRepository MeterReadingRepository
         {
             get
             {
                 if (_meterReadingRepository == null)
                 {
-                    _meterReadingRepository = new GenericRepository<MeterReading>(_context);
+                    _meterReadingRepository = new MeterReadingRepository(_context);
                 }
                 return _meterReadingRepository;
             }
         }
 
-        public GenericRepository<Client> ClientRepository
+        public IClientRepository ClientRepository
         {
             get
             {
                 if (_clientRepository == null)
                 {
-                    _clientRepository = new GenericRepository<Client>(_context);
+                    _clientRepository = new ClientRepository(_context);
                 }
                 return _clientRepository;
             }
         }
 
-        public GenericRepository<SubClient> SubClientRepository
+        public ISubClientRepository SubClientRepository
         {
             get
             {
                 if (_subClientRepository == null)
                 {
-                    _subClientRepository = new GenericRepository<SubClient>(_context);
+                    _subClientRepository = new SubClientRepository(_context);
                 }
                 return _subClientRepository;
             }
         }
 
-        public GenericRepository<SpaceType> SpaceTypeRepository
+        public ISpaceTypeRepository SpaceTypeRepository
         {
             get
             {
                 if (_spaceTypeRepository == null)
                 {
-                    _spaceTypeRepository = new GenericRepository<SpaceType>(_context);
+                    _spaceTypeRepository = new SpaceTypeRepository(_context);
                 }
                 return _spaceTypeRepository;
             }
         }
 
-        public GenericRepository<Section> SectionRepository
+        public ISectionRepository SectionRepository
         {
             get
             {
                 if (_sectionRepository == null)
                 {
-                    _sectionRepository = new GenericRepository<Section>(_context);
+                    _sectionRepository = new SectionRepository(_context);
                 }
                 return _sectionRepository;
             }
         }
 
-        public GenericRepository<Level> LevelRepository
+        public ILevelRepository LevelRepository
         {
             get
             {
                 if (_levelRepository == null)
                 {
-                    _levelRepository = new GenericRepository<Level>(_context);
+                    _levelRepository = new LevelRepository(_context);
                 }
                 return _levelRepository;
             }
         }
 
-        public GenericRepository<Space> SpaceRepository
+        public ISpaceRepository SpaceRepository
         {
             get
             {
                 if (_spaceRepository == null)
                 {
-                    _spaceRepository = new GenericRepository<Space>(_context);
+                    _spaceRepository = new SpaceRepository(_context);
                 }
                 return _spaceRepository;
             }
         }
 
-        public GenericRepository<InvoiceType> InvoiceTypeRepository
+        public IInvoiceTypeRepository InvoiceTypeRepository
         {
             get
             {
                 if (_invoiceTypeRepository == null)
                 {
-                    _invoiceTypeRepository = new GenericRepository<InvoiceType>(_context);
+                    _invoiceTypeRepository = new InvoiceTypeRepository(_context);
                 }
                 return _invoiceTypeRepository;
             }
         }
 
-        public GenericRepository<Provider> ProviderRepository
+        public IProviderRepository ProviderRepository
         {
             get
             {
                 if (_providerRepository == null)
                 {
-                    _providerRepository = new GenericRepository<Provider>(_context);
+                    _providerRepository = new ProviderRepository(_context);
                 }
                 return _providerRepository;
             }
         }
 
-        public GenericRepository<Service> ServiceRepository
+        public IServiceRepository ServiceRepository
         {
             get
             {
                 if (_serviceRepository == null)
                 {
-                    _serviceRepository = new GenericRepository<Service>(_context);
+                    _serviceRepository = new ServiceRepository(_context);
                 }
                 return _serviceRepository;
             }
         }
 
-        public GenericRepository<Invoice> InvoiceRepository
+        public IInvoiceRepository InvoiceRepository
         {
             get
             {
                 if (_invoiceRepository == null)
                 {
-                    _invoiceRepository = new GenericRepository<Invoice>(_context);
+                    _invoiceRepository = new InvoiceRepository(_context);
                 }
                 return _invoiceRepository;
             }
         }
 
-        public GenericRepository<Cost> CostRepository
+        public ICostRepository CostRepository
         {
             get
             {
                 if (_costRepository == null)
                 {
-                    _costRepository = new GenericRepository<Cost>(_context);
+                    _costRepository = new CostRepository(_context);
                 }
                 return _costRepository;
             }
         }
 
-        public GenericRepository<User> UserRepository => _userRepository ?? (_userRepository = new GenericRepository<User>(_context));
+        public IUserRepository UserRepository => _userRepository ?? (_userRepository = new UserRepository(_context));
         public GenericRepository<UserRole> UserRoleRepository => _userRoleRepository ?? (_userRoleRepository = new GenericRepository<UserRole>(_context));
 
         public void Save()
         {
             _context.SaveChanges();
+        }
+
+        public Task<int> SaveAsync()
+        {
+            return _context.SaveChangesAsync();
         }
 
         private bool _disposed;
