@@ -66,38 +66,36 @@ namespace BuildingManagement.Controllers
         // GET: Client/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new Client();
+            return View(model);
         }
 
         // POST: Client/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,Phone,Address,Contact,Email")] Client client)
+        public ActionResult CreateClient(Client client)
         {
+            //uniqueness condition check
+            var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
+            if (duplicateClient != null)
+            {
+                ModelState.AddModelError("Name", "A client with this name already exists.");
+                return View("Create", client);
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
-                    if (duplicateClient != null)
-                    {
-                        ModelState.AddModelError("Name", "A client with this name already exists.");
-                        return View(client);
-                    }
                     _unitOfWork.ClientRepository.Add(client);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Client {0} has been created.", client.Name);
-                    return RedirectToAction("Index");
+                    return Json(client.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(client);
+            return View("Create", client);
         }
 
         // GET: Client/Edit/5
@@ -112,38 +110,35 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: Client/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult EditClient(Client client)
         {
-            var client = _unitOfWork.ClientRepository.Get(id);
-            if (client == null)
+            var clientToUpdate = _unitOfWork.ClientRepository.Get(client.ID);
+            if (clientToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(client, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
+            if (TryUpdateModel(clientToUpdate, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
-                    if (duplicateClient != null && duplicateClient.ID != client.ID)
+                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
+                    if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
                     {
                         ModelState.AddModelError("Name", "A client with this name already exists.");
-                        return View(client);
+                        return View("Edit", clientToUpdate);
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Client {0} has been edited.", client.Name);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Client {0} has been edited.", clientToUpdate.Name);
+                    return Json(clientToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(client);
+            return View("Edit", clientToUpdate);
         }
 
         // GET: Client/Delete/5

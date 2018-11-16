@@ -8,6 +8,7 @@ namespace BuildingManagement.Models
     {
         public int ID { get; set; }
 
+        [Required]
         [StringLength(30)]
         public string Number { get; set; }
 
