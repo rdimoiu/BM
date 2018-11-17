@@ -81,7 +81,7 @@ namespace BuildingManagement.Controllers
                 if (duplicateClient != null)
                 {
                     ModelState.AddModelError("Name", "A client with this name already exists.");
-                    return View("Create", client);
+                    return View(client);
                 }
                 try
                 {
@@ -95,7 +95,7 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View("Create", client);
+            return View(client);
         }
 
         // GET: Client/Edit/5
@@ -123,7 +123,7 @@ namespace BuildingManagement.Controllers
             if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
             {
                 ModelState.AddModelError("Name", "A client with this name already exists.");
-                return View("Edit", clientToUpdate);
+                return View(clientToUpdate);
             }
             if (TryUpdateModel(clientToUpdate, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
             {
@@ -138,7 +138,7 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View("Edit", clientToUpdate);
+            return View(clientToUpdate);
         }
 
         // GET: Client/Delete/5

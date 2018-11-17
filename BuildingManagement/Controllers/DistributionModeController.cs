@@ -76,7 +76,7 @@ namespace BuildingManagement.Controllers
                 if (duplicateDistributionMode != null)
                 {
                     ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                    return View("Create", distributionMode);
+                    return View(distributionMode);
                 }
                 try
                 {
@@ -90,7 +90,7 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View("Create", distributionMode);
+            return View(distributionMode);
         }
 
         // GET: DistributionMode/Edit/5
@@ -118,7 +118,7 @@ namespace BuildingManagement.Controllers
             if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
             {
                 ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                return View("Edit", distributionModeToUpdate);
+                return View(distributionModeToUpdate);
             }
             if (TryUpdateModel(distributionModeToUpdate, "", new[] {"Mode"}))
             {
@@ -133,7 +133,7 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View("Edit", distributionModeToUpdate);
+            return View(distributionModeToUpdate);
         }
 
         // GET: DistributionMode/Delete/5

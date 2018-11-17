@@ -75,67 +75,64 @@ namespace BuildingManagement.Controllers
         // GET: Invoice/Create
         public ActionResult Create(int? clientId, int? providerId)
         {
-            var model = new Invoice();
+            var invoice = new Invoice();
             if (clientId != null)
             {
-                model.ClientID = (int) clientId;
+                invoice.ClientID = (int) clientId;
             }
             if (providerId != null)
             {
-                model.ProviderID = (int) providerId;
+                invoice.ProviderID = (int) providerId;
             }
             if (Request.UrlReferrer != null && Request.UrlReferrer.AbsoluteUri.Contains("Distribution"))
             {
-                model.PreviousPage = "InvoiceDistribution";
+                invoice.PreviousPage = "InvoiceDistribution";
             }
             else
             {
-                model.PreviousPage = "Invoice";
+                invoice.PreviousPage = "Invoice";
             }
             PopulateInvoiceTypesDropDownList();
             PopulateClientsDropDownList();
             PopulateProvidersDropDownList();
-            return View(model);
+            return View(invoice);
         }
 
         // POST: Invoice/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Number,CheckTotalValueWithoutTVA,CheckTotalTVA,Date,DueDate,CheckQuantity,DiscountMonth,InvoiceTypeID,ProviderID,ClientID,PreviousPage")] Invoice invoice)
+        public ActionResult Create(Invoice invoice)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
+                if (duplicateInvoice != null)
+                {
+                    ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
+                    PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
+                    PopulateClientsDropDownList(invoice.ClientID);
+                    PopulateProvidersDropDownList(invoice.ProviderID);
+                    return View(invoice);
+                }
+                if (invoice.Date > invoice.DueDate)
+                {
+                    ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
+                    PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
+                    PopulateClientsDropDownList(invoice.ClientID);
+                    PopulateProvidersDropDownList(invoice.ProviderID);
+                    return View(invoice);
+                }
+                invoice.Quantity = 0.0m;
+                invoice.TotalValueWithoutTVA = 0.0m;
+                invoice.TotalTVA = 0.0m;
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
-                    if (duplicateInvoice != null)
-                    {
-                        ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
-                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoice.ClientID);
-                        PopulateProvidersDropDownList(invoice.ProviderID);
-                        return View(invoice);
-                    }
-                    if (invoice.Date > invoice.DueDate)
-                    {
-                        ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
-                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoice.ClientID);
-                        PopulateProvidersDropDownList(invoice.ProviderID);
-                        return View(invoice);
-                    }
-                    invoice.Quantity = 0.0m;
-                    invoice.TotalValueWithoutTVA = 0.0m;
-                    invoice.TotalTVA = 0.0m;
                     _unitOfWork.InvoiceRepository.Add(invoice);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice {0} has been created.", invoice.Number);
                     if (invoice.PreviousPage.Equals("Invoice"))
                     {
-                        return RedirectToAction("Index", "Invoice");
+                        return Json(invoice.ID);
                     }
                     return RedirectToAction("Index", "InvoiceDistribution", new {invoice.ClientID, invoice.ProviderID});
                 }
@@ -165,52 +162,49 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: Invoice/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(Invoice invoice)
         {
-            var invoice = _unitOfWork.InvoiceRepository.Get(id);
-            if (invoice == null)
+            var invoiceToUpdate = _unitOfWork.InvoiceRepository.GetInvoiceIncludingClientAndProviderAndInvoiceTypeAndServices(invoice.ID);
+            if (invoiceToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(invoice, "", new[]{"Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID"}))
+            //uniqueness condition check
+            var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
+            if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
+            {
+                ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
+                PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
+                PopulateClientsDropDownList(invoiceToUpdate.ClientID);
+                PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
+                return View(invoiceToUpdate);
+            }
+            if (invoiceToUpdate.Date > invoiceToUpdate.DueDate)
+            {
+                ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
+                PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
+                PopulateClientsDropDownList(invoiceToUpdate.ClientID);
+                PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
+                return View(invoiceToUpdate);
+            }
+            if (TryUpdateModel(invoiceToUpdate, "", new[]{"Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID"}))
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
-                    if (duplicateInvoice != null && duplicateInvoice.ID != invoice.ID)
-                    {
-                        ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
-                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoice.ClientID);
-                        PopulateProvidersDropDownList(invoice.ProviderID);
-                        return View(invoice);
-                    }
-                    if (invoice.Date > invoice.DueDate)
-                    {
-                        ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
-                        PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoice.ClientID);
-                        PopulateProvidersDropDownList(invoice.ProviderID);
-                        return View(invoice);
-                    }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice {0} has been edited.", invoice.Number);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Invoice {0} has been edited.", invoiceToUpdate.Number);
+                    return Json(invoiceToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-            PopulateClientsDropDownList(invoice.ClientID);
-            PopulateProvidersDropDownList(invoice.ProviderID);
-            return View(invoice);
+            PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
+            PopulateClientsDropDownList(invoiceToUpdate.ClientID);
+            PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
+            return View(invoiceToUpdate);
         }
 
         // GET: Invoice/Delete/5

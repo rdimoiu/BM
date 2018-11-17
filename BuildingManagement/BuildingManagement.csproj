@@ -404,6 +404,7 @@
     <Content Include="Scripts\SubSubMeterUtils.js" />
     <Content Include="Scripts\ValidateDistributionMode.js" />
     <Content Include="Scripts\ValidateFields.js" />
+    <Content Include="Scripts\ValidateInvoice.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

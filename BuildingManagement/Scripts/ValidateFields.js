@@ -51,3 +51,93 @@ function ModeValidation() {
         return "";
     }
 }
+
+function ClientValidation() {
+    var controlId = document.getElementById("ClientID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Client field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function ProviderValidation() {
+    var controlId = document.getElementById("ProviderID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Provider field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function InvoiceTypeValidation() {
+    var controlId = document.getElementById("InvoiceTypeID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The InvoiceType field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function NumberValidation() {
+    var controlId = document.getElementById("Number");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Number field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function DateValidation() {
+    var controlId = document.getElementById("Date");
+    if (controlId.value === "") {
+        return "The Date field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function DueDateValidation() {
+    var controlId = document.getElementById("DueDate");
+    if (controlId.value === "") {
+        return "The DueDate field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function CheckQuantityValidation() {
+    var controlId = document.getElementById("CheckQuantity");
+    if (controlId.value === "") {
+        return "The CheckQuantity field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function CheckTotalValueWithoutTVAValidation() {
+    var controlId = document.getElementById("CheckTotalValueWithoutTVA");
+    if (controlId.value === "") {
+        return "The CheckTotalValueWithoutTVA field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function CheckTotalTVAValidation() {
+    var controlId = document.getElementById("CheckTotalTVA");
+    if (controlId.value === "") {
+        return "The CheckTotalTVA field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function DiscountMonthValidation() {
+    var controlId = document.getElementById("DiscountMonth");
+    if (controlId.value === "") {
+        return "The DiscountMonth field is required." + "\n";
+    } else {
+        return "";
+    }
+}
