@@ -66,23 +66,23 @@ namespace BuildingManagement.Controllers
         // GET: Client/Create
         public ActionResult Create()
         {
-            var model = new Client();
-            return View(model);
+            var client = new Client();
+            return View(client);
         }
 
         // POST: Client/Create
         [HttpPost]
-        public ActionResult CreateClient(Client client)
+        public ActionResult Create(Client client)
         {
-            //uniqueness condition check
-            var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
-            if (duplicateClient != null)
-            {
-                ModelState.AddModelError("Name", "A client with this name already exists.");
-                return View("Create", client);
-            }
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
+                if (duplicateClient != null)
+                {
+                    ModelState.AddModelError("Name", "A client with this name already exists.");
+                    return View("Create", client);
+                }
                 try
                 {
                     _unitOfWork.ClientRepository.Add(client);
@@ -111,24 +111,24 @@ namespace BuildingManagement.Controllers
 
         // POST: Client/Edit/5
         [HttpPost]
-        public ActionResult EditClient(Client client)
+        public ActionResult Edit(Client client)
         {
             var clientToUpdate = _unitOfWork.ClientRepository.Get(client.ID);
             if (clientToUpdate == null)
             {
                 return HttpNotFound();
             }
+            //uniqueness condition check
+            var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
+            if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
+            {
+                ModelState.AddModelError("Name", "A client with this name already exists.");
+                return View("Edit", clientToUpdate);
+            }
             if (TryUpdateModel(clientToUpdate, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
-                    if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
-                    {
-                        ModelState.AddModelError("Name", "A client with this name already exists.");
-                        return View("Edit", clientToUpdate);
-                    }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Client {0} has been edited.", clientToUpdate.Name);
                     return Json(clientToUpdate.ID);

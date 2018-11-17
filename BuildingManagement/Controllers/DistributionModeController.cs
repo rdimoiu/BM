@@ -61,38 +61,36 @@ namespace BuildingManagement.Controllers
         // GET: DistributionMode/Create
         public ActionResult Create()
         {
-            return View();
+            var distributionMode = new DistributionMode();
+            return View(distributionMode);
         }
 
         // POST: DistributionMode/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Mode")] DistributionMode distributionMode)
+        public ActionResult Create(DistributionMode distributionMode)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
+                if (duplicateDistributionMode != null)
+                {
+                    ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
+                    return View("Create", distributionMode);
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
-                    if (duplicateDistributionMode != null)
-                    {
-                        ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                        return View(distributionMode);
-                    }
                     _unitOfWork.DistributionModeRepository.Add(distributionMode);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Distribution mode {0} has been created.", distributionMode.Mode);
-                    return RedirectToAction("Index");
+                    return Json(distributionMode.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(distributionMode);
+            return View("Create", distributionMode);
         }
 
         // GET: DistributionMode/Edit/5
@@ -107,38 +105,35 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: DistributionMode/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(DistributionMode distributionMode)
         {
-            var distributionMode = _unitOfWork.DistributionModeRepository.Get(id);
-            if (distributionMode == null)
+            var distributionModeToUpdate = _unitOfWork.DistributionModeRepository.Get(distributionMode.ID);
+            if (distributionModeToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(distributionMode, "", new[] {"Mode"}))
+            //uniqueness condition check
+            var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
+            if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
+            {
+                ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
+                return View("Edit", distributionModeToUpdate);
+            }
+            if (TryUpdateModel(distributionModeToUpdate, "", new[] {"Mode"}))
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
-                    if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionMode.ID)
-                    {
-                        ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                        return View(distributionMode);
-                    }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Distribution mode {0} has been edited.", distributionMode.Mode);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Distribution mode {0} has been edited.", distributionModeToUpdate.Mode);
+                    return Json(distributionModeToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(distributionMode);
+            return View("Edit", distributionModeToUpdate);
         }
 
         // GET: DistributionMode/Delete/5

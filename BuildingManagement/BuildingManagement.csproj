@@ -380,7 +380,7 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <None Include="Properties\PublishProfiles\mybuildingmanagement - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\ClientUtils.js" />
+    <Content Include="Scripts\ValidateClient.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -400,7 +400,10 @@
     <Content Include="Scripts\ServiceUtils.js" />
     <Content Include="Scripts\SpaceUtils.js" />
     <Content Include="Scripts\SubMeterUtils.js" />
+    <Content Include="Scripts\SubmitPage.js" />
     <Content Include="Scripts\SubSubMeterUtils.js" />
+    <Content Include="Scripts\ValidateDistributionMode.js" />
+    <Content Include="Scripts\ValidateFields.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
