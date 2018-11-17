@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;

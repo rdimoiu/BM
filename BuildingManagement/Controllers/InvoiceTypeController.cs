@@ -61,32 +61,29 @@ namespace BuildingManagement.Controllers
         // GET: InvoiceType/Create
         public ActionResult Create()
         {
-            return View();
+            var invoiceType = new InvoiceType();
+            return View(invoiceType);
         }
 
         // POST: InvoiceType/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Type")] InvoiceType invoiceType)
+        public ActionResult Create(InvoiceType invoiceType)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceType.Type);
+                if (duplicateInvoiceType != null)
+                {
+                    ModelState.AddModelError("Type", "An invoice type with this type already exists.");
+                    return View(invoiceType);
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateInvoiceType =
-                        _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceType.Type);
-                    if (duplicateInvoiceType != null)
-                    {
-                        ModelState.AddModelError("Type", "An invoice type with this type already exists.");
-                        return View(invoiceType);
-                    }
                     _unitOfWork.InvoiceTypeRepository.Add(invoiceType);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice type {0} has been created.", invoiceType.Type);
-                    return RedirectToAction("Index");
+                    return Json(invoiceType.ID);
                 }
                 catch (DataException)
                 {
@@ -108,38 +105,35 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: InvoiceType/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(InvoiceType invoiceType)
         {
-            var invoiceType = _unitOfWork.InvoiceTypeRepository.Get(id);
-            if (invoiceType == null)
+            var invoiceTypeToUpdate = _unitOfWork.InvoiceTypeRepository.Get(invoiceType.ID);
+            if (invoiceTypeToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(invoiceType, "", new[] {"Type"}))
+            //uniqueness condition check
+            var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceTypeToUpdate.Type);
+            if (duplicateInvoiceType != null && duplicateInvoiceType.ID != invoiceTypeToUpdate.ID)
+            {
+                ModelState.AddModelError("Type", "An invoice type with this type already exists.");
+                return View(invoiceTypeToUpdate);
+            }
+            if (TryUpdateModel(invoiceTypeToUpdate, "", new[] {"Type"}))
             {
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceType.Type);
-                    if (duplicateInvoiceType != null && duplicateInvoiceType.ID != invoiceType.ID)
-                    {
-                        ModelState.AddModelError("Type", "An invoice type with this type already exists.");
-                        return View(invoiceType);
-                    }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice type {0} has been edited.", invoiceType.Type);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Invoice type {0} has been edited.", invoiceTypeToUpdate.Type);
+                    return Json(invoiceTypeToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(invoiceType);
+            return View(invoiceTypeToUpdate);
         }
 
         // GET: InvoiceType/Delete/5

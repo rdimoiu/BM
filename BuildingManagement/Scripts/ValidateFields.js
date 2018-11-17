@@ -141,3 +141,12 @@ function DiscountMonthValidation() {
         return "";
     }
 }
+
+function TypeValidation() {
+    var controlId = document.getElementById("Type");
+    if (controlId.value === "") {
+        return "The Type field is required." + "\n";
+    } else {
+        return "";
+    }
+}
