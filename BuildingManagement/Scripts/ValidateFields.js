@@ -159,3 +159,30 @@ function SectionValidation() {
         return "";
     }
 }
+
+function CodeValidation() {
+    var controlId = document.getElementById("Code");
+    if (controlId.value === "") {
+        return "The Code field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function InitialIndexValidation() {
+    var controlId = document.getElementById("InitialIndex");
+    if (controlId.value === "") {
+        return "The InitialIndex field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function DistributionModeValidation() {
+    var controlId = document.getElementById("DistributionModeID");
+    if (controlId.value === "" || controlId === "0") {
+        return "The DistributionMode field is required." + "\n";
+    } else {
+        return "";
+    }
+}

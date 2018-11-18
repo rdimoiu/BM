@@ -407,6 +407,7 @@
     <Content Include="Scripts\ValidateInvoice.js" />
     <Content Include="Scripts\ValidateInvoiceType.js" />
     <Content Include="Scripts\ValidateLevel.js" />
+    <Content Include="Scripts\ValidateMeter.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
