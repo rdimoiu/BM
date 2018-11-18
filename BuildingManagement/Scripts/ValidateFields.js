@@ -186,3 +186,30 @@ function DistributionModeValidation() {
         return "";
     }
 }
+
+function IndexValidation() {
+    var controlId = document.getElementById("Index");
+    if (controlId.value === "") {
+        return "The Index field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function MeterValidation() {
+    var controlId = document.getElementById("MeterID");
+    if (controlId.value === "" || controlId === "0") {
+        return "The Meter field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function MeterTypeValidation() {
+    var controlId = document.getElementById("MeterTypeID");
+    if (controlId.value === "" || controlId === "0") {
+        return "The MeterType field is required." + "\n";
+    } else {
+        return "";
+    }
+}

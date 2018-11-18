@@ -368,6 +368,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\MeterReadingUtils1.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -380,6 +381,7 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <None Include="Properties\PublishProfiles\mybuildingmanagement - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\MeterReadingUtils.js" />
     <Content Include="Scripts\ValidateClient.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -408,6 +410,7 @@
     <Content Include="Scripts\ValidateInvoiceType.js" />
     <Content Include="Scripts\ValidateLevel.js" />
     <Content Include="Scripts\ValidateMeter.js" />
+    <Content Include="Scripts\ValidateMeterReading.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

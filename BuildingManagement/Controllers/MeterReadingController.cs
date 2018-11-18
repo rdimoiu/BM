@@ -65,42 +65,38 @@ namespace BuildingManagement.Controllers
         // GET: MeterReading/Create
         public ActionResult Create()
         {
+            MeterReading meterReading = new MeterReading();
             PopulateMetersDropDownList();
-            return View();
+            return View(meterReading);
         }
 
         // POST: MeterReading/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Index,Date,MeterID,MeterTypeID")] MeterReading meterReading)
+        public ActionResult Create(MeterReading meterReading)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date >= meterReading.Date && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                if (duplicateMeterReading != null)
+                {
+                    PopulateMetersDropDownList(meterReading.MeterID);
+                    PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
+                    return new HttpStatusCodeResult(409, "A meter reading on the same or later date already exists.");
+                }
+                var greaterMeterReadings = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && mr.Index > meterReading.Index);
+                if (greaterMeterReadings != null)
+                {
+                    PopulateMetersDropDownList(meterReading.MeterID);
+                    PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
+                    return new HttpStatusCodeResult(409, "A meter reading with the same or greater index already exists.");
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date >= meterReading.Date && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
-                    if (duplicateMeterReading != null)
-                    {
-                        ModelState.AddModelError("Date", "A meter reading on the same or later date already exists.");
-                        PopulateMetersDropDownList(meterReading.MeterID);
-                        PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return View(meterReading);
-                    }
-                    var greaterMeterReadings = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && mr.Index > meterReading.Index);
-                    if (greaterMeterReadings != null)
-                    {
-                        ModelState.AddModelError("Index", "A meter reading with the same or greater index already exists.");
-                        PopulateMetersDropDownList(meterReading.MeterID);
-                        PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return View(meterReading);
-                    }
                     _unitOfWork.MeterReadingRepository.Add(meterReading);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("MeterReading {0} has been created.", meterReading.Index);
-                    return RedirectToAction("Index");
+                    return Json(meterReading.ID);
                 }
                 catch (DataException)
                 {
@@ -124,50 +120,45 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: MeterReading/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(MeterReading meterReading)
         {
-            var meterReading = _unitOfWork.MeterReadingRepository.Get(id);
-            if (meterReading == null)
+            var meterReadingToUpdate = _unitOfWork.MeterReadingRepository.Get(meterReading.ID);
+            if (meterReadingToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(meterReading, "", new[] { "Index", "Date", "MeterID", "MeterTypeID" }))
+            if (TryUpdateModel(meterReadingToUpdate, "", new[] { "Index", "Date", "MeterID", "MeterTypeID" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date == meterReading.Date && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
-                    if (duplicateMeterReading != null && duplicateMeterReading.ID != meterReading.ID)
+                    var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date == meterReadingToUpdate.Date && mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID);
+                    if (duplicateMeterReading != null && duplicateMeterReading.ID != meterReadingToUpdate.ID)
                     {
-                        ModelState.AddModelError("Date", "A meter reading on the same or later date already exists.");
-                        PopulateMetersDropDownList(meterReading.MeterID);
-                        PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return View(meterReading);
+                        PopulateMetersDropDownList(meterReadingToUpdate.MeterID);
+                        PopulateMeterTypesDropDownList(meterReadingToUpdate.MeterID, meterReadingToUpdate.MeterTypeID);
+                        return new HttpStatusCodeResult(409, "A meter reading on the same or later date already exists.");
                     }
-                    var greaterMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && mr.Index > meterReading.Index);
-                    if (greaterMeterReading != null && greaterMeterReading.ID != meterReading.ID)
+                    var greaterMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID && mr.Index > meterReadingToUpdate.Index);
+                    if (greaterMeterReading != null && greaterMeterReading.ID != meterReadingToUpdate.ID)
                     {
-                        ModelState.AddModelError("Index", "A meter reading with the same or greater index already exists.");
-                        PopulateMetersDropDownList(meterReading.MeterID);
-                        PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return View(meterReading);
+                        PopulateMetersDropDownList(meterReadingToUpdate.MeterID);
+                        PopulateMeterTypesDropDownList(meterReadingToUpdate.MeterID, meterReadingToUpdate.MeterTypeID);
+                        return new HttpStatusCodeResult(409, "A meter reading with the same or greater index already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("MeterReading {0} has been edited.", meterReading.Index);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("MeterReading {0} has been edited.", meterReadingToUpdate.Index);
+                    return Json(meterReadingToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateMetersDropDownList(meterReading.MeterID);
-            PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-            return View(meterReading);
+            PopulateMetersDropDownList(meterReadingToUpdate.MeterID);
+            PopulateMeterTypesDropDownList(meterReadingToUpdate.MeterID, meterReadingToUpdate.MeterTypeID);
+            return View(meterReadingToUpdate);
         }
 
         // GET: MeterReading/Delete/5
