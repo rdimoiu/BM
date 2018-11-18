@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Net;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -70,31 +69,28 @@ namespace BuildingManagement.Controllers
         // GET: Provider/Create
         public ActionResult Create()
         {
-            return View();
+            Provider provider = new Provider();
+            return View(provider);
         }
 
         // POST: Provider/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,FiscalCode,TradeRegister,Address,Phone,Email,BankAccount,Bank,TVAPayer")] Provider provider)
+        public ActionResult Create(Provider provider)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
+                if (duplicateProvider != null)
+                {
+                    return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
-                    if (duplicateProvider != null)
-                    {
-                        ModelState.AddModelError("FiscalCode", "A provider with this fiscal code already exists.");
-                        return View(provider);
-                    }
                     _unitOfWork.ProviderRepository.Add(provider);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Provider {0} has been created.", provider.Name);
-                    return RedirectToAction("Index");
+                    return Json(provider.ID);
                 }
                 catch (DataException)
                 {
@@ -116,38 +112,34 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: Provider/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(Provider provider)
         {
-            var provider = _unitOfWork.ProviderRepository.Get(id);
-            if (provider == null)
+            var providerToUpdate = _unitOfWork.ProviderRepository.Get(provider.ID);
+            if (providerToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(provider, "", new[] { "Name", "FiscalCode", "TradeRegister", "Address", "Phone", "Email", "BankAccount", "Bank", "TVAPayer" }))
+            if (TryUpdateModel(providerToUpdate, "", new[] { "Name", "FiscalCode", "TradeRegister", "Address", "Phone", "Email", "BankAccount", "Bank", "TVAPayer" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
-                    if (duplicateProvider != null && duplicateProvider.ID != provider.ID)
+                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == providerToUpdate.FiscalCode);
+                    if (duplicateProvider != null && duplicateProvider.ID != providerToUpdate.ID)
                     {
-                        ModelState.AddModelError("FiscalCode", "A provider with this fiscal code already exists.");
-                        return View(provider);
+                        return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Provider {0} has been edited.", provider.Name);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Provider {0} has been edited.", providerToUpdate.Name);
+                    return Json(providerToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(provider);
+            return View(providerToUpdate);
         }
 
         // GET: Provider/Delete/5

@@ -213,3 +213,12 @@ function MeterTypeValidation() {
         return "";
     }
 }
+
+function FiscalCodeValidation() {
+    var controlId = document.getElementById("FiscalCode");
+    if (controlId.value === "") {
+        return "The FiscalCode field is required." + "\n";
+    } else {
+        return "";
+    }
+}

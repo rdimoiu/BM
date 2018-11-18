@@ -412,6 +412,7 @@
     <Content Include="Scripts\ValidateMeter.js" />
     <Content Include="Scripts\ValidateMeterReading.js" />
     <Content Include="Scripts\ValidateMeterType.js" />
+    <Content Include="Scripts\ValidateProvider.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
