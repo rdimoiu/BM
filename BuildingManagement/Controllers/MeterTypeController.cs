@@ -61,31 +61,28 @@ namespace BuildingManagement.Controllers
         // GET: MeterType/Create
         public ActionResult Create()
         {
-            return View();
+            MeterType meterType = new MeterType();
+            return View(meterType);
         }
 
         // POST: MeterType/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Type")] MeterType meterType)
+        public ActionResult Create(MeterType meterType)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterType.Type);
+                if (duplicateMeterType != null)
+                {
+                    return new HttpStatusCodeResult(409, "A meter type with this type already exists.");
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterType.Type);
-                    if (duplicateMeterType != null)
-                    {
-                        ModelState.AddModelError("Type", "A meter type with this type already exists.");
-                        return View(duplicateMeterType);
-                    }
                     _unitOfWork.MeterTypeRepository.Add(meterType);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Meter type {0} has been created.", meterType.Type);
-                    return RedirectToAction("Index");
+                    return Json(meterType.ID);
                 }
                 catch (DataException)
                 {
@@ -107,42 +104,38 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: MeterType/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(MeterType meterType)
         {
-            var meterType = _unitOfWork.MeterTypeRepository.Get(id);
-            if (meterType == null)
+            var meterTypeToUpdate = _unitOfWork.MeterTypeRepository.Get(meterType.ID);
+            if (meterTypeToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(meterType, "", new[] {"Type"}))
+            if (TryUpdateModel(meterTypeToUpdate, "", new[] {"Type"}))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterType.Type);
-                    if (duplicateMeterType != null && duplicateMeterType.ID != meterType.ID)
+                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.Type == meterTypeToUpdate.Type);
+                    if (duplicateMeterType != null && duplicateMeterType.ID != meterTypeToUpdate.ID)
                     {
-                        ModelState.AddModelError("Type", "A meter type with this type already exists.");
-                        return View(duplicateMeterType);
+                        return new HttpStatusCodeResult(409, "A meter type with this type already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Meter type {0} has been edited.", meterType.Type);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Meter type {0} has been edited.", meterTypeToUpdate.Type);
+                    return Json(meterTypeToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(meterType);
+            return View(meterTypeToUpdate);
         }
 
         // GET: MeterType/Delete/5
-        public ActionResult Delete(int id, bool? saveChangesError=false)
+        public ActionResult Delete(int id, bool? saveChangesError = false)
         {
             if (saveChangesError.GetValueOrDefault())
             {
@@ -157,7 +150,7 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: MeterType/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
