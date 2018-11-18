@@ -80,8 +80,7 @@ namespace BuildingManagement.Controllers
                 var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
                 if (duplicateClient != null)
                 {
-                    ModelState.AddModelError("Name", "A client with this name already exists.");
-                    return View(client);
+                    return new HttpStatusCodeResult(409, "A client with this name already exists.");
                 }
                 try
                 {
@@ -118,17 +117,16 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            //uniqueness condition check
-            var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
-            if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
-            {
-                ModelState.AddModelError("Name", "A client with this name already exists.");
-                return View(clientToUpdate);
-            }
             if (TryUpdateModel(clientToUpdate, "", new[] {"Name", "Phone", "Address", "Contact", "Email"}))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
+                    if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
+                    {
+                        return new HttpStatusCodeResult(409, "A client with this name already exists.");
+                    }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Client {0} has been edited.", clientToUpdate.Name);
                     return Json(clientToUpdate.ID);

@@ -75,8 +75,7 @@ namespace BuildingManagement.Controllers
                 var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
                 if (duplicateDistributionMode != null)
                 {
-                    ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                    return View(distributionMode);
+                    return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");
                 }
                 try
                 {
@@ -113,17 +112,16 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            //uniqueness condition check
-            var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
-            if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
-            {
-                ModelState.AddModelError("Mode", "A distribution mode with this mode already exists.");
-                return View(distributionModeToUpdate);
-            }
             if (TryUpdateModel(distributionModeToUpdate, "", new[] {"Mode"}))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
+                    if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
+                    {
+                        return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");
+                    }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Distribution mode {0} has been edited.", distributionModeToUpdate.Mode);
                     return Json(distributionModeToUpdate.ID);

@@ -65,34 +65,33 @@ namespace BuildingManagement.Controllers
         // GET: Level/Create
         public ActionResult Create()
         {
-            var model = new Level();
+            var level = new Level();
             PopulateSectionsDropDownList();
             PopulateClientsDropDownList();
-            return View(model);
+            return View(level);
         }
 
         // POST: Level/Create
         [HttpPost]
-        public ActionResult CreateLevel(Level level)
+        public ActionResult Create(Level level)
         {
-            //uniqueness condition check
-            var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == level.Number && l.SectionID == level.SectionID);
-            if (duplicateLevel != null)
-            {
-                ModelState.AddModelError("Number", "A level with this number already exists for this section.");
-                PopulateSectionsDropDownList(level.SectionID);
-                PopulateClientsDropDownList(level.ClientID);
-                return View("Create", level);
-            }
-            var section = _unitOfWork.SectionRepository.Get(level.SectionID);
-            if (section != null)
-            {
-                level.Section = section;
-            }
-            level.Surface = 0m;
-            level.People = 0;
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == level.Number && l.SectionID == level.SectionID);
+                if (duplicateLevel != null)
+                {
+                    PopulateSectionsDropDownList(level.SectionID);
+                    PopulateClientsDropDownList(level.ClientID);
+                    return new HttpStatusCodeResult(409, "A level with this number already exists for this section.");
+                }
+                var section = _unitOfWork.SectionRepository.Get(level.SectionID);
+                if (section != null)
+                {
+                    level.Section = section;
+                }
+                level.Surface = 0m;
+                level.People = 0;
                 try
                 {
                     _unitOfWork.LevelRepository.Add(level);
@@ -107,7 +106,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateSectionsDropDownList(level.SectionID);
             PopulateClientsDropDownList(level.ClientID);
-            return View("Create", level);
+            return View(level);
         }
 
         // GET: Level/Edit/5
@@ -125,7 +124,7 @@ namespace BuildingManagement.Controllers
 
         // POST: Level/Edit/5
         [HttpPost]
-        public ActionResult EditLevel(Level level)
+        public ActionResult Edit(Level level)
         {
             var levelToUpdate = _unitOfWork.LevelRepository.GetLevelIncludingSection(level.ID);
             if (levelToUpdate == null)
@@ -147,10 +146,9 @@ namespace BuildingManagement.Controllers
                     var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
                     if (duplicateLevel != null && duplicateLevel.ID != levelToUpdate.ID)
                     {
-                        ModelState.AddModelError("Number", "A level with this number already exists for this section.");
                         PopulateSectionsDropDownList(levelToUpdate.SectionID);
                         PopulateClientsDropDownList(levelToUpdate.ClientID);
-                        return View("Edit", levelToUpdate);
+                        return new HttpStatusCodeResult(409, "A level with this number already exists for this section.");
                     }
                     var section = _unitOfWork.SectionRepository.Get(levelToUpdate.SectionID);
                     if (section == null)
@@ -170,7 +168,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateSectionsDropDownList(levelToUpdate.SectionID);
             PopulateClientsDropDownList(levelToUpdate.ClientID);
-            return View("Edit", levelToUpdate);
+            return View(levelToUpdate);
         }
 
         // GET: Level/Delete/5

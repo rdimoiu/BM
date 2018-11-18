@@ -8,8 +8,10 @@
         success: function () {
             window.location.href = indexUrl;
         },
-        error: function (reponse) {
-            alert("error : " + reponse);
+        error: function (xhr, httpStatusMessage, customErrorMessage) {
+            if (xhr.status === 409) {
+                alert(customErrorMessage);
+            }
         }
     });
 }

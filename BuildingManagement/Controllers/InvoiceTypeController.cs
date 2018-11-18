@@ -75,8 +75,7 @@ namespace BuildingManagement.Controllers
                 var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceType.Type);
                 if (duplicateInvoiceType != null)
                 {
-                    ModelState.AddModelError("Type", "An invoice type with this type already exists.");
-                    return View(invoiceType);
+                    return new HttpStatusCodeResult(409, "An invoice type with this type already exists.");
                 }
                 try
                 {
@@ -113,17 +112,16 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            //uniqueness condition check
-            var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceTypeToUpdate.Type);
-            if (duplicateInvoiceType != null && duplicateInvoiceType.ID != invoiceTypeToUpdate.ID)
-            {
-                ModelState.AddModelError("Type", "An invoice type with this type already exists.");
-                return View(invoiceTypeToUpdate);
-            }
             if (TryUpdateModel(invoiceTypeToUpdate, "", new[] {"Type"}))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceTypeToUpdate.Type);
+                    if (duplicateInvoiceType != null && duplicateInvoiceType.ID != invoiceTypeToUpdate.ID)
+                    {
+                        return new HttpStatusCodeResult(409, "An invoice type with this type already exists.");
+                    }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice type {0} has been edited.", invoiceTypeToUpdate.Type);
                     return Json(invoiceTypeToUpdate.ID);

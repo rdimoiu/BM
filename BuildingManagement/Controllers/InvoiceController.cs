@@ -107,19 +107,17 @@ namespace BuildingManagement.Controllers
                 var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
                 if (duplicateInvoice != null)
                 {
-                    ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
                     PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
                     PopulateClientsDropDownList(invoice.ClientID);
                     PopulateProvidersDropDownList(invoice.ProviderID);
-                    return View(invoice);
+                    return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
                 }
                 if (invoice.Date > invoice.DueDate)
                 {
-                    ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
                     PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
                     PopulateClientsDropDownList(invoice.ClientID);
                     PopulateProvidersDropDownList(invoice.ProviderID);
-                    return View(invoice);
+                    return new HttpStatusCodeResult(409, "DueDate must be greater than Date.");
                 }
                 invoice.Quantity = 0.0m;
                 invoice.TotalValueWithoutTVA = 0.0m;
@@ -169,28 +167,26 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            //uniqueness condition check
-            var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
-            if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
-            {
-                ModelState.AddModelError("Number", "An invoice with this number, on this date, from this provider, already exists.");
-                PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-                PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-                PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-                return View(invoiceToUpdate);
-            }
-            if (invoiceToUpdate.Date > invoiceToUpdate.DueDate)
-            {
-                ModelState.AddModelError("DueDate", "DueDate must be greater than Date.");
-                PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-                PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-                PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-                return View(invoiceToUpdate);
-            }
             if (TryUpdateModel(invoiceToUpdate, "", new[]{"Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID"}))
             {
                 try
                 {
+                    //uniqueness condition check
+                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
+                    if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
+                    {
+                        PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
+                        PopulateClientsDropDownList(invoiceToUpdate.ClientID);
+                        PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
+                        return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
+                    }
+                    if (invoiceToUpdate.Date > invoiceToUpdate.DueDate)
+                    {
+                        PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
+                        PopulateClientsDropDownList(invoiceToUpdate.ClientID);
+                        PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
+                        return new HttpStatusCodeResult(409, "DueDate must be greater than Date.");
+                    }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice {0} has been edited.", invoiceToUpdate.Number);
                     return Json(invoiceToUpdate.ID);

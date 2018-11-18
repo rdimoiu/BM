@@ -40,7 +40,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" onclick="LevelValidateAll('Edit')" />
+            <input type="submit" value="Save" class="btn btn-default" onclick="ValidateAll('Edit')" />
         </div>
     </div>
 </div>
@@ -53,8 +53,11 @@
     @Scripts.Render("~/bundles/jqueryval")
 }
 
-<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
-<script src="@Url.Content("~/Scripts/LevelUtils.js")"></script>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/LevelUtils.js"></script>
+<script src="~/Scripts/ValidateLevel.js"></script>
+<script src="~/Scripts/ValidateFields.js"></script>
+<script src="~/Scripts/SubmitPage.js"></script>
 <script>
     $(document).ready(function() {
         GetSections(@Model.Section.ClientID, @Model.SectionID, "Edit");

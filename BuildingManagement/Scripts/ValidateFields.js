@@ -150,3 +150,12 @@ function TypeValidation() {
         return "";
     }
 }
+
+function SectionValidation() {
+    var controlId = document.getElementById("SectionID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Section field is required." + "\n";
+    } else {
+        return "";
+    }
+}
