@@ -65,32 +65,30 @@ namespace BuildingManagement.Controllers
         // GET: Section/Create
         public ActionResult Create()
         {
-            var model = new Section();
+            var section = new Section();
             PopulateClientsDropDownList();
-            return View(model);
+            return View(section);
         }
 
         // POST: Section/Create
         [HttpPost]
-        public ActionResult CreateSection(Section section)
+        public ActionResult Create(Section section)
         {
-            //uniqueness condition check
-            var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
-            if (duplicateSection != null)
-            {
-                ModelState.AddModelError("Number", "A section with this number already exists for this client.");
-                PopulateClientsDropDownList(section.ClientID);
-                return View("Create", section);
-            }
-            var client = _unitOfWork.ClientRepository.Get(section.ClientID);
-            if (client != null)
-            {
-                section.Client = client;
-            }
-            section.Surface = 0m;
-            section.People = 0;
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
+                if (duplicateSection != null)
+                {
+                    return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");
+                }
+                var client = _unitOfWork.ClientRepository.Get(section.ClientID);
+                if (client != null)
+                {
+                    section.Client = client;
+                }
+                section.Surface = 0m;
+                section.People = 0;
                 try
                 {
                     _unitOfWork.SectionRepository.Add(section);
@@ -104,7 +102,7 @@ namespace BuildingManagement.Controllers
                 }
             }
             PopulateClientsDropDownList(section.ClientID);
-            return View("Create", section);
+            return View(section);
         }
 
         // GET: Section/Edit/5
@@ -121,7 +119,7 @@ namespace BuildingManagement.Controllers
 
         // POST: Section/Edit/5
         [HttpPost]
-        public ActionResult EditSection(Section section)
+        public ActionResult Edit(Section section)
         {
             var sectionToUpdate = _unitOfWork.SectionRepository.GetSectionIncludingClient(section.ID);
             if (sectionToUpdate == null)
@@ -136,9 +134,7 @@ namespace BuildingManagement.Controllers
                     var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
                     if (duplicateSection != null && duplicateSection.ID != sectionToUpdate.ID)
                     {
-                        ModelState.AddModelError("Number", "A section with this number already exists for this client.");
-                        PopulateClientsDropDownList(sectionToUpdate.ClientID);
-                        return View("Edit", sectionToUpdate);
+                        return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");
                     }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Section {0} has been edited.", sectionToUpdate.Number);
@@ -150,7 +146,7 @@ namespace BuildingManagement.Controllers
                 }
             }
             PopulateClientsDropDownList(sectionToUpdate.ClientID);
-            return View("Edit", sectionToUpdate);
+            return View(sectionToUpdate);
         }
 
         // GET: Section/Delete/5
