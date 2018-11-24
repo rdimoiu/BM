@@ -69,7 +69,7 @@ namespace BuildingManagement.Controllers
         // GET: Provider/Create
         public ActionResult Create()
         {
-            Provider provider = new Provider();
+            var provider = new Provider();
             return View(provider);
         }
 

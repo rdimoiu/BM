@@ -61,7 +61,7 @@ namespace BuildingManagement.Controllers
         // GET: MeterType/Create
         public ActionResult Create()
         {
-            MeterType meterType = new MeterType();
+            var meterType = new MeterType();
             return View(meterType);
         }
 

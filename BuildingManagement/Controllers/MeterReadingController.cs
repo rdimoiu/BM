@@ -65,7 +65,7 @@ namespace BuildingManagement.Controllers
         // GET: MeterReading/Create
         public ActionResult Create()
         {
-            MeterReading meterReading = new MeterReading();
+            var meterReading = new MeterReading();
             PopulateMetersDropDownList();
             return View(meterReading);
         }

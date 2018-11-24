@@ -2,6 +2,12 @@
     var validationSummary = "";
     validationSummary += NameValidation();
     validationSummary += FiscalCodeValidation();
+    validationSummary += TradeRegisterValidation();
+    validationSummary += AddressValidation();
+    validationSummary += PhoneValidation();
+    validationSummary += EmailValidation();
+    validationSummary += BankAccountValidation();
+    validationSummary += BankValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
         return false;

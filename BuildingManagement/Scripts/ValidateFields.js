@@ -222,3 +222,31 @@ function FiscalCodeValidation() {
         return "";
     }
 }
+
+function TradeRegisterValidation() {
+    var controlId = document.getElementById("TradeRegister");
+    if (controlId.value === "") {
+        return "The TradeRegister field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function BankAccountValidation() {
+    var controlId = document.getElementById("BankAccount");
+    if (controlId.value === "") {
+        return "The BankAccount field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function BankValidation() {
+    var controlId = document.getElementById("Bank");
+    if (controlId.value === "") {
+        return "The Bank field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
