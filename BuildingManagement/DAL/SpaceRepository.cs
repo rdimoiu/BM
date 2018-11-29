@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BuildingManagement.Models;
-using System.Data.Entity;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -16,14 +16,14 @@ namespace BuildingManagement.DAL
 
         public Space GetSpaceIncludingLevel(int id)
         {
-            return MainContext.Spaces.Include(s => s.Level).SingleOrDefault(s => s.ID == id);
+            return MainContext.Spaces.IncludeOptimized(s => s.Level).SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Space> GetAllSpacesIncludingLevelAndSpaceTypeAndSubClient(string sortOrder)
         {
-            var spaces = MainContext.Spaces.Include(s => s.Level)
-                .Include(s => s.SpaceType)
-                .Include(s => s.SubClient);
+            var spaces = MainContext.Spaces.IncludeOptimized(s => s.Level)
+                .IncludeOptimized(s => s.SpaceType)
+                .IncludeOptimized(s => s.SubClient);
             switch (sortOrder)
             {
                 case "number_desc":
@@ -74,7 +74,9 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Space> GetFilteredSpacesIncludingLevelAndSpaceTypeAndSubClient(string searchString, string sortOrder)
         {
-            var spaces = MainContext.Spaces.Include(s => s.Level).Include(s => s.SpaceType).Include(s => s.SubClient)
+            var spaces = MainContext.Spaces.IncludeOptimized(s => s.Level)
+                .IncludeOptimized(s => s.SpaceType)
+                .IncludeOptimized(s => s.SubClient)
                     .Where(
                         s =>
                             s.Number.ToLower().Contains(searchString) ||
@@ -130,7 +132,6 @@ namespace BuildingManagement.DAL
                     break;
             }
             return spaces;
-
         }
 
         public IEnumerable<Space> GetSpacesByLevel(int levelId)
@@ -138,6 +139,7 @@ namespace BuildingManagement.DAL
             return MainContext.Spaces.Where(s => s.LevelID == levelId);
         } 
 
+        // to be deleted
         public IEnumerable<Space> OrderSpaces(IEnumerable<Space> spaces, string sortOrder)
         {
             switch (sortOrder)

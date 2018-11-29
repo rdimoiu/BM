@@ -74,37 +74,35 @@ namespace BuildingManagement.Controllers
         // GET: Service/Create
         public ActionResult Create(int? invoiceId)
         {
-            var model = new Service();
+            var service = new Service();
             if (invoiceId != null)
             {
-                model.InvoiceID = (int) invoiceId;
+                service.InvoiceID = (int) invoiceId;
             }
             if (Request.UrlReferrer != null && Request.UrlReferrer.AbsoluteUri.Contains("Distribution"))
             {
-                model.PreviousPage = "InvoiceDistribution";
+                service.PreviousPage = "InvoiceDistribution";
             }
             else
             {
-                model.PreviousPage = "Invoice";
+                service.PreviousPage = "Invoice";
             }
             PopulateInvoicesDropDownList();
             PopulateDistributionModesDropDownList();
-            return View(model);
+            return View(service);
         }
 
         // POST: Service/Create
         [HttpPost]
-        public ActionResult CreateService(Service service)
+        public ActionResult Create(Service service)
         {
             //uniqueness condition check
             var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
             if (duplicateService != null)
             {
-                //ViewBag.Message = "A service with this name, for this invoice, already exists.";
-                ModelState.AddModelError("Name", "A service with this name, for this invoice, already exists.");
                 PopulateInvoicesDropDownList(service.InvoiceID);
                 PopulateDistributionModesDropDownList(service.DistributionModeID);
-                return View("Create", service);
+                return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
             }
             var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
             if (invoice != null)
@@ -175,7 +173,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
-            return View("Create", service);
+            return View(service);
         }
 
         // GET: Service/Edit/5
@@ -193,7 +191,7 @@ namespace BuildingManagement.Controllers
 
         // POST: Service/Edit/5
         [HttpPost]
-        public ActionResult EditService(Service service)
+        public ActionResult Edit(Service service)
         {
             var serviceToUpdate = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(service.ID);
             if (serviceToUpdate == null)
@@ -216,10 +214,9 @@ namespace BuildingManagement.Controllers
                     var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
                     if (duplicateService != null && duplicateService.ID != service.ID)
                     {
-                        ModelState.AddModelError("Name", "A service with this name, for this invoice, already exists.");
                         PopulateInvoicesDropDownList(service.InvoiceID);
                         PopulateDistributionModesDropDownList(service.DistributionModeID);
-                        return View("Edit", service);
+                        return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
                     }
                     if (service.ServiceSLSSelected != null)
                     {
@@ -276,7 +273,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
-            return View("Edit", service);
+            return View(service);
         }
 
         // GET: Service/Delete/5

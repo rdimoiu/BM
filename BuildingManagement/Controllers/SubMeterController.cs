@@ -27,18 +27,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString);
+                subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString, sortOrder).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString);
+                    subMeters = _unitOfWork.SubMeterRepository.GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(searchString, sortOrder).ToList();
                 }
                 else
                 {
-                    subMeters = _unitOfWork.SubMeterRepository.GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces();
+                    subMeters = _unitOfWork.SubMeterRepository.GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(sortOrder).ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BuildingManagement.Models;
-using System.Data.Entity;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -17,51 +17,51 @@ namespace BuildingManagement.DAL
         public SubSubMeter GetSubSubMeterIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.SubSubMeters.Include(ssm => ssm.MeterTypes)
-                    .Include(ssm => ssm.DistributionMode)
-                    .Include(ssm => ssm.SubMeter)
-                    .Include(ssm => ssm.Sections)
-                    .Include(ssm => ssm.Levels)
-                    .Include(ssm => ssm.Spaces)
+                MainContext.SubSubMeters.IncludeOptimized(ssm => ssm.MeterTypes)
+                    .IncludeOptimized(ssm => ssm.DistributionMode)
+                    .IncludeOptimized(ssm => ssm.SubMeter)
+                    .IncludeOptimized(ssm => ssm.Sections)
+                    .IncludeOptimized(ssm => ssm.Levels)
+                    .IncludeOptimized(ssm => ssm.Spaces)
                     .SingleOrDefault(ssm => ssm.ID == id);
         }
 
         public SubSubMeter GetSubSubMeterIncludingMeterTypes(int id)
         {
             return
-                MainContext.SubSubMeters.Include(ssm => ssm.MeterTypes)
+                MainContext.SubSubMeters.IncludeOptimized(ssm => ssm.MeterTypes)
                     .SingleOrDefault(ssm => ssm.ID == id);
         }
 
         public SubSubMeter GetSubSubMeterIncludingSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.SubSubMeters.Include(ssm => ssm.Sections)
-                    .Include(ssm => ssm.Levels)
-                    .Include(ssm => ssm.Spaces)
+                MainContext.SubSubMeters.IncludeOptimized(ssm => ssm.Sections)
+                    .IncludeOptimized(ssm => ssm.Levels)
+                    .IncludeOptimized(ssm => ssm.Spaces)
                     .SingleOrDefault(ssm => ssm.ID == id);
         }
 
         public IEnumerable<SubSubMeter> GetAllSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces()
         {
             return
-                MainContext.SubSubMeters.Include(ssm => ssm.MeterTypes)
-                    .Include(ssm => ssm.DistributionMode)
-                    .Include(ssm => ssm.SubMeter)
-                    .Include(ssm => ssm.Sections)
-                    .Include(ssm => ssm.Levels)
-                    .Include(ssm => ssm.Spaces);
+                MainContext.SubSubMeters.IncludeOptimized(ssm => ssm.MeterTypes)
+                    .IncludeOptimized(ssm => ssm.DistributionMode)
+                    .IncludeOptimized(ssm => ssm.SubMeter)
+                    .IncludeOptimized(ssm => ssm.Sections)
+                    .IncludeOptimized(ssm => ssm.Levels)
+                    .IncludeOptimized(ssm => ssm.Spaces);
         }
 
         public IEnumerable<SubSubMeter> GetFilteredSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(string searchString)
         {
             return
-                MainContext.SubSubMeters.Include(ssm => ssm.MeterTypes)
-                    .Include(ssm => ssm.DistributionMode)
-                    .Include(ssm => ssm.SubMeter)
-                    .Include(ssm => ssm.Sections)
-                    .Include(ssm => ssm.Levels)
-                    .Include(ssm => ssm.Spaces)
+                MainContext.SubSubMeters.IncludeOptimized(ssm => ssm.MeterTypes)
+                    .IncludeOptimized(ssm => ssm.DistributionMode)
+                    .IncludeOptimized(ssm => ssm.SubMeter)
+                    .IncludeOptimized(ssm => ssm.Sections)
+                    .IncludeOptimized(ssm => ssm.Levels)
+                    .IncludeOptimized(ssm => ssm.Spaces)
                     .Where(
                         ssm =>
                             ssm.Code.ToLower().Contains(searchString) ||

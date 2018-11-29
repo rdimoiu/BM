@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using BuildingManagement.Models;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -17,51 +17,51 @@ namespace BuildingManagement.DAL
         public Meter GetMeterIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.Meters.Include(m => m.MeterTypes)
-                    .Include(m => m.DistributionMode)
-                    .Include(m => m.Client)
-                    .Include(m => m.Sections)
-                    .Include(m => m.Levels)
-                    .Include(m => m.Spaces)
+                MainContext.Meters.IncludeOptimized(m => m.MeterTypes)
+                    .IncludeOptimized(m => m.DistributionMode)
+                    .IncludeOptimized(m => m.Client)
+                    .IncludeOptimized(m => m.Sections)
+                    .IncludeOptimized(m => m.Levels)
+                    .IncludeOptimized(m => m.Spaces)
                     .SingleOrDefault(m => m.ID == id);
         }
 
         public Meter GetMeterIncludingMeterTypes(int id)
         {
             return
-                MainContext.Meters.Include(m => m.MeterTypes)
+                MainContext.Meters.IncludeOptimized(m => m.MeterTypes)
                     .SingleOrDefault(m => m.ID == id);
         }
 
         public Meter GetMeterIncludingSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.Meters.Include(m => m.Sections)
-                    .Include(m => m.Levels)
-                    .Include(m => m.Spaces)
+                MainContext.Meters.IncludeOptimized(m => m.Sections)
+                    .IncludeOptimized(m => m.Levels)
+                    .IncludeOptimized(m => m.Spaces)
                     .SingleOrDefault(m => m.ID == id);
         }
 
         public IEnumerable<Meter> GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces()
         {
             return
-                MainContext.Meters.Include(m => m.MeterTypes)
-                    .Include(m => m.DistributionMode)
-                    .Include(m => m.Client)
-                    .Include(m => m.Sections)
-                    .Include(m => m.Levels)
-                    .Include(m => m.Spaces);
+                MainContext.Meters.IncludeOptimized(m => m.MeterTypes)
+                    .IncludeOptimized(m => m.DistributionMode)
+                    .IncludeOptimized(m => m.Client)
+                    .IncludeOptimized(m => m.Sections)
+                    .IncludeOptimized(m => m.Levels)
+                    .IncludeOptimized(m => m.Spaces);
         }
 
         public IEnumerable<Meter> GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(string searchString)
         {
             return
-                MainContext.Meters.Include(m => m.MeterTypes)
-                    .Include(m => m.DistributionMode)
-                    .Include(m => m.Client)
-                    .Include(m => m.Sections)
-                    .Include(m => m.Levels)
-                    .Include(m => m.Spaces)
+                MainContext.Meters.IncludeOptimized(m => m.MeterTypes)
+                    .IncludeOptimized(m => m.DistributionMode)
+                    .IncludeOptimized(m => m.Client)
+                    .IncludeOptimized(m => m.Sections)
+                    .IncludeOptimized(m => m.Levels)
+                    .IncludeOptimized(m => m.Spaces)
                     .Where(
                         m =>
                             m.Code.ToLower().Contains(searchString) ||

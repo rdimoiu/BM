@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Data.Entity;
 using BuildingManagement.Models;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -16,19 +16,19 @@ namespace BuildingManagement.DAL
 
         public SubClient GetSubClientIncludingClient(int id)
         {
-            return MainContext.SubClients.Include(sc => sc.Client).SingleOrDefault(sc => sc.ID == id);
+            return MainContext.SubClients.IncludeOptimized(sc => sc.Client).SingleOrDefault(sc => sc.ID == id);
         }
 
         public IEnumerable<SubClient> GetAllSubClientsIncludingClient()
         {
             return
-                MainContext.SubClients.Include(sc => sc.Client);
+                MainContext.SubClients.IncludeOptimized(sc => sc.Client);
         }
 
         public IEnumerable<SubClient> GetFilteredSubClientsIncludingClient(string searchString)
         {
             return
-                MainContext.SubClients.Include(sc => sc.Client)
+                MainContext.SubClients.IncludeOptimized(sc => sc.Client)
                     .Where(
                         sc => sc.Name.ToLower().Contains(searchString) ||
                               sc.Phone.ToLower().Contains(searchString) ||

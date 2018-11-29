@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Data.Entity;
 using BuildingManagement.Models;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -16,19 +16,19 @@ namespace BuildingManagement.DAL
 
         public Section GetSectionIncludingClient(int id)
         {
-            return MainContext.Sections.Include(s => s.Client).SingleOrDefault(s => s.ID == id);
+            return MainContext.Sections.IncludeOptimized(s => s.Client).SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Section> GetAllSectionsIncludingClient()
         {
             return
-                MainContext.Sections.Include(s => s.Client);
+                MainContext.Sections.IncludeOptimized(s => s.Client);
         }
 
         public IEnumerable<Section> GetFilteredSectionsIncludingClient(string searchString)
         {
             return
-                MainContext.Sections.Include(s => s.Client)
+                MainContext.Sections.IncludeOptimized(s => s.Client)
                     .Where(
                         s =>
                             s.Client.Name.ToLower().Contains(searchString) ||

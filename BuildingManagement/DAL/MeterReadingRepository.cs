@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BuildingManagement.Models;
-using System.Data.Entity;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -17,21 +17,21 @@ namespace BuildingManagement.DAL
         public MeterReading GetMeterReadingIncludingMeterAndMeterType(int id)
         {
             return
-                MainContext.MeterReadings.Include(mr => mr.Meter)
-                    .Include(mr => mr.MeterType)
+                MainContext.MeterReadings.IncludeOptimized(mr => mr.Meter)
+                    .IncludeOptimized(mr => mr.MeterType)
                     .SingleOrDefault(mr => mr.ID == id);
         }
 
         public IEnumerable<MeterReading> GetAllMeterReadingsIncludingMeterAndMeterType()
         {
             return
-                MainContext.MeterReadings.Include(mr => mr.Meter).Include(mr => mr.MeterType);
+                MainContext.MeterReadings.IncludeOptimized(mr => mr.Meter).IncludeOptimized(mr => mr.MeterType);
         }
 
         public IEnumerable<MeterReading> GetFilteredMeterReadingsIncludingMeterAndMeterType(string searchString)
         {
             return
-                MainContext.MeterReadings.Include(mr => mr.Meter).Include(mr => mr.MeterType)
+                MainContext.MeterReadings.IncludeOptimized(mr => mr.Meter).IncludeOptimized(mr => mr.MeterType)
                     .Where(
                         mr =>
                             mr.Index.ToString().ToLower().Contains(searchString) ||

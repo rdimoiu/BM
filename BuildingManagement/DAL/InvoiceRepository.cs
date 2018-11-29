@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BuildingManagement.Models;
-using System.Data.Entity;
+using Z.EntityFramework.Plus;
 
 namespace BuildingManagement.DAL
 {
@@ -17,29 +17,29 @@ namespace BuildingManagement.DAL
         public Invoice GetInvoiceIncludingClientAndProviderAndInvoiceTypeAndServices(int id)
         {
             return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services)
+                MainContext.Invoices.IncludeOptimized(i => i.Client)
+                    .IncludeOptimized(i => i.Provider)
+                    .IncludeOptimized(i => i.InvoiceType)
+                    .IncludeOptimized(i => i.Services)
                     .SingleOrDefault(i => i.ID == id);
         }
 
         public IEnumerable<Invoice> GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices()
         {
             return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services);
+                MainContext.Invoices.IncludeOptimized(i => i.Client)
+                    .IncludeOptimized(i => i.Provider)
+                    .IncludeOptimized(i => i.InvoiceType)
+                    .IncludeOptimized(i => i.Services);
         }
 
         public IEnumerable<Invoice> GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(string searchString)
         {
             return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services)
+                MainContext.Invoices.IncludeOptimized(i => i.Client)
+                    .IncludeOptimized(i => i.Provider)
+                    .IncludeOptimized(i => i.InvoiceType)
+                    .IncludeOptimized(i => i.Services)
                     .Where(
                         i =>
                             i.Client.Name.ToLower().Contains(searchString) ||

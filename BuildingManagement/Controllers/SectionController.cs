@@ -80,6 +80,7 @@ namespace BuildingManagement.Controllers
                 var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
                 if (duplicateSection != null)
                 {
+                    PopulateClientsDropDownList(section.ClientID);
                     return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");
                 }
                 var client = _unitOfWork.ClientRepository.Get(section.ClientID);
@@ -134,6 +135,7 @@ namespace BuildingManagement.Controllers
                     var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
                     if (duplicateSection != null && duplicateSection.ID != sectionToUpdate.ID)
                     {
+                        PopulateClientsDropDownList(sectionToUpdate.ClientID);
                         return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");
                     }
                     _unitOfWork.Save();

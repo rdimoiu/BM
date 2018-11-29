@@ -131,7 +131,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" onclick="ServiceValidateAll('Create')" />
+            <input type="submit" value="Create" class="btn btn-default" onclick="ValidateAll('Create')" />
         </div>
     </div>
 </div>
@@ -144,10 +144,13 @@
     @Scripts.Render("~/bundles/jqueryval")
 }
 
-<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
-<script src="@Url.Content("~/Scripts/jstree.js")"></script>
-<script src="@Url.Content("~/Scripts/ServiceUtils.js")"></script>
-<script type="text/javascript">
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jstree.js"></script>
+<script src="~/Scripts/ServiceUtils.js"></script>
+<script src="~/Scripts/ValidateService.js"></script>
+<script src="~/Scripts/ValidateFields.js"></script>
+<script src="~/Scripts/SubmitPage.js"></script>
+<script>
     $(document).ready(function() {
         GetSpacesForService(@Model.ID, @Model.InvoiceID, "Create");
     });
