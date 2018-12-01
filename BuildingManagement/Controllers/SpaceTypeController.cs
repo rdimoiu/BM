@@ -61,31 +61,28 @@ namespace BuildingManagement.Controllers
         // GET: SpaceType/Create
         public ActionResult Create()
         {
-            return View();
+            var spaceType = new SpaceType();
+            return View(spaceType);
         }
 
         // POST: SpaceType/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Type")] SpaceType spaceType)
+        public ActionResult Create(SpaceType spaceType)
         {
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
+                if (duplicateSpaceType != null)
+                {
+                    return new HttpStatusCodeResult(409, "A space type with this type already exists.");
+                }
                 try
                 {
-                    //uniqueness condition check
-                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
-                    if (duplicateSpaceType != null)
-                    {
-                        ModelState.AddModelError("Type", "A space type with this type already exists.");
-                        return View(spaceType);
-                    }
                     _unitOfWork.SpaceTypeRepository.Add(spaceType);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Space type {0} has been created.", spaceType.Type);
-                    return RedirectToAction("Index");
+                    return Json(spaceType.ID);
                 }
                 catch (DataException)
                 {
@@ -107,38 +104,34 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: SpaceType/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(SpaceType spaceType)
         {
-            var spaceType = _unitOfWork.SpaceTypeRepository.Get(id);
-            if (spaceType == null)
+            var spaceTypeToUpdate = _unitOfWork.SpaceTypeRepository.Get(spaceType.ID);
+            if (spaceTypeToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(spaceType, "", new[] { "Type" }))
+            if (TryUpdateModel(spaceTypeToUpdate, "", new[] { "Type" }))
             {
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
-                    if (duplicateSpaceType != null && duplicateSpaceType.ID != spaceType.ID)
+                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceTypeToUpdate.Type);
+                    if (duplicateSpaceType != null && duplicateSpaceType.ID != spaceTypeToUpdate.ID)
                     {
-                        ModelState.AddModelError("Type", "A space type with this type already exists.");
-                        return View(spaceType);
+                        return new HttpStatusCodeResult(409, "A space type with this type already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Space type {0} has been edited.", spaceType.Type);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Space type {0} has been edited.", spaceTypeToUpdate.Type);
+                    return Json(spaceTypeToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(spaceType);
+            return View(spaceTypeToUpdate);
         }
 
         // GET: SpaceType/Delete/5

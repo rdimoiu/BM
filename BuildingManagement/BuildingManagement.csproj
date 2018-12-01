@@ -416,6 +416,7 @@
     <Content Include="Scripts\ValidateSection.js" />
     <Content Include="Scripts\ValidateService.js" />
     <Content Include="Scripts\ValidateSpace.js" />
+    <Content Include="Scripts\ValidateSpaceType.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
