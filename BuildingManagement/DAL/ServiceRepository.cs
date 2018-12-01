@@ -2,7 +2,7 @@
 using System.Linq;
 using BuildingManagement.Models;
 using System.Data.Entity;
-using Z.EntityFramework.Plus;
+using System.Data.Entity;
 
 namespace BuildingManagement.DAL
 {
@@ -18,41 +18,41 @@ namespace BuildingManagement.DAL
         public Service GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.Services.IncludeOptimized(s => s.Invoice)
-                    .IncludeOptimized(s => s.DistributionMode)
-                    .IncludeOptimized(s => s.Sections)
-                    .IncludeOptimized(s => s.Levels)
-                    .IncludeOptimized(s => s.Spaces)
+                MainContext.Services.Include(s => s.Invoice)
+                    .Include(s => s.DistributionMode)
+                    .Include(s => s.Sections)
+                    .Include(s => s.Levels)
+                    .Include(s => s.Spaces)
                     .SingleOrDefault(s => s.ID == id);
         }
 
         public Service GetServiceIncludingSectionsAndLevelsAndSpaces(int id)
         {
             return
-                MainContext.Services.IncludeOptimized(s => s.Sections)
-                    .IncludeOptimized(s => s.Levels)
-                    .IncludeOptimized(s => s.Spaces)
+                MainContext.Services.Include(s => s.Sections)
+                    .Include(s => s.Levels)
+                    .Include(s => s.Spaces)
                     .SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces()
         {
             return
-                MainContext.Services.IncludeOptimized(s => s.Invoice)
-                    .IncludeOptimized(s => s.DistributionMode)
-                    .IncludeOptimized(s => s.Sections)
-                    .IncludeOptimized(s => s.Levels)
-                    .IncludeOptimized(s => s.Spaces);
+                MainContext.Services.Include(s => s.Invoice)
+                    .Include(s => s.DistributionMode)
+                    .Include(s => s.Sections)
+                    .Include(s => s.Levels)
+                    .Include(s => s.Spaces);
         }
 
         public IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(string searchString)
         {
             return
-                MainContext.Services.IncludeOptimized(s => s.Invoice)
-                    .IncludeOptimized(s => s.DistributionMode)
-                    .IncludeOptimized(s => s.Sections)
-                    .IncludeOptimized(s => s.Levels)
-                    .IncludeOptimized(s => s.Spaces)
+                MainContext.Services.Include(s => s.Invoice)
+                    .Include(s => s.DistributionMode)
+                    .Include(s => s.Sections)
+                    .Include(s => s.Levels)
+                    .Include(s => s.Spaces)
                     .Where(
                         s =>
                             s.Name.ToLower().Contains(searchString) ||

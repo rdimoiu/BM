@@ -86,7 +86,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" onclick="SpaceValidateAll('Create')" />
+            <input type="submit" value="Create" class="btn btn-default" onclick="ValidateAll('Create')" />
         </div>
     </div>
 </div>
@@ -99,5 +99,8 @@
     @Scripts.Render("~/bundles/jqueryval")
 }
 
-<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
-<script src="@Url.Content("~/Scripts/SpaceUtils.js")"></script>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/SpaceUtils.js"></script>
+<script src="~/Scripts/ValidateSpace.js"></script>
+<script src="~/Scripts/ValidateFields.js"></script>
+<script src="~/Scripts/SubmitPage.js"></script>

@@ -187,10 +187,6 @@
       <HintPath>..\packages\X.PagedList.Mvc.7.2.0\lib\net452\X.PagedList.Mvc.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Z.EntityFramework.Plus.QueryIncludeOptimized.EF6, Version=1.8.1.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Z.EntityFramework.Plus.QueryIncludeOptimized.EF6.1.8.1\lib\net45\Z.EntityFramework.Plus.QueryIncludeOptimized.EF6.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -403,7 +399,6 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\SectionUtils.js" />
     <Content Include="Scripts\ServiceUtils.js" />
     <Content Include="Scripts\SpaceUtils.js" />
     <Content Include="Scripts\SubMeterUtils.js" />
@@ -420,6 +415,7 @@
     <Content Include="Scripts\ValidateProvider.js" />
     <Content Include="Scripts\ValidateSection.js" />
     <Content Include="Scripts\ValidateService.js" />
+    <Content Include="Scripts\ValidateSpace.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -68,47 +68,46 @@ namespace BuildingManagement.Controllers
         // GET: Space/Create
         public ActionResult Create()
         {
-            var model = new Space();
+            var space = new Space();
             PopulateClientsDropDownList();
             PopulateSectionsDropDownList();
             PopulateLevelsDropDownList();
             PopulateSpaceTypesDropDownList();
             PopulateSubClientsDropDownList();
-            return View(model);
+            return View(space);
         }
 
         // POST: Space/Create
         [HttpPost]
-        public async Task<ActionResult> CreateSpace(Space space)
+        public async Task<ActionResult> Create(Space space)
         {
-            //uniqueness condition check
-            var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID);
-            if (duplicateSpace != null)
-            {
-                ModelState.AddModelError("Number", "A space with this number, of this type, already exists for this level.");
-                PopulateClientsDropDownList(space.ClientID);
-                PopulateSectionsDropDownList(space.SectionID);
-                PopulateLevelsDropDownList(space.LevelID);
-                PopulateSpaceTypesDropDownList(space.SpaceTypeID);
-                PopulateSubClientsDropDownList(space.SubClientID);
-                return View("Create", space);
-            }
-            var level = _unitOfWork.LevelRepository.Get(space.LevelID);
-            if (level == null)
-            {
-                return HttpNotFound();
-            }
-            level.Surface = level.Surface + space.Surface;
-            level.People = level.People + space.People;
-            var section = _unitOfWork.SectionRepository.Get(level.SectionID);
-            if (section == null)
-            {
-                return HttpNotFound();
-            }
-            section.Surface = section.Surface + space.Surface;
-            section.People = section.People + space.People;
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID);
+                if (duplicateSpace != null)
+                {
+                    PopulateClientsDropDownList(space.ClientID);
+                    PopulateSectionsDropDownList(space.SectionID);
+                    PopulateLevelsDropDownList(space.LevelID);
+                    PopulateSpaceTypesDropDownList(space.SpaceTypeID);
+                    PopulateSubClientsDropDownList(space.SubClientID);
+                    return new HttpStatusCodeResult(409, "A space with this number, of this type, already exists for this level.");
+                }
+                var level = _unitOfWork.LevelRepository.Get(space.LevelID);
+                if (level == null)
+                {
+                    return HttpNotFound();
+                }
+                level.Surface = level.Surface + space.Surface;
+                level.People = level.People + space.People;
+                var section = _unitOfWork.SectionRepository.Get(level.SectionID);
+                if (section == null)
+                {
+                    return HttpNotFound();
+                }
+                section.Surface = section.Surface + space.Surface;
+                section.People = section.People + space.People;
                 try
                 {
                     _unitOfWork.SpaceRepository.Add(space);
@@ -126,7 +125,7 @@ namespace BuildingManagement.Controllers
             PopulateLevelsDropDownList(space.LevelID);
             PopulateSpaceTypesDropDownList(space.SpaceTypeID);
             PopulateSubClientsDropDownList(space.SubClientID);
-            return View("Create", space);
+            return View(space);
         }
 
         // GET: Space/Edit/5
@@ -154,7 +153,7 @@ namespace BuildingManagement.Controllers
 
         // POST: Space/Edit/5
         [HttpPost]
-        public async Task<ActionResult> EditSpace(Space space)
+        public async Task<ActionResult> Edit(Space space)
         {
             var spaceToUpdate = _unitOfWork.SpaceRepository.GetSpaceIncludingLevel(space.ID);
             if (spaceToUpdate == null)
@@ -183,13 +182,12 @@ namespace BuildingManagement.Controllers
                     var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
                     if (duplicateSpace != null && duplicateSpace.ID != spaceToUpdate.ID)
                     {
-                        ModelState.AddModelError("Number", "A space with this number, of this type, already exists for this level.");
                         PopulateClientsDropDownList(spaceToUpdate.ClientID);
                         PopulateSectionsDropDownList(spaceToUpdate.SectionID);
                         PopulateLevelsDropDownList(spaceToUpdate.LevelID);
                         PopulateSpaceTypesDropDownList(spaceToUpdate.SpaceTypeID);
                         PopulateSubClientsDropDownList(spaceToUpdate.SubClientID);
-                        return View("Edit", spaceToUpdate);
+                        return new HttpStatusCodeResult(409, "A space with this number, of this type, already exists for this level.");
                     }
                     var level = _unitOfWork.LevelRepository.Get(spaceToUpdate.LevelID);
                     if (level == null)
@@ -219,7 +217,7 @@ namespace BuildingManagement.Controllers
             PopulateLevelsDropDownList(spaceToUpdate.LevelID);
             PopulateSpaceTypesDropDownList(spaceToUpdate.SpaceTypeID);
             PopulateSubClientsDropDownList(spaceToUpdate.SubClientID);
-            return View("Edit", spaceToUpdate);
+            return View(spaceToUpdate);
         }
 
         // GET: Space/Delete/5

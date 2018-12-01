@@ -180,7 +180,7 @@ function InitialIndexValidation() {
 
 function DistributionModeValidation() {
     var controlId = document.getElementById("DistributionModeID");
-    if (controlId.value === "" || controlId === "0") {
+    if (controlId.value === "" || controlId.value === "0") {
         return "The DistributionMode field is required." + "\n";
     } else {
         return "";
@@ -198,7 +198,7 @@ function IndexValidation() {
 
 function MeterValidation() {
     var controlId = document.getElementById("MeterID");
-    if (controlId.value === "" || controlId === "0") {
+    if (controlId.value === "" || controlId.value === "0") {
         return "The Meter field is required." + "\n";
     } else {
         return "";
@@ -207,7 +207,7 @@ function MeterValidation() {
 
 function MeterTypeValidation() {
     var controlId = document.getElementById("MeterTypeID");
-    if (controlId.value === "" || controlId === "0") {
+    if (controlId.value === "" || controlId.value === "0") {
         return "The MeterType field is required." + "\n";
     } else {
         return "";
@@ -245,6 +245,69 @@ function BankValidation() {
     var controlId = document.getElementById("Bank");
     if (controlId.value === "") {
         return "The Bank field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function InvoiceValidation() {
+    var controlId = document.getElementById("InvoiceID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Invoice field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function UnitValidation() {
+    var controlId = document.getElementById("Unit");
+    if (controlId.value === "") {
+        return "The Unit field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function SurfaceValidation() {
+    var controlId = document.getElementById("Surface");
+    if (controlId.value === "") {
+        return "The Surface field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function PeopleValidation() {
+    var controlId = document.getElementById("People");
+    if (controlId.value === "") {
+        return "The People field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function LevelValidation() {
+    var controlId = document.getElementById("LevelID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The Level field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function SpaceTypeValidation() {
+    var controlId = document.getElementById("SpaceTypeID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The SpaceType field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function SubClientValidation() {
+    var controlId = document.getElementById("SubClientID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The SubClient field is required." + "\n";
     } else {
         return "";
     }

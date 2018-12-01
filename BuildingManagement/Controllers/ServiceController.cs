@@ -96,64 +96,64 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult Create(Service service)
         {
-            //uniqueness condition check
-            var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
-            if (duplicateService != null)
-            {
-                PopulateInvoicesDropDownList(service.InvoiceID);
-                PopulateDistributionModesDropDownList(service.DistributionModeID);
-                return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
-            }
-            var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
-            if (invoice != null)
-            {
-                invoice.Quantity = invoice.Quantity + service.Quantity;
-                invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.Quantity * service.Price;
-                invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
-                service.Invoice = invoice;
-            }
-            var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
-            if (distributionMode != null)
-            {
-                service.DistributionMode = distributionMode;
-            }
-            if (service.ServiceSLSSelected != null)
-            {
-                #region Add Sections, Levels and Spaces
-
-                var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(service.ServiceSLSSelected);
-                service.Sections = new List<Section>();
-                foreach (var sectionId in tree3D.SectionIDs)
-                {
-                    var section = _unitOfWork.SectionRepository.Get(sectionId);
-                    if (section != null)
-                    {
-                        service.Sections.Add(section);
-                    }
-                }
-                service.Levels = new List<Level>();
-                foreach (var levelId in tree3D.LevelIDs)
-                {
-                    var level = _unitOfWork.LevelRepository.Get(levelId);
-                    if (level != null)
-                    {
-                        service.Levels.Add(level);
-                    }
-                }
-                service.Spaces = new List<Space>();
-                foreach (var spaceId in tree3D.SpaceIDs)
-                {
-                    var space = _unitOfWork.SpaceRepository.Get(spaceId);
-                    if (space != null)
-                    {
-                        service.Spaces.Add(space);
-                    }
-                }
-
-                #endregion
-            }
             if (ModelState.IsValid)
             {
+                //uniqueness condition check
+                var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+                if (duplicateService != null)
+                {
+                    PopulateInvoicesDropDownList(service.InvoiceID);
+                    PopulateDistributionModesDropDownList(service.DistributionModeID);
+                    return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
+                }
+                var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
+                if (invoice != null)
+                {
+                    invoice.Quantity = invoice.Quantity + service.Quantity;
+                    invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.Quantity * service.Price;
+                    invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
+                    service.Invoice = invoice;
+                }
+                var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
+                if (distributionMode != null)
+                {
+                    service.DistributionMode = distributionMode;
+                }
+                if (service.ServiceSLSSelected != null)
+                {
+                    #region Add Sections, Levels and Spaces
+
+                    var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(service.ServiceSLSSelected);
+                    service.Sections = new List<Section>();
+                    foreach (var sectionId in tree3D.SectionIDs)
+                    {
+                        var section = _unitOfWork.SectionRepository.Get(sectionId);
+                        if (section != null)
+                        {
+                            service.Sections.Add(section);
+                        }
+                    }
+                    service.Levels = new List<Level>();
+                    foreach (var levelId in tree3D.LevelIDs)
+                    {
+                        var level = _unitOfWork.LevelRepository.Get(levelId);
+                        if (level != null)
+                        {
+                            service.Levels.Add(level);
+                        }
+                    }
+                    service.Spaces = new List<Space>();
+                    foreach (var spaceId in tree3D.SpaceIDs)
+                    {
+                        var space = _unitOfWork.SpaceRepository.Get(spaceId);
+                        if (space != null)
+                        {
+                            service.Spaces.Add(space);
+                        }
+                    }
+
+                    #endregion
+                }
                 try
                 {
                     _unitOfWork.ServiceRepository.Add(service);
@@ -162,7 +162,6 @@ namespace BuildingManagement.Controllers
                     if (service.PreviousPage.Equals("Invoice"))
                     {
                         return Json(service.ID);
-                        //return RedirectToAction("Index", "Invoice");
                     }
                     return RedirectToAction("Index", "InvoiceDistribution", new { service.Invoice.ClientID, service.Invoice.ProviderID });
                 }
