@@ -37,6 +37,7 @@ namespace BuildingManagement.DAL
             var subClient1 = new SubClient
             {
                 CNP = "1750913233445",
+                FiscalCode = "111",
                 Bank = "BRD",
                 IBAN = "111112222233333",
                 Country = "Romania",
@@ -52,6 +53,7 @@ namespace BuildingManagement.DAL
             var subClient2 = new SubClient
             {
                 CNP = "1760214243546",
+                FiscalCode = "222",
                 Bank = "BRD",
                 IBAN = "222223333344444",
                 Country = "Romania",
@@ -67,6 +69,7 @@ namespace BuildingManagement.DAL
             var subClient3 = new SubClient
             {
                 CNP = "1850714253647",
+                FiscalCode = "333",
                 Bank = "BRD",
                 IBAN = "333334444455555",
                 Country = "Romania",
@@ -81,6 +84,7 @@ namespace BuildingManagement.DAL
             };
             var subClient4 = new SubClient
             {
+                CNP = "2",
                 FiscalCode = "2",
                 Bank = "BCR",
                 IBAN = "444445555566666",
@@ -96,6 +100,7 @@ namespace BuildingManagement.DAL
             };
             var subClient5 = new SubClient
             {
+                CNP = "3",
                 FiscalCode = "3",
                 Bank = "BCR",
                 IBAN = "555556666677777",
@@ -111,6 +116,7 @@ namespace BuildingManagement.DAL
             };
             var subClient6 = new SubClient
             {
+                CNP = "4",
                 FiscalCode = "4",
                 Bank = "BRD",
                 IBAN = "777776666655555",
@@ -533,7 +539,7 @@ namespace BuildingManagement.DAL
             }
             catch (Exception ex)
             {
-                throw new EarlyExitException("hmmm", ex);
+                throw new EarlyExitException();
             }
 
             //var meterReadings = new List<MeterReading>();

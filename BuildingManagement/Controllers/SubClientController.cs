@@ -74,40 +74,35 @@ namespace BuildingManagement.Controllers
         // GET: SubClient/Create
         public ActionResult Create()
         {
+            var subClient = new SubClient();
             PopulateClientsDropDownList();
-            return View();
+            return View(subClient);
         }
 
         // POST: SubClient/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,Phone,Country,State,City,Street,Contact,Email,IBAN,Bank,CNP,FiscalCode,ClientID")] SubClient subClient)
+        public ActionResult Create(SubClient subClient)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
                     if (string.IsNullOrEmpty(subClient.CNP) || string.IsNullOrEmpty(subClient.FiscalCode))
                     {
-                        ModelState.AddModelError("", "A CNP or FiscalCode is required.");
-                        ModelState.AddModelError("FiscalCode", "A CNP or FiscalCode is required.");
                         PopulateClientsDropDownList(subClient.ClientID);
-                        return View("Create");
+                        return new HttpStatusCodeResult(409, "A CNP or FiscalCode is required.");
                     }
                     //uniqueness condition check
                     var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
                     if (duplicateSubClient != null)
                     {
-                        ModelState.AddModelError("FiscalCode", "A sub client with this CNP or FiscalCode already exists.");
                         PopulateClientsDropDownList(subClient.ClientID);
-                        return View("Create");
+                        return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");
                     }
+                try
+                {
                     _unitOfWork.SubClientRepository.Add(subClient);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Sub client {0} has been created.", subClient.Name);
-                    return RedirectToAction("Index");
+                    return Json(subClient.ID);
                 }
                 catch (DataException)
                 {
@@ -131,47 +126,41 @@ namespace BuildingManagement.Controllers
         }
 
         // POST: SubClient/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int id)
+        [HttpPost]
+        public ActionResult Edit(SubClient subClient)
         {
-            var subClient = _unitOfWork.SubClientRepository.Get(id);
-            if (subClient == null)
+            var subClientToUpdate = _unitOfWork.SubClientRepository.Get(subClient.ID);
+            if (subClientToUpdate == null)
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(subClient, "", new[] { "Name", "Phone", "Country", "State", "City", "Street", "Contact", "Email", "IBAN", "Bank", "CNP", "FiscalCode", "ClientID" }))
+            if (TryUpdateModel(subClientToUpdate, "", new[] { "Name", "Phone", "Country", "State", "City", "Street", "Contact", "Email", "IBAN", "Bank", "CNP", "FiscalCode", "ClientID" }))
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(subClient.CNP) || string.IsNullOrEmpty(subClient.FiscalCode))
+                    if (string.IsNullOrEmpty(subClientToUpdate.CNP) || string.IsNullOrEmpty(subClientToUpdate.FiscalCode))
                     {
-                        ModelState.AddModelError("CNP", "A CNP or FiscalCode is required.");
-                        ModelState.AddModelError("FiscalCode", "A CNP or FiscalCode is required.");
-                        PopulateClientsDropDownList(subClient.ClientID);
-                        return View("Create");
+                        PopulateClientsDropDownList(subClientToUpdate.ClientID);
+                        return new HttpStatusCodeResult(409, "A CNP or FiscalCode is required.");
                     }
                     //uniqueness condition check
-                    var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
-                    if (duplicateSubClient != null && duplicateSubClient.ID != subClient.ID)
+                    var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
+                    if (duplicateSubClient != null && duplicateSubClient.ID != subClientToUpdate.ID)
                     {
-                        ModelState.AddModelError("Code", "A sub client with this CNP or FiscalCode already exists.");
-                        PopulateClientsDropDownList(subClient.ClientID);
-                        return View("Create");
+                        PopulateClientsDropDownList(subClientToUpdate.ClientID);
+                        return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Sub client {0} has been edited.", subClient.Name);
-                    return RedirectToAction("Index");
+                    TempData["message"] = string.Format("Sub client {0} has been edited.", subClientToUpdate.Name);
+                    return Json(subClientToUpdate.ID);
                 }
                 catch (DataException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateClientsDropDownList(subClient.ClientID);
-            return View(subClient);
+            PopulateClientsDropDownList(subClientToUpdate.ClientID);
+            return View(subClientToUpdate);
         }
 
         // GET: SubClient/Delete/5

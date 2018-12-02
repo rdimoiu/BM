@@ -313,3 +313,13 @@ function SubClientValidation() {
     }
 }
 
+function CNPValidation() {
+    var controlId = document.getElementById("CNP");
+    if (controlId.value === "") {
+        return "The CNP field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+
