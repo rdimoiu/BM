@@ -26,7 +26,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Details, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Details, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Details, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Details, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -42,7 +42,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.InitialIndex, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.InitialIndex, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.InitialIndex, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.InitialIndex, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -50,7 +50,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Defect, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Defect, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Defect)
             @Html.ValidationMessageFor(model => model.Defect, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -85,7 +85,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" onclick="SubMeterValidateAll('Edit')" />
+            <input type="submit" value="Save" class="btn btn-default" onclick="ValidateAll('Edit')" />
         </div>
     </div>
 </div>
@@ -98,9 +98,12 @@
     @Scripts.Render("~/bundles/jqueryval")
 }
 
-<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
-<script src="@Url.Content("~/Scripts/jstree.js")"></script>
-<script src="@Url.Content("~/Scripts/SubMeterUtils.js")"></script>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jstree.js"></script>
+<script src="~/Scripts/ValidateSubMeter.js"></script>
+<script src="~/Scripts/SubMeterUtils.js"></script>
+<script src="~/Scripts/ValidateFields.js"></script>
+<script src="~/Scripts/SubmitPage.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         GetMeterTypesAndSpacesForSubMeter(@Model.ID, @Model.MeterID, "Edit");

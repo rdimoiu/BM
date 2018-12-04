@@ -418,6 +418,8 @@
     <Content Include="Scripts\ValidateSpace.js" />
     <Content Include="Scripts\ValidateSpaceType.js" />
     <Content Include="Scripts\ValidateSubClient.js" />
+    <Content Include="Scripts\ValidateSubMeter.js" />
+    <Content Include="Scripts\ValidateSubSubMeter.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

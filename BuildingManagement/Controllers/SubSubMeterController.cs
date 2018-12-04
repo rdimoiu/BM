@@ -68,90 +68,89 @@ namespace BuildingManagement.Controllers
         // GET: SubMeter/Create
         public ActionResult Create()
         {
-            var model = new SubSubMeter();
+            var subSubMeter = new SubSubMeter();
             PopulateSubMetersDropDownList();
             PopulateDistributionModesDropDownList();
-            return View(model);
+            return View(subSubMeter);
         }
 
         // POST: SubSubMeter/Create
         [HttpPost]
-        public ActionResult CreateSubSubMeter(SubSubMeter subSubMeter)
+        public ActionResult Create(SubSubMeter subSubMeter)
         {
-            //uniqueness condition check
-            if (subSubMeter.Code != null)
+            if (ModelState.IsValid)
             {
-                var duplicateSubSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(ssm => ssm.Code == subSubMeter.Code);
-                if (duplicateSubSubMeter != null)
+                //uniqueness condition check
+                if (subSubMeter.Code != null)
                 {
-                    ModelState.AddModelError("Code", "A sub sub meter with this code already exists.");
-                    PopulateSubMetersDropDownList(subSubMeter.SubMeterID);
-                    PopulateDistributionModesDropDownList(subSubMeter.DistributionModeID);
-                    return View("Create", subSubMeter);
-                }
-            }
-            var subMeter = _unitOfWork.MeterRepository.Get(subSubMeter.SubMeterID);
-            if (subMeter != null)
-            {
-                subSubMeter.SubMeter = subMeter;
-            }
-            var distributionMode = _unitOfWork.DistributionModeRepository.Get(subSubMeter.DistributionModeID);
-            if (distributionMode != null)
-            {
-                subSubMeter.DistributionMode = distributionMode;
-            }
-            subSubMeter.MeterTypes = new List<MeterType>();
-            if (subSubMeter.MeterTypesSelected != null)
-            {
-                foreach (var subMeterTypeSelected in subSubMeter.MeterTypesSelected)
-                {
-                    if (subMeterTypeSelected != "root")
+                    var duplicateSubSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(ssm => ssm.Code == subSubMeter.Code);
+                    if (duplicateSubSubMeter != null)
                     {
-                        var meterType = _unitOfWork.MeterTypeRepository.Get(int.Parse(subMeterTypeSelected));
-                        if (meterType != null)
+                        PopulateSubMetersDropDownList(subSubMeter.SubMeterID);
+                        PopulateDistributionModesDropDownList(subSubMeter.DistributionModeID);
+                        return new HttpStatusCodeResult(409, "A sub sub meter with this code already exists.");
+                    }
+                }
+                var subMeter = _unitOfWork.MeterRepository.Get(subSubMeter.SubMeterID);
+                if (subMeter != null)
+                {
+                    subSubMeter.SubMeter = subMeter;
+                }
+                var distributionMode = _unitOfWork.DistributionModeRepository.Get(subSubMeter.DistributionModeID);
+                if (distributionMode != null)
+                {
+                    subSubMeter.DistributionMode = distributionMode;
+                }
+                subSubMeter.MeterTypes = new List<MeterType>();
+                if (subSubMeter.MeterTypesSelected != null)
+                {
+                    foreach (var subMeterTypeSelected in subSubMeter.MeterTypesSelected)
+                    {
+                        if (subMeterTypeSelected != "root")
                         {
-                            subSubMeter.MeterTypes.Add(meterType);
+                            var meterType = _unitOfWork.MeterTypeRepository.Get(int.Parse(subMeterTypeSelected));
+                            if (meterType != null)
+                            {
+                                subSubMeter.MeterTypes.Add(meterType);
+                            }
                         }
                     }
                 }
-            }
-            if (subSubMeter.MeterSLSSelected != null)
-            {
-                #region Add Sections, Levels and Spaces
+                if (subSubMeter.MeterSLSSelected != null)
+                {
+                    #region Add Sections, Levels and Spaces
 
-                var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(subSubMeter.MeterSLSSelected);
-                subSubMeter.Sections = new List<Section>();
-                foreach (var sectionId in tree3D.SectionIDs)
-                {
-                    var section = _unitOfWork.SectionRepository.Get(sectionId);
-                    if (section != null)
+                    var tree3D = Utils.TreeHelper.MapSelectedIDsToDatabaseIDsForSpaces(subSubMeter.MeterSLSSelected);
+                    subSubMeter.Sections = new List<Section>();
+                    foreach (var sectionId in tree3D.SectionIDs)
                     {
-                        subSubMeter.Sections.Add(section);
+                        var section = _unitOfWork.SectionRepository.Get(sectionId);
+                        if (section != null)
+                        {
+                            subSubMeter.Sections.Add(section);
+                        }
                     }
-                }
-                subSubMeter.Levels = new List<Level>();
-                foreach (var levelId in tree3D.LevelIDs)
-                {
-                    var level = _unitOfWork.LevelRepository.Get(levelId);
-                    if (level != null)
+                    subSubMeter.Levels = new List<Level>();
+                    foreach (var levelId in tree3D.LevelIDs)
                     {
-                        subSubMeter.Levels.Add(level);
+                        var level = _unitOfWork.LevelRepository.Get(levelId);
+                        if (level != null)
+                        {
+                            subSubMeter.Levels.Add(level);
+                        }
                     }
-                }
-                subSubMeter.Spaces = new List<Space>();
-                foreach (var spaceId in tree3D.SpaceIDs)
-                {
-                    var space = _unitOfWork.SpaceRepository.Get(spaceId);
-                    if (space != null)
+                    subSubMeter.Spaces = new List<Space>();
+                    foreach (var spaceId in tree3D.SpaceIDs)
                     {
-                        subSubMeter.Spaces.Add(space);
+                        var space = _unitOfWork.SpaceRepository.Get(spaceId);
+                        if (space != null)
+                        {
+                            subSubMeter.Spaces.Add(space);
+                        }
                     }
-                }
 
-                #endregion
-            }
-            if (ModelState.IsValid)
-            {
+                    #endregion
+                }
                 try
                 {
                     _unitOfWork.SubSubMeterRepository.Add(subSubMeter);
@@ -166,7 +165,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateSubMetersDropDownList(subSubMeter.SubMeterID);
             PopulateDistributionModesDropDownList(subSubMeter.DistributionModeID);
-            return View("Create", subSubMeter);
+            return View(subSubMeter);
         }
 
         // GET: SubSubMeter/Edit/5
@@ -184,7 +183,7 @@ namespace BuildingManagement.Controllers
 
         // POST: SubSubMeter/Edit/5
         [HttpPost]
-        public ActionResult EditSubSubMeter(SubSubMeter subSubMeter)
+        public ActionResult Edit(SubSubMeter subSubMeter)
         {
             var subSubMeterToUpdate = _unitOfWork.SubSubMeterRepository.GetSubSubMeterIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(subSubMeter.ID);
             if (subSubMeterToUpdate == null)
@@ -199,10 +198,9 @@ namespace BuildingManagement.Controllers
                     var duplicateSubSubMeter = _unitOfWork.SubSubMeterRepository.SingleOrDefault(ssm => ssm.Code == subSubMeterToUpdate.Code);
                     if (duplicateSubSubMeter != null && duplicateSubSubMeter.ID != subSubMeterToUpdate.ID)
                     {
-                        ModelState.AddModelError("Code", "A sub sub meter with this code already exists.");
                         PopulateSubMetersDropDownList(subSubMeterToUpdate.SubMeterID);
                         PopulateDistributionModesDropDownList(subSubMeterToUpdate.DistributionModeID);
-                        return View("Edit", subSubMeter);
+                        return new HttpStatusCodeResult(409, "A sub sub meter with this code already exists.");
                     }
 
                     #region Update MeterTypes
@@ -264,7 +262,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateSubMetersDropDownList(subSubMeterToUpdate.SubMeterID);
             PopulateDistributionModesDropDownList(subSubMeterToUpdate.DistributionModeID);
-            return View("Edit", subSubMeterToUpdate);
+            return View(subSubMeterToUpdate);
         }
 
         // GET: SubSubMeter/Delete/5

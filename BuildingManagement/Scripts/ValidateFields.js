@@ -322,4 +322,12 @@ function CNPValidation() {
     }
 }
 
+function SubMeterValidation() {
+    var controlId = document.getElementById("SubMeterID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The SubMeter field is required." + "\n";
+    } else {
+        return "";
+    }
+}
 

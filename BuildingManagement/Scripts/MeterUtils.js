@@ -1,4 +1,4 @@
-﻿function GetMeterTypesForMeter(modelId, operation) {
+﻿function GetMeterTypesForMeter(meterId, operation) {
     var url;
     if (operation === "Create") {
         url = "../Meter/GetMeterTypesTreeData/?meterId=";
@@ -14,14 +14,14 @@
                     "themes": {
                         "responsive": true
                     },
-                    "url": url + modelId,
+                    "url": url + meterId,
                     "dataType": "json"
                 }
             }
         });
 }
 
-function GetSpacesForMeter(modelId, clientId, operation) {
+function GetSpacesForMeter(meterId, clientId, operation) {
     var url;
     if (operation === "Create") {
         url = "../Meter/GetSpacesTreeData/?meterId=";
@@ -37,7 +37,7 @@ function GetSpacesForMeter(modelId, clientId, operation) {
                     "themes": {
                         "responsive": true
                     },
-                    "url": url + modelId + "&clientId=" + clientId,
+                    "url": url + meterId + "&clientId=" + clientId,
                     "dataType": "json"
                 }
             }
