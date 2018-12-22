@@ -338,7 +338,7 @@ namespace BuildingManagement.Controllers
             var selectedMeterTypes = new HashSet<int>();
             if (subSubMeterId != null && subSubMeterId != 0)
             {
-                var subSubMeter = _unitOfWork.SubSubMeterRepository.GetSubSubMeterIncludingMeterTypes((int)subSubMeterId);
+                var subSubMeter = _unitOfWork.SubSubMeterRepository.Get((int)subSubMeterId);
                 if (subSubMeter != null)
                 {
                     selectedMeterTypes = new HashSet<int>(subSubMeter.MeterTypes.Select(mt => mt.ID));
@@ -348,7 +348,7 @@ namespace BuildingManagement.Controllers
             var meterTypes = new List<MeterType>();
             if (subMeterId != null && subSubMeterId != 0)
             {
-                var meter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingMeterTypes((int)subMeterId);
+                var meter = _unitOfWork.SubMeterRepository.Get((int)subMeterId);
                 if (meter != null)
                 {
                     meterTypes = meter.MeterTypes.ToList();
@@ -389,7 +389,7 @@ namespace BuildingManagement.Controllers
             var selectedSectionsIDs = new HashSet<int>();
             if (subSubMeterId != null && subSubMeterId != 0)
             {
-                var subSubMeter = _unitOfWork.SubSubMeterRepository.GetSubSubMeterIncludingSectionsAndLevelsAndSpaces((int)subSubMeterId);
+                var subSubMeter = _unitOfWork.SubSubMeterRepository.Get((int)subSubMeterId);
                 if (subSubMeter != null)
                 {
                     selectedSpacesIDs = new HashSet<int>(subSubMeter.Spaces.Select(s => s.ID));
@@ -400,7 +400,7 @@ namespace BuildingManagement.Controllers
 
             if (subMeterId != null && subMeterId != 0)
             {
-                var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingSectionsAndLevelsAndSpaces((int)subMeterId);
+                var subMeter = _unitOfWork.SubMeterRepository.Get((int)subMeterId);
                 if (subMeter != null)
                 {
                     var meter = _unitOfWork.MeterRepository.Get(subMeter.MeterID);

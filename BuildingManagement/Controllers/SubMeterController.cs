@@ -338,7 +338,7 @@ namespace BuildingManagement.Controllers
             var selectedMeterTypes = new HashSet<int>();
             if (subMeterId != null && subMeterId != 0)
             {
-                var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingMeterTypes((int)subMeterId);
+                var subMeter = _unitOfWork.SubMeterRepository.Get((int)subMeterId);
                 if (subMeter != null)
                 {
                     selectedMeterTypes = new HashSet<int>(subMeter.MeterTypes.Select(mt => mt.ID));
@@ -348,7 +348,7 @@ namespace BuildingManagement.Controllers
             var meterTypes = new List<MeterType>();
             if (meterId != null && subMeterId != 0)
             {
-                var meter = _unitOfWork.MeterRepository.GetMeterIncludingMeterTypes((int)meterId);
+                var meter = _unitOfWork.MeterRepository.Get((int)meterId);
                 if (meter != null)
                 {
                     meterTypes = meter.MeterTypes.ToList();
