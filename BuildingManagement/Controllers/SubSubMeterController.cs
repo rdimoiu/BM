@@ -403,8 +403,12 @@ namespace BuildingManagement.Controllers
                 var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingSectionsAndLevelsAndSpaces((int)subMeterId);
                 if (subMeter != null)
                 {
-                    var treeHelper = new Utils.TreeHelper(_unitOfWork);
-                    root = treeHelper.GetSectionsLevelsSpacesByParent(root, subMeter.MeterID, subMeter.Sections, subMeter.Levels, subMeter.Spaces, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
+                    var meter = _unitOfWork.MeterRepository.Get(subMeter.MeterID);
+                    if (meter != null)
+                    {
+                        var treeHelper = new Utils.TreeHelper(_unitOfWork);
+                        root = treeHelper.GetSectionsLevelsSpacesByParent(root, meter.ClientID, subMeter.Sections, subMeter.Levels, subMeter.Spaces, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
+                    }
                 }
             }
 
