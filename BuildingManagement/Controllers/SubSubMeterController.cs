@@ -91,7 +91,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A sub sub meter with this code already exists.");
                     }
                 }
-                var subMeter = _unitOfWork.MeterRepository.Get(subSubMeter.SubMeterID);
+                var subMeter = _unitOfWork.SubMeterRepository.Get(subSubMeter.SubMeterID);
                 if (subMeter != null)
                 {
                     subSubMeter.SubMeter = subMeter;

@@ -21,7 +21,7 @@ namespace BuildingManagement.Models
         //consumption
 
         public int SubMeterID { get; set; }
-        public Meter SubMeter { get; set; }
+        public SubMeter SubMeter { get; set; }
 
         public int DistributionModeID { get; set; }
         public virtual DistributionMode DistributionMode { get; set; }
