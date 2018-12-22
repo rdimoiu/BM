@@ -389,7 +389,7 @@ namespace BuildingManagement.Controllers
             var selectedSectionsIDs = new HashSet<int>();
             if (subMeterId != null && subMeterId != 0)
             {
-                var subMeter = _unitOfWork.SubMeterRepository.GetSubMeterIncludingSectionsAndLevelsAndSpaces((int)subMeterId);
+                var subMeter = _unitOfWork.SubMeterRepository.Get((int)subMeterId);
                 if (subMeter != null)
                 {
                     selectedSpacesIDs = new HashSet<int>(subMeter.Spaces.Select(s => s.ID));
@@ -400,7 +400,7 @@ namespace BuildingManagement.Controllers
 
             if (meterId != null && meterId != 0)
             {
-                var meter = _unitOfWork.MeterRepository.GetMeterIncludingSectionsAndLevelsAndSpaces((int)meterId);
+                var meter = _unitOfWork.MeterRepository.Get((int)meterId);
                 if (meter != null)
                 {
                     var treeHelper = new Utils.TreeHelper(_unitOfWork);
