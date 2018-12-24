@@ -15,12 +15,11 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<MeterType> GetFilteredMeterTypes(string searchString)
         {
-            return
-                MainContext.MeterTypes.Where(mt => mt.Type.ToLower().Contains(searchString));
+            return MainContext.MeterTypes
+                .Where(mt => mt.Type.ToLower().Contains(searchString));
         }
 
-        public IEnumerable<MeterType> OrderMeterTypes(IEnumerable<MeterType> meterTypes,
-            string sortOrder)
+        public IEnumerable<MeterType> OrderMeterTypes(IEnumerable<MeterType> meterTypes, string sortOrder)
         {
             switch (sortOrder)
             {

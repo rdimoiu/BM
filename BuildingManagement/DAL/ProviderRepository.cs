@@ -15,17 +15,16 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Provider> GetFilteredProviders(string searchString)
         {
-            return
-                MainContext.Providers.Where(
-                    p =>
-                        p.Name.ToLower().Contains(searchString) ||
-                        p.FiscalCode.ToLower().Contains(searchString) ||
-                        p.TradeRegister.ToLower().Contains(searchString) ||
-                        p.Address.ToLower().Contains(searchString) ||
-                        p.Phone.ToLower().Contains(searchString) ||
-                        p.Email.ToLower().Contains(searchString) ||
-                        p.BankAccount.ToLower().Contains(searchString) ||
-                        p.Bank.ToLower().Contains(searchString));
+            return MainContext.Providers
+                .Where(p =>
+                    p.Name.ToLower().Contains(searchString) ||
+                    p.FiscalCode.ToLower().Contains(searchString) ||
+                    p.TradeRegister.ToLower().Contains(searchString) ||
+                    p.Address.ToLower().Contains(searchString) ||
+                    p.Phone.ToLower().Contains(searchString) ||
+                    p.Email.ToLower().Contains(searchString) ||
+                    p.BankAccount.ToLower().Contains(searchString) ||
+                    p.Bank.ToLower().Contains(searchString));
         }
 
         public IEnumerable<Provider> OrderProviders(IEnumerable<Provider> providers, string sortOrder)

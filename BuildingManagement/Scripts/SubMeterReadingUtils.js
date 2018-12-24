@@ -1,17 +1,17 @@
-﻿function GetMeterTypes(idMeter, idMeterType) {
+﻿function GetMeterTypes(idSubMeter, idMeterType) {
     var meterTypeList = $("#MeterTypeID");
-    if (idMeter === "") {
+    if (idSubMeter === "") {
         meterTypeList.empty();
         var firstItem = new Option("Select...", "0");
         meterTypeList.append(firstItem);
         return;
     }
     $.ajax({
-        url: "/MeterReading/GetMeterTypes/",
-        data: { meterId: idMeter, meterTypeId: idMeterType },
+        url: "/SubMeterReading/GetMeterTypes/",
+        data: { subMeterId: idSubMeter, meterTypeId: idMeterType },
         cache: false,
         type: "POST",
-        success: function(data) {
+        success: function (data) {
             meterTypeList.empty();
             var first = new Option("Select...", "0");
             meterTypeList.append(first);
@@ -20,7 +20,7 @@
                 meterTypeList.append(item);
             }
         },
-        error: function(reponse) {
+        error: function (reponse) {
             alert("error : " + reponse);
         }
     });

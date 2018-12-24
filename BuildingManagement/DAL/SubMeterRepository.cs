@@ -16,40 +16,41 @@ namespace BuildingManagement.DAL
 
         public SubMeter GetSubMeterIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(int id)
         {
-            return
-                MainContext.SubMeters.Include(sm => sm.MeterTypes)
-                    .Include(sm => sm.DistributionMode)
-                    .Include(sm => sm.Meter)
-                    .Include(sm => sm.Sections)
-                    .Include(sm => sm.Levels)
-                    .Include(sm => sm.Spaces)
-                    .SingleOrDefault(sm => sm.ID == id);
+            return MainContext.SubMeters
+                .Include(sm => sm.MeterTypes)
+                .Include(sm => sm.DistributionMode)
+                .Include(sm => sm.Meter)
+                .Include(sm => sm.Sections)
+                .Include(sm => sm.Levels)
+                .Include(sm => sm.Spaces)
+                .SingleOrDefault(sm => sm.ID == id);
         }
 
         public SubMeter GetSubMeterIncludingMeterTypes(int id)
         {
-            return
-                MainContext.SubMeters.Include(sm => sm.MeterTypes)
-                    .SingleOrDefault(sm => sm.ID == id);
+            return MainContext.SubMeters
+                .Include(sm => sm.MeterTypes)
+                .SingleOrDefault(sm => sm.ID == id);
         }
 
         public SubMeter GetSubMeterIncludingSectionsAndLevelsAndSpaces(int id)
         {
-            return
-                MainContext.SubMeters.Include(sm => sm.Sections)
-                    .Include(sm => sm.Levels)
-                    .Include(sm => sm.Spaces)
-                    .SingleOrDefault(sm => sm.ID == id);
+            return MainContext.SubMeters
+                .Include(sm => sm.Sections)
+                .Include(sm => sm.Levels)
+                .Include(sm => sm.Spaces)
+                .SingleOrDefault(sm => sm.ID == id);
         }
 
         public IEnumerable<SubMeter> GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(string sortOrder)
         {
-            var subMeters = MainContext.SubMeters.Include(sm => sm.MeterTypes)
-                    .Include(sm => sm.DistributionMode)
-                    .Include(sm => sm.Meter)
-                    .Include(sm => sm.Sections)
-                    .Include(sm => sm.Levels)
-                    .Include(sm => sm.Spaces);
+            var subMeters = MainContext.SubMeters
+                .Include(sm => sm.MeterTypes)
+                .Include(sm => sm.DistributionMode)
+                .Include(sm => sm.Meter)
+                .Include(sm => sm.Sections)
+                .Include(sm => sm.Levels)
+                .Include(sm => sm.Spaces);
             switch (sortOrder)
             {
                 case "code_desc":
@@ -94,20 +95,20 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<SubMeter> GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(string searchString, string sortOrder)
         {
-            var subMeters = MainContext.SubMeters.Include(sm => sm.MeterTypes)
-                    .Include(sm => sm.DistributionMode)
-                    .Include(sm => sm.Meter)
-                    .Include(sm => sm.Sections)
-                    .Include(sm => sm.Levels)
-                    .Include(sm => sm.Spaces)
-                    .Where(
-                        sm =>
-                            sm.Code.ToLower().Contains(searchString) ||
-                            sm.Details.ToLower().Contains(searchString) ||
-                            sm.InitialIndex.ToString().ToLower().Contains(searchString) ||
-                            sm.Defect.ToString().ToLower().Contains(searchString) ||
-                            sm.DistributionMode.Mode.ToLower().Contains(searchString) ||
-                            sm.Meter.Code.ToLower().Contains(searchString));
+            var subMeters = MainContext.SubMeters
+                .Include(sm => sm.MeterTypes)
+                .Include(sm => sm.DistributionMode)
+                .Include(sm => sm.Meter)
+                .Include(sm => sm.Sections)
+                .Include(sm => sm.Levels)
+                .Include(sm => sm.Spaces)
+                .Where(sm =>
+                    sm.Code.ToLower().Contains(searchString) ||
+                    sm.Details.ToLower().Contains(searchString) ||
+                    sm.InitialIndex.ToString().ToLower().Contains(searchString) ||
+                    sm.Defect.ToString().ToLower().Contains(searchString) ||
+                    sm.DistributionMode.Mode.ToLower().Contains(searchString) ||
+                    sm.Meter.Code.ToLower().Contains(searchString));
             switch (sortOrder)
             {
                 case "code_desc":
@@ -149,7 +150,6 @@ namespace BuildingManagement.DAL
             }
             return subMeters;
         }
-
 
         //to be deleted
         public IEnumerable<SubMeter> OrderSubMeters(IEnumerable<SubMeter> subMeters, string sortOrder)

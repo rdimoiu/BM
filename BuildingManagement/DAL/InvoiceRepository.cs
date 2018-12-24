@@ -16,45 +16,44 @@ namespace BuildingManagement.DAL
 
         public Invoice GetInvoiceIncludingClientAndProviderAndInvoiceTypeAndServices(int id)
         {
-            return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services)
-                    .SingleOrDefault(i => i.ID == id);
+            return MainContext.Invoices
+                .Include(i => i.Client)
+                .Include(i => i.Provider)
+                .Include(i => i.InvoiceType)
+                .Include(i => i.Services)
+                .SingleOrDefault(i => i.ID == id);
         }
 
         public IEnumerable<Invoice> GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices()
         {
-            return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services);
+            return MainContext.Invoices
+                .Include(i => i.Client)
+                .Include(i => i.Provider)
+                .Include(i => i.InvoiceType)
+                .Include(i => i.Services);
         }
 
         public IEnumerable<Invoice> GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(string searchString)
         {
-            return
-                MainContext.Invoices.Include(i => i.Client)
-                    .Include(i => i.Provider)
-                    .Include(i => i.InvoiceType)
-                    .Include(i => i.Services)
-                    .Where(
-                        i =>
-                            i.Client.Name.ToLower().Contains(searchString) ||
-                            i.Provider.Name.ToLower().Contains(searchString) ||
-                            i.InvoiceType.Type.ToLower().Contains(searchString) ||
-                            i.Number.ToLower().Contains(searchString) ||
-                            i.Date.ToString().ToLower().Contains(searchString) ||
-                            i.DueDate.ToString().ToLower().Contains(searchString) ||
-                            i.Quantity.ToString().ToLower().Contains(searchString) ||
-                            i.CheckQuantity.ToString().ToLower().Contains(searchString) ||
-                            i.TotalValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
-                            i.CheckTotalValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
-                            i.TotalTVA.ToString().ToLower().Contains(searchString) ||
-                            i.CheckTotalTVA.ToString().ToLower().Contains(searchString) ||
-                            i.DiscountMonth.ToString().ToLower().Contains(searchString));
+            return MainContext.Invoices
+                .Include(i => i.Client)
+                .Include(i => i.Provider)
+                .Include(i => i.InvoiceType)
+                .Include(i => i.Services)
+                .Where(i =>
+                    i.Client.Name.ToLower().Contains(searchString) ||
+                    i.Provider.Name.ToLower().Contains(searchString) ||
+                    i.InvoiceType.Type.ToLower().Contains(searchString) ||
+                    i.Number.ToLower().Contains(searchString) ||
+                    i.Date.ToString().ToLower().Contains(searchString) ||
+                    i.DueDate.ToString().ToLower().Contains(searchString) ||
+                    i.Quantity.ToString().ToLower().Contains(searchString) ||
+                    i.CheckQuantity.ToString().ToLower().Contains(searchString) ||
+                    i.TotalValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
+                    i.CheckTotalValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
+                    i.TotalTVA.ToString().ToLower().Contains(searchString) ||
+                    i.CheckTotalTVA.ToString().ToLower().Contains(searchString) ||
+                    i.DiscountMonth.ToString().ToLower().Contains(searchString));
         }
 
         public IEnumerable<Invoice> OrderInvoices(IEnumerable<Invoice> invoices, string sortOrder)

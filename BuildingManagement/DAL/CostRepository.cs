@@ -15,7 +15,8 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Cost> GetCostsByService(int serviceId)
         {
-            return MainContext.Costs.Where(c => c.ServiceID == serviceId);
+            return MainContext.Costs
+                .Where(c => c.ServiceID == serviceId);
         }
     }
 }

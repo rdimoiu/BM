@@ -23,7 +23,9 @@ namespace BuildingManagement.DAL
         public virtual DbSet<MeterReading> MeterReadings { get; set; }
         public virtual DbSet<MeterType> MeterTypes { get; set; }
         public virtual DbSet<SubMeter> SubMeters { get; set; }
+        public virtual DbSet<SubMeterReading> SubMeterReadings { get; set; }
         public virtual DbSet<SubSubMeter> SubSubMeters { get; set; }
+        public virtual DbSet<SubSubMeterReading> SubSubMeterReadings { get; set; }
 
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Level> Levels { get; set; }

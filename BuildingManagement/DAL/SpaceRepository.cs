@@ -16,12 +16,15 @@ namespace BuildingManagement.DAL
 
         public Space GetSpaceIncludingLevel(int id)
         {
-            return MainContext.Spaces.Include(s => s.Level).SingleOrDefault(s => s.ID == id);
+            return MainContext.Spaces
+                .Include(s => s.Level)
+                .SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Space> GetAllSpacesIncludingLevelAndSpaceTypeAndSubClient(string sortOrder)
         {
-            var spaces = MainContext.Spaces.Include(s => s.Level)
+            var spaces = MainContext.Spaces
+                .Include(s => s.Level)
                 .Include(s => s.SpaceType)
                 .Include(s => s.SubClient);
             switch (sortOrder)
@@ -74,18 +77,18 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Space> GetFilteredSpacesIncludingLevelAndSpaceTypeAndSubClient(string searchString, string sortOrder)
         {
-            var spaces = MainContext.Spaces.Include(s => s.Level)
+            var spaces = MainContext.Spaces
+                .Include(s => s.Level)
                 .Include(s => s.SpaceType)
                 .Include(s => s.SubClient)
-                    .Where(
-                        s =>
-                            s.Number.ToLower().Contains(searchString) ||
-                            s.Surface.ToString().ToLower().Contains(searchString) ||
-                            s.People.ToString().ToLower().Contains(searchString) ||
-                            s.Inhabited.ToString().ToLower().Contains(searchString) ||
-                            s.Level.Number.ToLower().Contains(searchString) ||
-                            s.SpaceType.Type.ToLower().Contains(searchString) ||
-                            s.SubClient.Name.ToLower().Contains(searchString));
+                .Where(s =>
+                    s.Number.ToLower().Contains(searchString) ||
+                    s.Surface.ToString().ToLower().Contains(searchString) ||
+                    s.People.ToString().ToLower().Contains(searchString) ||
+                    s.Inhabited.ToString().ToLower().Contains(searchString) ||
+                    s.Level.Number.ToLower().Contains(searchString) ||
+                    s.SpaceType.Type.ToLower().Contains(searchString) ||
+                    s.SubClient.Name.ToLower().Contains(searchString));
             switch (sortOrder)
             {
                 case "number_desc":
@@ -136,7 +139,8 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Space> GetSpacesByLevel(int levelId)
         {
-            return MainContext.Spaces.Where(s => s.LevelID == levelId);
+            return MainContext.Spaces
+                .Where(s => s.LevelID == levelId);
         } 
 
         // to be deleted

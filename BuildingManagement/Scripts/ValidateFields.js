@@ -331,3 +331,11 @@ function SubMeterValidation() {
     }
 }
 
+function SubSubMeterValidation() {
+    var controlId = document.getElementById("SubSubMeterID");
+    if (controlId.value === "" || controlId.value === "0") {
+        return "The SubSubMeter field is required." + "\n";
+    } else {
+        return "";
+    }
+}

@@ -16,28 +16,28 @@ namespace BuildingManagement.DAL
 
         public MeterReading GetMeterReadingIncludingMeterAndMeterType(int id)
         {
-            return
-                MainContext.MeterReadings.Include(mr => mr.Meter)
-                    .Include(mr => mr.MeterType)
-                    .SingleOrDefault(mr => mr.ID == id);
+            return MainContext.MeterReadings
+                .Include(mr => mr.Meter)
+                .Include(mr => mr.MeterType)
+                .SingleOrDefault(mr => mr.ID == id);
         }
 
         public IEnumerable<MeterReading> GetAllMeterReadingsIncludingMeterAndMeterType()
         {
-            return
-                MainContext.MeterReadings.Include(mr => mr.Meter).Include(mr => mr.MeterType);
+            return MainContext.MeterReadings
+                .Include(mr => mr.Meter)
+                .Include(mr => mr.MeterType);
         }
 
         public IEnumerable<MeterReading> GetFilteredMeterReadingsIncludingMeterAndMeterType(string searchString)
         {
-            return
-                MainContext.MeterReadings.Include(mr => mr.Meter).Include(mr => mr.MeterType)
-                    .Where(
-                        mr =>
-                            mr.Index.ToString().ToLower().Contains(searchString) ||
-                            mr.Date.ToString().ToLower().Contains(searchString) ||
-                            mr.Meter.Code.ToLower().Contains(searchString) ||
-                            mr.MeterType.Type.ToLower().Contains(searchString));
+            return MainContext.MeterReadings
+                .Include(mr => mr.Meter).Include(mr => mr.MeterType)
+                .Where(mr =>
+                    mr.Index.ToString().ToLower().Contains(searchString) ||
+                    mr.Date.ToString().ToLower().Contains(searchString) ||
+                    mr.Meter.Code.ToLower().Contains(searchString) ||
+                    mr.MeterType.Type.ToLower().Contains(searchString));
         }
 
         public IEnumerable<MeterReading> OrderMeterReadings(IEnumerable<MeterReading> meterReadings, string sortOrder)

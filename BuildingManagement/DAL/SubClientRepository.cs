@@ -16,33 +16,35 @@ namespace BuildingManagement.DAL
 
         public SubClient GetSubClientIncludingClient(int id)
         {
-            return MainContext.SubClients.Include(sc => sc.Client).SingleOrDefault(sc => sc.ID == id);
+            return MainContext.SubClients
+                .Include(sc => sc.Client)
+                .SingleOrDefault(sc => sc.ID == id);
         }
 
         public IEnumerable<SubClient> GetAllSubClientsIncludingClient()
         {
-            return
-                MainContext.SubClients.Include(sc => sc.Client);
+            return MainContext.SubClients
+                .Include(sc => sc.Client);
         }
 
         public IEnumerable<SubClient> GetFilteredSubClientsIncludingClient(string searchString)
         {
-            return
-                MainContext.SubClients.Include(sc => sc.Client)
-                    .Where(
-                        sc => sc.Name.ToLower().Contains(searchString) ||
-                              sc.Phone.ToLower().Contains(searchString) ||
-                              sc.Country.ToLower().Contains(searchString) ||
-                              sc.State.ToLower().Contains(searchString) ||
-                              sc.City.ToLower().Contains(searchString) ||
-                              sc.Street.ToLower().Contains(searchString) ||
-                              sc.Contact.ToLower().Contains(searchString) ||
-                              sc.Email.ToLower().Contains(searchString) ||
-                              sc.IBAN.ToLower().Contains(searchString) ||
-                              sc.Bank.ToLower().Contains(searchString) ||
-                              sc.CNP.ToLower().Contains(searchString) ||
-                              sc.FiscalCode.ToLower().Contains(searchString) ||
-                              sc.Client.Name.ToLower().Contains(searchString));
+            return MainContext.SubClients
+                .Include(sc => sc.Client)
+                .Where(sc => 
+                    sc.Name.ToLower().Contains(searchString) ||
+                    sc.Phone.ToLower().Contains(searchString) ||
+                    sc.Country.ToLower().Contains(searchString) ||
+                    sc.State.ToLower().Contains(searchString) ||
+                    sc.City.ToLower().Contains(searchString) ||
+                    sc.Street.ToLower().Contains(searchString) ||
+                    sc.Contact.ToLower().Contains(searchString) ||
+                    sc.Email.ToLower().Contains(searchString) ||
+                    sc.IBAN.ToLower().Contains(searchString) ||
+                    sc.Bank.ToLower().Contains(searchString) ||
+                    sc.CNP.ToLower().Contains(searchString) ||
+                    sc.FiscalCode.ToLower().Contains(searchString) ||
+                    sc.Client.Name.ToLower().Contains(searchString));
         }
 
         public IEnumerable<SubClient> OrderSubClients(IEnumerable<SubClient> subClients, string sortOrder)

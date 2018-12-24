@@ -15,12 +15,11 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<SpaceType> GetFilteredSpaceTypes(string searchString)
         {
-            return
-                MainContext.SpaceTypes.Where(st => st.Type.ToLower().Contains(searchString));
+            return MainContext.SpaceTypes
+                .Where(st => st.Type.ToLower().Contains(searchString));
         }
 
-        public IEnumerable<SpaceType> OrderSpaceTypes(IEnumerable<SpaceType> spaceTypes,
-            string sortOrder)
+        public IEnumerable<SpaceType> OrderSpaceTypes(IEnumerable<SpaceType> spaceTypes, string sortOrder)
         {
             switch (sortOrder)
             {

@@ -264,7 +264,9 @@
     <Compile Include="Controllers\SpaceTypeController.cs" />
     <Compile Include="Controllers\SubClientController.cs" />
     <Compile Include="Controllers\SubMeterController.cs" />
+    <Compile Include="Controllers\SubMeterReadingController.cs" />
     <Compile Include="Controllers\SubSubMeterController.cs" />
+    <Compile Include="Controllers\SubSubMeterReadingController.cs" />
     <Compile Include="Controllers\UserManagementController.cs" />
     <Compile Include="DAL\CostRepository.cs" />
     <Compile Include="DAL\DistributionModeRepository.cs" />
@@ -284,7 +286,9 @@
     <Compile Include="DAL\ISpaceRepository.cs" />
     <Compile Include="DAL\ISpaceTypeRepository.cs" />
     <Compile Include="DAL\ISubClientRepository.cs" />
+    <Compile Include="DAL\ISubMeterReadingRepository.cs" />
     <Compile Include="DAL\ISubMeterRepository.cs" />
+    <Compile Include="DAL\ISubSubMeterReadingRepository.cs" />
     <Compile Include="DAL\ISubSubMeterRepository.cs" />
     <Compile Include="DAL\LevelRepository.cs" />
     <Compile Include="DAL\MeterReadingRepository.cs" />
@@ -296,9 +300,13 @@
     <Compile Include="DAL\SpaceRepository.cs" />
     <Compile Include="DAL\SpaceTypeRepository.cs" />
     <Compile Include="DAL\SubClientRepository.cs" />
+    <Compile Include="DAL\SubMeterReadingRepository.cs" />
     <Compile Include="DAL\SubMeterRepository.cs" />
+    <Compile Include="DAL\SubSubMeterReadingRepository.cs" />
     <Compile Include="DAL\SubSubMeterRepository.cs" />
+    <Compile Include="Models\SubMeterReading.cs" />
     <Compile Include="Models\SubSubMeter.cs" />
+    <Compile Include="Models\SubSubMeterReading.cs" />
     <Compile Include="Models\Tree1D.cs" />
     <Compile Include="Utils\TreeHelper.cs" />
     <Compile Include="Cryptography\SimpleAes.cs" />
@@ -354,6 +362,7 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\menu.css" />
+    <Content Include="Content\MonthPicker.css" />
     <Content Include="Content\themes\default-dark\32px.png" />
     <Content Include="Content\themes\default-dark\40px.png" />
     <Content Include="Content\themes\default-dark\style.css" />
@@ -369,7 +378,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\MeterReadingUtils1.js" />
+    <Content Include="Scripts\MeterReadingUtils.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -382,7 +391,9 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <None Include="Properties\PublishProfiles\mybuildingmanagement - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\MeterReadingUtils.js" />
+    <Content Include="Scripts\MonthPicker.js" />
+    <Content Include="Scripts\SubMeterReadingUtils.js" />
+    <Content Include="Scripts\SubSubMeterReadingUtils.js" />
     <Content Include="Scripts\ValidateClient.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -419,7 +430,9 @@
     <Content Include="Scripts\ValidateSpaceType.js" />
     <Content Include="Scripts\ValidateSubClient.js" />
     <Content Include="Scripts\ValidateSubMeter.js" />
+    <Content Include="Scripts\ValidateSubMeterReading.js" />
     <Content Include="Scripts\ValidateSubSubMeter.js" />
+    <Content Include="Scripts\ValidateSubSubMeterReading.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -546,6 +559,16 @@
     <Content Include="Views\SubSubMeter\Details.cshtml" />
     <Content Include="Views\SubSubMeter\Edit.cshtml" />
     <Content Include="Views\SubSubMeter\Index.cshtml" />
+    <Content Include="Views\SubMeterReading\Index.cshtml" />
+    <Content Include="Views\SubMeterReading\Create.cshtml" />
+    <Content Include="Views\SubMeterReading\Delete.cshtml" />
+    <Content Include="Views\SubMeterReading\Details.cshtml" />
+    <Content Include="Views\SubMeterReading\Edit.cshtml" />
+    <Content Include="Views\SubSubMeterReading\Create.cshtml" />
+    <Content Include="Views\SubSubMeterReading\Delete.cshtml" />
+    <Content Include="Views\SubSubMeterReading\Details.cshtml" />
+    <Content Include="Views\SubSubMeterReading\Edit.cshtml" />
+    <Content Include="Views\SubSubMeterReading\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

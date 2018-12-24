@@ -16,30 +16,32 @@ namespace BuildingManagement.DAL
 
         public Level GetLevelIncludingSection(int id)
         {
-            return MainContext.Levels.Include(l => l.Section).SingleOrDefault(l => l.ID == id);
+            return MainContext.Levels
+                .Include(l => l.Section)
+                .SingleOrDefault(l => l.ID == id);
         }
 
         public IEnumerable<Level> GetAllLevelsIncludingSection()
         {
-            return
-                MainContext.Levels.Include(l => l.Section);
+            return MainContext.Levels
+                .Include(l => l.Section);
         }
 
         public IEnumerable<Level> GetFilteredLevelsIncludingSection(string searchString)
         {
-            return
-                MainContext.Levels.Include(l => l.Section)
-                    .Where(
-                        l =>
-                            l.Section.Number.ToLower().Contains(searchString) ||
-                            l.Number.ToLower().Contains(searchString) ||
-                            l.Surface.ToString().ToLower().Contains(searchString) ||
-                            l.People.ToString().ToLower().Contains(searchString));
+            return MainContext.Levels
+                .Include(l => l.Section)
+                .Where(l =>
+                    l.Section.Number.ToLower().Contains(searchString) ||
+                    l.Number.ToLower().Contains(searchString) ||
+                    l.Surface.ToString().ToLower().Contains(searchString) ||
+                    l.People.ToString().ToLower().Contains(searchString));
         }
 
         public IEnumerable<Level> GetLevelsBySection(int sectionId)
         {
-            return MainContext.Levels.Where(l => l.SectionID == sectionId);
+            return MainContext.Levels
+                .Where(l => l.SectionID == sectionId);
         }
 
         public IEnumerable<Level> OrderLevels(IEnumerable<Level> levels, string sortOrder)

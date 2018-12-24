@@ -6,6 +6,11 @@ namespace BuildingManagement.Models
 {
     public class MeterReading
     {
+        public MeterReading()
+        {
+            Date = DateTime.Today;
+        }
+
         public int ID { get; set; }
 
         [Required]

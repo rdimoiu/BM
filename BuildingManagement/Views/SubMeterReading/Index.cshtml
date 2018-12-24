@@ -1,0 +1,64 @@
+﻿@model IPagedList<BuildingManagement.Models.SubMeterReading>
+@using X.PagedList.Mvc;
+@using X.PagedList;
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@using (Html.BeginForm("Index", "SubMeterReading", FormMethod.Get))
+{
+    <p>
+        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Index", "Index", new { sortOrder = ViewBag.IndexSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("SubMeter", "Index", new { sortOrder = ViewBag.SubMeterSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("MeterType", "Index", new { sortOrder = ViewBag.MeterTypeSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in ViewBag.OnePageOfSubMeterReadings)
+    {
+        <tr>
+            <td>
+                @item.Index
+            </td>
+            <td>
+                @item.Date
+            </td>
+            <td>
+                @item.SubMeter.Code
+            </td>
+            <td>
+                @item.MeterType.Type
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+</table>
+<br />
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfSubMeterReadings, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>

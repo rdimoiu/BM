@@ -11,9 +11,11 @@ namespace BuildingManagement.DAL
         private IMeterTypeRepository _meterTypeRepository;
         private IDistributionModeRepository _distributionModeRepository;
         private IMeterRepository _meterRepository;
-        private ISubMeterRepository _subMeterRepository;
-        private ISubSubMeterRepository _subSubMeterRepository;
         private IMeterReadingRepository _meterReadingRepository;
+        private ISubMeterRepository _subMeterRepository;
+        private ISubMeterReadingRepository _subMeterReadingRepository;
+        private ISubSubMeterRepository _subSubMeterRepository;
+        private ISubSubMeterReadingRepository _subSubMeterReadingRepository;
 
         private IClientRepository _clientRepository;
         private ISubClientRepository _subClientRepository;
@@ -70,6 +72,18 @@ namespace BuildingManagement.DAL
             }
         }
 
+        public IMeterReadingRepository MeterReadingRepository
+        {
+            get
+            {
+                if (_meterReadingRepository == null)
+                {
+                    _meterReadingRepository = new MeterReadingRepository(_context);
+                }
+                return _meterReadingRepository;
+            }
+        }
+
         public ISubMeterRepository SubMeterRepository
         {
             get
@@ -79,6 +93,18 @@ namespace BuildingManagement.DAL
                     _subMeterRepository = new SubMeterRepository(_context);
                 }
                 return _subMeterRepository;
+            }
+        }
+
+        public ISubMeterReadingRepository SubMeterReadingRepository
+        {
+            get
+            {
+                if (_subMeterReadingRepository == null)
+                {
+                    _subMeterReadingRepository = new SubMeterReadingRepository(_context);
+                }
+                return _subMeterReadingRepository;
             }
         }
 
@@ -94,15 +120,15 @@ namespace BuildingManagement.DAL
             }
         }
 
-        public IMeterReadingRepository MeterReadingRepository
+        public ISubSubMeterReadingRepository SubSubMeterReadingRepository
         {
             get
             {
-                if (_meterReadingRepository == null)
+                if (_subSubMeterReadingRepository == null)
                 {
-                    _meterReadingRepository = new MeterReadingRepository(_context);
+                    _subSubMeterReadingRepository = new SubSubMeterReadingRepository(_context);
                 }
-                return _meterReadingRepository;
+                return _subSubMeterReadingRepository;
             }
         }
 

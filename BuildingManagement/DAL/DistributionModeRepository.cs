@@ -15,12 +15,11 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<DistributionMode> GetFilteredDistributionModes(string searchString)
         {
-            return
-                MainContext.DistributionModes.Where(dm => dm.Mode.ToLower().Contains(searchString));
+            return MainContext.DistributionModes
+                .Where(dm => dm.Mode.ToLower().Contains(searchString));
         }
 
-        public IEnumerable<DistributionMode> OrderDistributionModes(IEnumerable<DistributionMode> distributionModes,
-            string sortOrder)
+        public IEnumerable<DistributionMode> OrderDistributionModes(IEnumerable<DistributionMode> distributionModes, string sortOrder)
         {
             switch (sortOrder)
             {

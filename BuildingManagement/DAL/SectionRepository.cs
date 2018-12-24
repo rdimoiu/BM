@@ -16,30 +16,32 @@ namespace BuildingManagement.DAL
 
         public Section GetSectionIncludingClient(int id)
         {
-            return MainContext.Sections.Include(s => s.Client).SingleOrDefault(s => s.ID == id);
+            return MainContext.Sections
+                .Include(s => s.Client)
+                .SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Section> GetAllSectionsIncludingClient()
         {
-            return
-                MainContext.Sections.Include(s => s.Client);
+            return MainContext.Sections
+                .Include(s => s.Client);
         }
 
         public IEnumerable<Section> GetFilteredSectionsIncludingClient(string searchString)
         {
-            return
-                MainContext.Sections.Include(s => s.Client)
-                    .Where(
-                        s =>
-                            s.Client.Name.ToLower().Contains(searchString) ||
-                            s.Number.ToLower().Contains(searchString) ||
-                            s.Surface.ToString().ToLower().Contains(searchString) ||
-                            s.People.ToString().ToLower().Contains(searchString));
+            return MainContext.Sections
+                .Include(s => s.Client)
+                .Where(s =>
+                    s.Client.Name.ToLower().Contains(searchString) ||
+                    s.Number.ToLower().Contains(searchString) ||
+                    s.Surface.ToString().ToLower().Contains(searchString) ||
+                    s.People.ToString().ToLower().Contains(searchString));
         }
 
         public IEnumerable<Section> GetSectionsByClient(int clientId)
         {
-            return MainContext.Sections.Where(s => s.ClientID == clientId);
+            return MainContext.Sections
+                .Where(s => s.ClientID == clientId);
         } 
 
         public IEnumerable<Section> OrderSections(IEnumerable<Section> sections, string sortOrder)

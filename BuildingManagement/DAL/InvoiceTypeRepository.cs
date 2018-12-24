@@ -15,12 +15,11 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<InvoiceType> GetFilteredInvoiceTypes(string searchString)
         {
-            return
-                MainContext.InvoiceTypes.Where(it => it.Type.ToLower().Contains(searchString));
+            return MainContext.InvoiceTypes
+                .Where(it => it.Type.ToLower().Contains(searchString));
         }
 
-        public IEnumerable<InvoiceType> OrderInvoiceTypes(IEnumerable<InvoiceType> invoiceTypes,
-            string sortOrder)
+        public IEnumerable<InvoiceType> OrderInvoiceTypes(IEnumerable<InvoiceType> invoiceTypes, string sortOrder)
         {
             switch (sortOrder)
             {

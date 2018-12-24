@@ -9,9 +9,11 @@ namespace BuildingManagement.DAL
         IMeterTypeRepository MeterTypeRepository { get; }
         IDistributionModeRepository DistributionModeRepository { get; }
         IMeterRepository MeterRepository { get; }
-        ISubMeterRepository SubMeterRepository { get; }
-        ISubSubMeterRepository SubSubMeterRepository { get; }
         IMeterReadingRepository MeterReadingRepository { get; }
+        ISubMeterRepository SubMeterRepository { get; }
+        ISubMeterReadingRepository SubMeterReadingRepository { get; }
+        ISubSubMeterRepository SubSubMeterRepository { get; }
+        ISubSubMeterReadingRepository SubSubMeterReadingRepository { get; }
         IClientRepository ClientRepository { get; }
         ISubClientRepository SubClientRepository { get; }
         ISpaceTypeRepository SpaceTypeRepository { get; }

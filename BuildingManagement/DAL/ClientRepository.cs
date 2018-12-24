@@ -15,14 +15,13 @@ namespace BuildingManagement.DAL
 
         public IEnumerable<Client> GetFilteredClients(string searchString)
         {
-            return
-                MainContext.Clients.Where(
-                    c =>
-                        c.Name.ToLower().Contains(searchString) ||
-                        c.Phone.ToLower().Contains(searchString) ||
-                        c.Address.ToLower().Contains(searchString) ||
-                        c.Contact.ToLower().Contains(searchString) ||
-                        c.Email.ToLower().Contains(searchString));
+            return MainContext.Clients
+                .Where(c =>
+                    c.Name.ToLower().Contains(searchString) ||
+                    c.Phone.ToLower().Contains(searchString) ||
+                    c.Address.ToLower().Contains(searchString) ||
+                    c.Contact.ToLower().Contains(searchString) ||
+                    c.Email.ToLower().Contains(searchString));
         }
 
         public IEnumerable<Client> OrderClients(IEnumerable<Client> clients, string sortOrder)

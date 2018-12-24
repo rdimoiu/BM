@@ -17,53 +17,52 @@ namespace BuildingManagement.DAL
 
         public Service GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(int id)
         {
-            return
-                MainContext.Services.Include(s => s.Invoice)
-                    .Include(s => s.DistributionMode)
-                    .Include(s => s.Sections)
-                    .Include(s => s.Levels)
-                    .Include(s => s.Spaces)
-                    .SingleOrDefault(s => s.ID == id);
+            return MainContext.Services
+                .Include(s => s.Invoice)
+                .Include(s => s.DistributionMode)
+                .Include(s => s.Sections)
+                .Include(s => s.Levels)
+                .Include(s => s.Spaces)
+                .SingleOrDefault(s => s.ID == id);
         }
 
         public Service GetServiceIncludingSectionsAndLevelsAndSpaces(int id)
         {
-            return
-                MainContext.Services.Include(s => s.Sections)
-                    .Include(s => s.Levels)
-                    .Include(s => s.Spaces)
-                    .SingleOrDefault(s => s.ID == id);
+            return MainContext.Services
+                .Include(s => s.Sections)
+                .Include(s => s.Levels)
+                .Include(s => s.Spaces)
+                .SingleOrDefault(s => s.ID == id);
         }
 
         public IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces()
         {
-            return
-                MainContext.Services.Include(s => s.Invoice)
-                    .Include(s => s.DistributionMode)
-                    .Include(s => s.Sections)
-                    .Include(s => s.Levels)
-                    .Include(s => s.Spaces);
+            return MainContext.Services
+                .Include(s => s.Invoice)
+                .Include(s => s.DistributionMode)
+                .Include(s => s.Sections)
+                .Include(s => s.Levels)
+                .Include(s => s.Spaces);
         }
 
         public IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(string searchString)
         {
-            return
-                MainContext.Services.Include(s => s.Invoice)
-                    .Include(s => s.DistributionMode)
-                    .Include(s => s.Sections)
-                    .Include(s => s.Levels)
-                    .Include(s => s.Spaces)
-                    .Where(
-                        s =>
-                            s.Name.ToLower().Contains(searchString) ||
-                            s.Quantity.ToString().ToLower().Contains(searchString) ||
-                            s.Unit.ToLower().Contains(searchString) ||
-                            s.Price.ToString().ToLower().Contains(searchString) ||
-                            s.ValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
-                            s.TVA.ToString().ToLower().Contains(searchString) ||
-                            s.QuotaTVA.ToString().ToLower().Contains(searchString) ||
-                            s.Invoice.Number.ToLower().Contains(searchString) ||
-                            s.DistributionMode.Mode.ToLower().Contains(searchString));
+            return MainContext.Services
+                .Include(s => s.Invoice)
+                .Include(s => s.DistributionMode)
+                .Include(s => s.Sections)
+                .Include(s => s.Levels)
+                .Include(s => s.Spaces)
+                .Where(s =>
+                    s.Name.ToLower().Contains(searchString) ||
+                    s.Quantity.ToString().ToLower().Contains(searchString) ||
+                    s.Unit.ToLower().Contains(searchString) ||
+                    s.Price.ToString().ToLower().Contains(searchString) ||
+                    s.ValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
+                    s.TVA.ToString().ToLower().Contains(searchString) ||
+                    s.QuotaTVA.ToString().ToLower().Contains(searchString) ||
+                    s.Invoice.Number.ToLower().Contains(searchString) ||
+                    s.DistributionMode.Mode.ToLower().Contains(searchString));
         }
 
         public IEnumerable<Service> OrderServices(IEnumerable<Service> services, string sortOrder)

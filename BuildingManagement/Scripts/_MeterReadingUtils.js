@@ -1,4 +1,4 @@
-﻿function GetMeterTypes(idMeter, idMeterType) {
+﻿function GetMeterTypes(idMeter) {
     var meterTypeList = $("#MeterTypeID");
     if (idMeter === "") {
         meterTypeList.empty();
@@ -8,19 +8,19 @@
     }
     $.ajax({
         url: "/MeterReading/GetMeterTypes/",
-        data: { meterId: idMeter, meterTypeId: idMeterType },
+        data: { meterId: idMeter },
         cache: false,
         type: "POST",
-        success: function(data) {
+        success: function (data) {
             meterTypeList.empty();
             var first = new Option("Select...", "0");
             meterTypeList.append(first);
             for (var i = 0; i < data.length; i++) {
-                var item = new Option(data[i].Text, data[i].Value, false, data[i].Selected);
+                var item = new Option(data[i].Text, data[i].Value);
                 meterTypeList.append(item);
             }
         },
-        error: function(reponse) {
+        error: function (reponse) {
             alert("error : " + reponse);
         }
     });
