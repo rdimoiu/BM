@@ -200,7 +200,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
     }

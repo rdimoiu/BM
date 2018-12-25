@@ -220,13 +220,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSectionsDropDownList(object selectedSection = null)
         {
-            var sectionsQuery = from s in _unitOfWork.SectionRepository.GetAll() select s;
+            var sectionsQuery = _unitOfWork.SectionRepository.GetAll();
             ViewBag.SectionID = new SelectList(sectionsQuery, "ID", "Number", selectedSection);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 

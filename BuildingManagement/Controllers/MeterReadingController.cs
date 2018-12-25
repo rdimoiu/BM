@@ -210,7 +210,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateMetersDropDownList(object selectedMeter = null)
         {
-            var metersQuery = from m in _unitOfWork.MeterRepository.GetAll() select m;
+            var metersQuery = _unitOfWork.MeterRepository.GetAll();
             ViewBag.MeterID = new SelectList(metersQuery, "ID", "Code", selectedMeter);
         }
 

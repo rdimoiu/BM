@@ -314,13 +314,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.GetAll() select dm;
+            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         private void PopulateSubMetersDropDownList(object selectedSubMeter = null)
         {
-            var subMetersQuery = from sm in _unitOfWork.SubMeterRepository.GetAll() select sm;
+            var subMetersQuery = _unitOfWork.SubMeterRepository.GetAll();
             ViewBag.SubMeterID = new SelectList(subMetersQuery, "ID", "Code", selectedSubMeter);
         }
 

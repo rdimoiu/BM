@@ -332,13 +332,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoicesDropDownList(object selectedInvoice = null)
         {
-            var invoicesQuery = from i in _unitOfWork.InvoiceRepository.GetAll() select i;
+            var invoicesQuery = _unitOfWork.InvoiceRepository.GetAll();
             ViewBag.InvoiceID = new SelectList(invoicesQuery, "ID", "Number", selectedInvoice);
         }
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = from dm in _unitOfWork.DistributionModeRepository.GetAll() select dm;
+            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 

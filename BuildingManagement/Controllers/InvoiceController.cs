@@ -364,19 +364,19 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoiceTypesDropDownList(object selectedInvoiceType = null)
         {
-            var invoiceTypesQuery = from it in _unitOfWork.InvoiceTypeRepository.GetAll() select it;
+            var invoiceTypesQuery = _unitOfWork.InvoiceTypeRepository.GetAll();
             ViewBag.InvoiceTypeID = new SelectList(invoiceTypesQuery, "ID", "Type", selectedInvoiceType);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateProvidersDropDownList(object selectedProvider = null)
         {
-            var providersQuery = from p in _unitOfWork.ProviderRepository.GetAll() select p;
+            var providersQuery = _unitOfWork.ProviderRepository.GetAll();
             ViewBag.ProviderID = new SelectList(providersQuery, "ID", "Name", selectedProvider);
         }
     }
