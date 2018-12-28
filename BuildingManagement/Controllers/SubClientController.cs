@@ -85,11 +85,6 @@ namespace BuildingManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                    if (string.IsNullOrEmpty(subClient.CNP) || string.IsNullOrEmpty(subClient.FiscalCode))
-                    {
-                        PopulateClientsDropDownList(subClient.ClientID);
-                        return new HttpStatusCodeResult(409, "A CNP or FiscalCode is required.");
-                    }
                     //uniqueness condition check
                     var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
                     if (duplicateSubClient != null)
@@ -138,11 +133,6 @@ namespace BuildingManagement.Controllers
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(subClientToUpdate.CNP) || string.IsNullOrEmpty(subClientToUpdate.FiscalCode))
-                    {
-                        PopulateClientsDropDownList(subClientToUpdate.ClientID);
-                        return new HttpStatusCodeResult(409, "A CNP or FiscalCode is required.");
-                    }
                     //uniqueness condition check
                     var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
                     if (duplicateSubClient != null && duplicateSubClient.ID != subClientToUpdate.ID)

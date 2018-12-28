@@ -90,6 +90,13 @@ namespace BuildingManagement.Controllers
                     PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
                     return new HttpStatusCodeResult(409, "A subsubmeter reading with the same or greater index already exists.");
                 }
+                var subSubMeter = _unitOfWork.SubSubMeterRepository.Get(subSubMeterReading.SubSubMeterID);
+                if (subSubMeterReading.Index > subSubMeter.InitialIndex)
+                {
+                    PopulateSubSubMetersDropDownList(subSubMeterReading.SubSubMeterID);
+                    PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
+                    return new HttpStatusCodeResult(409, "The subsubmeter intial index is the same or greater than the reading.");
+                }
                 try
                 {
                     _unitOfWork.SubSubMeterReadingRepository.Add(subSubMeterReading);
@@ -145,6 +152,13 @@ namespace BuildingManagement.Controllers
                         PopulateSubSubMetersDropDownList(subSubMeterReadingToUpdate.SubSubMeterID);
                         PopulateMeterTypesDropDownList(subSubMeterReadingToUpdate.SubSubMeterID, subSubMeterReadingToUpdate.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A subsubmeter reading with the same or greater index already exists.");
+                    }
+                    var subSubMeter = _unitOfWork.SubSubMeterRepository.Get(subSubMeterReading.SubSubMeterID);
+                    if (subSubMeterReading.Index > subSubMeter.InitialIndex)
+                    {
+                        PopulateSubSubMetersDropDownList(subSubMeterReading.SubSubMeterID);
+                        PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
+                        return new HttpStatusCodeResult(409, "The subsubmeter intial index is the same or greater than the reading.");
                     }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("SubSubMeterReading {0} has been edited.", subSubMeterReadingToUpdate.Index);
@@ -209,7 +223,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSubSubMetersDropDownList(object selectedSubSubMeter = null)
         {
-            var subSubMeters = _unitOfWork.SubMeterRepository.GetAll();
+            var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAll();
             ViewBag.SubSubMeterID = new SelectList(subSubMeters, "ID", "Code", selectedSubSubMeter);
         }
 

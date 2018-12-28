@@ -1,4 +1,14 @@
-﻿function NameValidation() {
+﻿function isEmail(email) {
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,6})+$/;
+    return regex.test(email);
+}
+
+function isPhone(phone) {
+    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
+    return regex.test(phone);
+}
+
+function NameValidation() {
     var controlId = document.getElementById("Name");
     if (controlId.value === "") {
         return "The Name field is required." + "\n";
@@ -11,6 +21,8 @@ function PhoneValidation() {
     var controlId = document.getElementById("Phone");
     if (controlId.value === "") {
         return "The Phone field is required." + "\n";
+    } else if (!isPhone(controlId.value)) {
+        return "The Phone is invalid." + "\n";
     } else {
         return "";
     }
@@ -38,6 +50,8 @@ function EmailValidation() {
     var controlId = document.getElementById("Email");
     if (controlId.value === "") {
         return "The Email field is required." + "\n";
+    } else if (!isEmail(controlId.value)) {
+        return "The Email is invalid." + "\n";
     } else {
         return "";
     }
@@ -223,6 +237,32 @@ function FiscalCodeValidation() {
     }
 }
 
+function isFiscalCode(phone) {
+    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
+    return regex.test(phone);
+}
+
+function isCNP(phone) {
+    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
+    return regex.test(phone);
+}
+
+function CNPOrFiscalCodeValidation() {
+    var cnpId = document.getElementById("CNP");
+    var fiscalCodeId = document.getElementById("FiscalCode");
+    if (cnpId.value === "" && fiscalCodeId.value === "") {
+        return "The CNP or FiscalCode field is required." + "\n";
+    } else {
+        if (!isFiscalCode(fiscalCodeId.value)) {
+            return "The FiscalCode is invalid." + "\n";
+        }
+        if (!isCNP(cnpId.value)) {
+            return "The CNP is invalid." + "\n";
+        }
+    }
+    return "";
+}
+
 function TradeRegisterValidation() {
     var controlId = document.getElementById("TradeRegister");
     if (controlId.value === "") {
@@ -308,15 +348,6 @@ function SubClientValidation() {
     var controlId = document.getElementById("SubClientID");
     if (controlId.value === "" || controlId.value === "0") {
         return "The SubClient field is required." + "\n";
-    } else {
-        return "";
-    }
-}
-
-function CNPValidation() {
-    var controlId = document.getElementById("CNP");
-    if (controlId.value === "") {
-        return "The CNP field is required." + "\n";
     } else {
         return "";
     }

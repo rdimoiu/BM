@@ -37,14 +37,13 @@ namespace BuildingManagement.Models
         [StringLength(50)]
         public string Bank { get; set; }
 
-        [Required]
         [StringLength(20)]
         public string CNP { get; set; }
 
-        [Required]
         [StringLength(20)]
         public string FiscalCode { get; set; }
 
+        [Required]
         public int ClientID { get; set; }
         public virtual Client Client { get; set; }
     }

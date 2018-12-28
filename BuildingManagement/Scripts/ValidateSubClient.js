@@ -1,8 +1,7 @@
 ﻿function ValidateAll(operation) {
     var validationSummary = "";
     validationSummary += ClientValidation();
-    validationSummary += CNPValidation();
-    validationSummary += FiscalCodeValidation();
+    validationSummary += CNPOrFiscalCodeValidation();
     validationSummary += NameValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
