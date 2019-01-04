@@ -361,6 +361,14 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\icons\icons8-add-to-collection-32.png" />
+    <Content Include="Content\icons\icons8-back-32.png" />
+    <Content Include="Content\icons\icons8-delete-32.png" />
+    <Content Include="Content\icons\icons8-document-32.png" />
+    <Content Include="Content\icons\icons8-edit-32.png" />
+    <Content Include="Content\icons\icons8-save-close-32.png" />
+    <Content Include="Content\icons\icons8-search-32.png" />
+    <Content Include="Content\index.css" />
     <Content Include="Content\menu.css" />
     <Content Include="Content\MonthPicker.css" />
     <Content Include="Content\themes\default-dark\32px.png" />

@@ -78,7 +78,7 @@
                 @item.Bank
             </td>
             <td>
-                @item.TVAPayer
+                <input type="checkbox" checked=@item.TVAPayer disabled />
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new {id = item.ID}) |

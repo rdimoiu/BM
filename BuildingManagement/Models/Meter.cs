@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BuildingManagement.Models
@@ -12,11 +11,7 @@ namespace BuildingManagement.Models
 
         public string Details { get; set; }
 
-        [Range(0, 9999999999999999.99)]
-        public decimal InitialIndex { get; set; }
-
         public bool Defect { get; set; }
-        //consumption
 
         public int DistributionModeID { get; set; }
         public virtual DistributionMode DistributionMode { get; set; }

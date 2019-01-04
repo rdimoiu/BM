@@ -8,6 +8,20 @@ function isPhone(phone) {
     return regex.test(phone);
 }
 
+function isFiscalCode(fiscalCode) {
+    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
+    return regex.test(fiscalCode);
+}
+
+function isCNP(cnp) {
+    var regex = /^\d{13}$/;
+    return regex.test(cnp);
+}
+
+function isValidDate(date) {
+    return date instanceof Date && !isNaN(date);
+}
+
 function NameValidation() {
     var controlId = document.getElementById("Name");
     if (controlId.value === "") {
@@ -106,6 +120,8 @@ function DateValidation() {
     var controlId = document.getElementById("Date");
     if (controlId.value === "") {
         return "The Date field is required." + "\n";
+    } else if (isValidDate(controlId.value)) {
+        return "The Date field is invalid." + "\n";;
     } else {
         return "";
     }
@@ -183,15 +199,6 @@ function CodeValidation() {
     }
 }
 
-function InitialIndexValidation() {
-    var controlId = document.getElementById("InitialIndex");
-    if (controlId.value === "") {
-        return "The InitialIndex field is required." + "\n";
-    } else {
-        return "";
-    }
-}
-
 function DistributionModeValidation() {
     var controlId = document.getElementById("DistributionModeID");
     if (controlId.value === "" || controlId.value === "0") {
@@ -205,6 +212,8 @@ function IndexValidation() {
     var controlId = document.getElementById("Index");
     if (controlId.value === "") {
         return "The Index field is required." + "\n";
+    } else if (isNaN(controlId.value)) {
+        return "The Index field is invalid." + "\n";
     } else {
         return "";
     }
@@ -237,30 +246,18 @@ function FiscalCodeValidation() {
     }
 }
 
-function isFiscalCode(phone) {
-    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
-    return regex.test(phone);
-}
-
-function isCNP(phone) {
-    var regex = /^\(?(\d{3})\)?[-\. ]?(\d{3})[-\. ]?(\d{4})$/;
-    return regex.test(phone);
-}
-
 function CNPOrFiscalCodeValidation() {
     var cnpId = document.getElementById("CNP");
     var fiscalCodeId = document.getElementById("FiscalCode");
     if (cnpId.value === "" && fiscalCodeId.value === "") {
         return "The CNP or FiscalCode field is required." + "\n";
     } else {
-        if (!isFiscalCode(fiscalCodeId.value)) {
-            return "The FiscalCode is invalid." + "\n";
-        }
-        if (!isCNP(cnpId.value)) {
-            return "The CNP is invalid." + "\n";
+        if (isFiscalCode(fiscalCodeId.value) || isCNP(cnpId.value)) {
+            return "";
+        } else {
+            return "The CNP or FiscalCode is invalid." + "\n";
         }
     }
-    return "";
 }
 
 function TradeRegisterValidation() {
@@ -366,6 +363,24 @@ function SubSubMeterValidation() {
     var controlId = document.getElementById("SubSubMeterID");
     if (controlId.value === "" || controlId.value === "0") {
         return "The SubSubMeter field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function MeterTypesValidation() {
+    var controlId = $("#meterTypesTree").jstree("get_selected");
+    if (controlId.length === 0) {
+        return "The MeterType field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function SpacesValidation() {
+    var controlId = $("#spacesTree").jstree("get_selected");
+    if (controlId.length === 0) {
+        return "The Spaces field is required." + "\n";
     } else {
         return "";
     }

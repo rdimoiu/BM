@@ -1,9 +1,10 @@
 ﻿function ValidateAll(operation) {
     var validationSummary = "";
     validationSummary += CodeValidation();
-    validationSummary += InitialIndexValidation();
     validationSummary += DistributionModeValidation();
     validationSummary += SubMeterValidation();
+    validationSummary += MeterTypesValidation();
+    validationSummary += SpacesValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
         return false;
@@ -11,7 +12,6 @@
         var data = {
             Code: document.getElementById("Code").value,
             Details: document.getElementById("Details").value,
-            InitialIndex: document.getElementById("InitialIndex").value,
             Defect: document.getElementById("Defect").checked,
             DistributionModeID: document.getElementById("DistributionModeID").value,
             SubMeterID: document.getElementById("SubMeterID").value,

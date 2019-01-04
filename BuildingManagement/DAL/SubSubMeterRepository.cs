@@ -65,7 +65,6 @@ namespace BuildingManagement.DAL
                 .Where(ssm =>
                     ssm.Code.ToLower().Contains(searchString) ||
                     ssm.Details.ToLower().Contains(searchString) ||
-                    ssm.InitialIndex.ToString().ToLower().Contains(searchString) ||
                     ssm.Defect.ToString().ToLower().Contains(searchString) ||
                     ssm.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     ssm.SubMeter.Code.ToLower().Contains(searchString));
@@ -83,12 +82,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "details_desc":
                     subSubMeters = subSubMeters.OrderByDescending(ssm => ssm.Details);
-                    break;
-                case "InitialIndex":
-                    subSubMeters = subSubMeters.OrderBy(ssm => ssm.InitialIndex);
-                    break;
-                case "initialIndex_desc":
-                    subSubMeters = subSubMeters.OrderByDescending(ssm => ssm.InitialIndex);
                     break;
                 case "Defect":
                     subSubMeters = subSubMeters.OrderBy(ssm => ssm.Defect);

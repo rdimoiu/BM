@@ -45,7 +45,6 @@ namespace BuildingManagement.Controllers
             ViewBag.CurrentSort = sortOrder;
             ViewBag.CodeSortParm = string.IsNullOrEmpty(sortOrder) ? "code_desc" : "";
             ViewBag.DetailsSortParm = sortOrder == "Details" ? "details_desc" : "Details";
-            ViewBag.InitialIndexSortParm = sortOrder == "InitialIndex" ? "initialIndex_desc" : "InitialIndex";
             ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
             ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
             ViewBag.MeterSortParm = sortOrder == "Meter" ? "meter_desc" : "Meter";
@@ -190,7 +189,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(subMeterToUpdate, "", new[] { "Code", "Details", "InitialIndex", "Defect", "MeterID", "DistributionModeID" }))
+            if (TryUpdateModel(subMeterToUpdate, "", new[] { "Code", "Details", "Defect", "MeterID", "DistributionModeID" }))
             {
                 try
                 {

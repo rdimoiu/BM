@@ -90,13 +90,6 @@ namespace BuildingManagement.Controllers
                     PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
                     return new HttpStatusCodeResult(409, "A submeter reading with the same or greater index already exists.");
                 }
-                var subMeter = _unitOfWork.SubMeterRepository.Get(subMeterReading.SubMeterID);
-                if (subMeterReading.Index > subMeter.InitialIndex)
-                {
-                    PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                    PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                    return new HttpStatusCodeResult(409, "The submeter intial index is the same or greater than the reading.");
-                }
                 try
                 {
                     _unitOfWork.SubMeterReadingRepository.Add(subMeterReading);
@@ -152,13 +145,6 @@ namespace BuildingManagement.Controllers
                         PopulateSubMetersDropDownList(subMeterReadingToUpdate.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReadingToUpdate.SubMeterID, subMeterReadingToUpdate.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A submeter reading with the same or greater index already exists.");
-                    }
-                    var subMeter = _unitOfWork.SubMeterRepository.Get(subMeterReading.SubMeterID);
-                    if (subMeterReading.Index > subMeter.InitialIndex)
-                    {
-                        PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                        PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "The submeter intial index is the same or greater than the reading.");
                     }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("SubMeterReading {0} has been edited.", subMeterReadingToUpdate.Index);

@@ -27,9 +27,6 @@
             @Html.ActionLink("Details", "Index", new {sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.ActionLink("InitialIndex", "Index", new {sortOrder = ViewBag.InitialIndexSortParm, currentFilter = ViewBag.CurrentFilter})
-        </th>
-        <th>
             @Html.ActionLink("Defect", "Index", new {sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
@@ -57,10 +54,7 @@
                 @item.Details
             </td>
             <td>
-                @item.InitialIndex
-            </td>
-            <td>
-                @item.Defect
+                <input type="checkbox" checked=@item.Defect disabled />
             </td>
             <td>
                 @item.DistributionMode.Mode

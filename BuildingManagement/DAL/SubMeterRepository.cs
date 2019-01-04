@@ -62,12 +62,6 @@ namespace BuildingManagement.DAL
                 case "details_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Details);
                     break;
-                case "InitialIndex":
-                    subMeters = subMeters.OrderBy(sm => sm.InitialIndex);
-                    break;
-                case "initialIndex_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.InitialIndex);
-                    break;
                 case "Defect":
                     subMeters = subMeters.OrderBy(sm => sm.Defect);
                     break;
@@ -105,7 +99,6 @@ namespace BuildingManagement.DAL
                 .Where(sm =>
                     sm.Code.ToLower().Contains(searchString) ||
                     sm.Details.ToLower().Contains(searchString) ||
-                    sm.InitialIndex.ToString().ToLower().Contains(searchString) ||
                     sm.Defect.ToString().ToLower().Contains(searchString) ||
                     sm.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     sm.Meter.Code.ToLower().Contains(searchString));
@@ -119,12 +112,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "details_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Details);
-                    break;
-                case "InitialIndex":
-                    subMeters = subMeters.OrderBy(sm => sm.InitialIndex);
-                    break;
-                case "initialIndex_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.InitialIndex);
                     break;
                 case "Defect":
                     subMeters = subMeters.OrderBy(sm => sm.Defect);
@@ -164,12 +151,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "details_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Details);
-                    break;
-                case "InitialIndex":
-                    subMeters = subMeters.OrderBy(sm => sm.InitialIndex);
-                    break;
-                case "initialIndex_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.InitialIndex);
                     break;
                 case "Defect":
                     subMeters = subMeters.OrderBy(sm => sm.Defect);

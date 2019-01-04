@@ -13,12 +13,7 @@ namespace BuildingManagement.Models
 
         public string Details { get; set; }
 
-        [Required]
-        [Range(0, 9999999999999999.99)]
-        public decimal InitialIndex { get; set; }
-
         public bool Defect { get; set; }
-        //consumption
 
         public int SubMeterID { get; set; }
         public SubMeter SubMeter { get; set; }

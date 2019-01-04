@@ -91,13 +91,6 @@ namespace BuildingManagement.Controllers
                     PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                     return new HttpStatusCodeResult(409, "A meter reading with the same or greater index already exists.");
                 }
-                var meter = _unitOfWork.MeterRepository.Get(meterReading.MeterID);
-                if (meterReading.Index > meter.InitialIndex)
-                {
-                    PopulateMetersDropDownList(meterReading.MeterID);
-                    PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                    return new HttpStatusCodeResult(409, "The meter intial index is the same or greater than the reading.");
-                }
                 try
                 {
                     _unitOfWork.MeterReadingRepository.Add(meterReading);
@@ -153,13 +146,6 @@ namespace BuildingManagement.Controllers
                         PopulateMetersDropDownList(meterReadingToUpdate.MeterID);
                         PopulateMeterTypesDropDownList(meterReadingToUpdate.MeterID, meterReadingToUpdate.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A meter reading with the same or greater index already exists.");
-                    }
-                    var meter = _unitOfWork.MeterRepository.Get(meterReading.MeterID);
-                    if (meterReading.Index > meter.InitialIndex)
-                    {
-                        PopulateMetersDropDownList(meterReading.MeterID);
-                        PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "The meter intial index is the same or greater than the reading.");
                     }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("MeterReading {0} has been edited.", meterReadingToUpdate.Index);

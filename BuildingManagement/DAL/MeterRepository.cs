@@ -65,7 +65,6 @@ namespace BuildingManagement.DAL
                 .Where(m =>
                     m.Code.ToLower().Contains(searchString) ||
                     m.Details.ToLower().Contains(searchString) ||
-                    m.InitialIndex.ToString().ToLower().Contains(searchString) ||
                     m.Defect.ToString().ToLower().Contains(searchString) ||
                     m.DistributionMode.Mode.ToLower().Contains(searchString)||
                     m.Client.Name.ToLower().Contains(searchString));
@@ -83,12 +82,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "details_desc":
                     meters = meters.OrderByDescending(m => m.Details);
-                    break;
-                case "InitialIndex":
-                    meters = meters.OrderBy(m => m.InitialIndex);
-                    break;
-                case "initialIndex_desc":
-                    meters = meters.OrderByDescending(m => m.InitialIndex);
                     break;
                 case "Defect":
                     meters = meters.OrderBy(m => m.Defect);
