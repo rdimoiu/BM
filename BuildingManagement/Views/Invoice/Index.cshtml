@@ -81,10 +81,10 @@
                 @invoice.Number
             </td>
             <td>
-                @invoice.Date
+                @invoice.Date.ToString("dd/MM/yyyy")
             </td>
             <td>
-                @invoice.DueDate
+                @invoice.DueDate.ToString("dd/MM/yyyy")
             </td>
             <td>
                 @invoice.Quantity
@@ -117,16 +117,16 @@
                 }
             </td>*@
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = invoice.ID}) |
-                @Html.ActionLink("Details", "Details", new {id = invoice.ID}) |
-                @Html.ActionLink("Delete", "Delete", new {id = invoice.ID}) |
+                @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" })
+                @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" })
+                @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" })
                 @if (!invoice.Closed)
                 {
-                    @Html.ActionLink("Close", "Close", "Invoice", new {id = invoice.ID}, null)
+                    @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon" })
                 }
                 else
                 {
-                    @Html.ActionLink("Open", "Open", "Invoice", new {id = invoice.ID}, null)
+                    @Html.ActionLink("Open", "Open", "Invoice", new { id = invoice.ID }, new { @class = "unlock-icon" })
                 }
             </td>
         </tr>

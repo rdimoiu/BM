@@ -6,6 +6,12 @@
 
 <h2>Index</h2>
 
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+</style>
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -14,12 +20,13 @@
         <h4>InvoiceDistribution</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
+        
         <div class="form-group">
             @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()" } })
-                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})
+                <input name="DiscountMonth" id="DiscountMonth" class="date-picker" />
+                @*@Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()"}})
+                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})*@
             </div>
         </div>
 
@@ -104,10 +111,10 @@
                     @Html.DisplayFor(modelItem => invoice.CheckTotalTVA)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.Date)
+                    @Html.DisplayFor(modelItem => invoice.Date.ToString("dd/MM/yyyy"))
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.DueDate)
+                    @Html.DisplayFor(modelItem => invoice.DueDate.ToString("dd/MM/yyyy"))
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", "Invoice", new { invoiceId = invoice.ID }, null) |
@@ -211,7 +218,10 @@
     @Html.ActionLink("Create Invoice", "Create", "Invoice", new { clientId = @Model.ClientID, providerId = @Model.ProviderID }, null)
 </p>
 
-<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")"></script>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+
 <script>
     function GetInvoices() {
         var discountMonth = document.getElementById('DiscountMonth').value;
@@ -219,4 +229,16 @@
         var providerId = document.getElementById('ProviderID').value;
         window.location.href = "/InvoiceDistribution/Index/?discountMonth=" + discountMonth + "&clientId=" + clientId + "&providerId=" + providerId;
     }
+
+    $(function () {
+        $('.date-picker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
 </script>

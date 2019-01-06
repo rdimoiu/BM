@@ -26,14 +26,6 @@ textarea {
     padding-top: 40px;
 }
 
-a.new-icon
-{
-    background: url(../Content/icons/icons8-add-to-collection-32.png) no-repeat top left;
-    display: block;
-    width: 32px;
-    height: 32px;
-    text-indent: -9999px; /* hides the link text */
-}
 a.edit-icon
 {
     background: url(../Content/icons/icons8-edit-32.png) no-repeat top left;
@@ -61,18 +53,18 @@ a.delete-icon
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
-a.back-icon
+a.lock-icon
 {
-    background: url(../Content/icons/icons8-back-32.png) no-repeat top left;
+    background: url(../Content/icons/icons8-lock-32.png) no-repeat top left;
     display: block;
     float: left;
     width: 32px;
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
-a.save-icon
+a.unlock-icon
 {
-    background: url(../Content/icons/icons8-save-close-32.png) no-repeat top left;
+    background: url(../Content/icons/icons8-padlock-32.png) no-repeat top left;
     display: block;
     float: left;
     width: 32px;
