@@ -14,7 +14,7 @@
             Number: document.getElementById("Number").value,
             Surface: document.getElementById("Surface").value,
             People: document.getElementById("People").value,
-            Inhabited: document.getElementById("Inhabited").value,
+            Inhabited: document.getElementById("Inhabited").checked,
             SpaceTypeID: document.getElementById("SpaceTypeID").value,
             SubClientID: document.getElementById("SubClientID").value,
             LevelID: document.getElementById("LevelID").value

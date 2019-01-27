@@ -6,12 +6,6 @@
 
 <h2>Index</h2>
 
-<style>
-    .ui-datepicker-calendar {
-        display: none;
-    }
-</style>
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -24,9 +18,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
-                <input name="DiscountMonth" id="DiscountMonth" class="date-picker" />
-                @*@Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()"}})
-                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})*@
+                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()"}})
+                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})
             </div>
         </div>
 
@@ -218,9 +211,7 @@
     @Html.ActionLink("Create Invoice", "Create", "Invoice", new { clientId = @Model.ClientID, providerId = @Model.ProviderID }, null)
 </p>
 
-<link href="~/Content/jquery-ui.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-1.10.2.js"></script>
-<script src="~/Scripts/jquery-ui.js"></script>
 
 <script>
     function GetInvoices() {
@@ -229,16 +220,4 @@
         var providerId = document.getElementById('ProviderID').value;
         window.location.href = "/InvoiceDistribution/Index/?discountMonth=" + discountMonth + "&clientId=" + clientId + "&providerId=" + providerId;
     }
-
-    $(function () {
-        $('.date-picker').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            showButtonPanel: true,
-            dateFormat: 'MM yy',
-            onClose: function (dateText, inst) {
-                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
-            }
-        });
-    });
 </script>

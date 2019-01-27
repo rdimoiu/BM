@@ -3,7 +3,11 @@
     validationSummary += InvoiceValidation();
     validationSummary += NameValidation();
     validationSummary += UnitValidation();
+    validationSummary += QuantityValidation();
+    validationSummary += PriceValidation();
+    validationSummary += QuotaTVAValidation();
     validationSummary += DistributionModeValidation();
+    validationSummary += SpacesValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
         return false;

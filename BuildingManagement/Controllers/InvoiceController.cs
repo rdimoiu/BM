@@ -112,13 +112,6 @@ namespace BuildingManagement.Controllers
                     PopulateProvidersDropDownList(invoice.ProviderID);
                     return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
                 }
-                if (invoice.Date > invoice.DueDate)
-                {
-                    PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
-                    PopulateClientsDropDownList(invoice.ClientID);
-                    PopulateProvidersDropDownList(invoice.ProviderID);
-                    return new HttpStatusCodeResult(409, "DueDate must be greater than Date.");
-                }
                 invoice.Quantity = 0.0m;
                 invoice.TotalValueWithoutTVA = 0.0m;
                 invoice.TotalTVA = 0.0m;
@@ -179,13 +172,6 @@ namespace BuildingManagement.Controllers
                         PopulateClientsDropDownList(invoiceToUpdate.ClientID);
                         PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
                         return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
-                    }
-                    if (invoiceToUpdate.Date > invoiceToUpdate.DueDate)
-                    {
-                        PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
-                        PopulateClientsDropDownList(invoiceToUpdate.ClientID);
-                        PopulateProvidersDropDownList(invoiceToUpdate.ProviderID);
-                        return new HttpStatusCodeResult(409, "DueDate must be greater than Date.");
                     }
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice {0} has been edited.", invoiceToUpdate.Number);

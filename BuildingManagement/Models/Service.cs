@@ -6,9 +6,6 @@ namespace BuildingManagement.Models
 {
     public class Service
     {
-        private decimal valueWithoutTVA;
-        private decimal tva;
-
         public int ID { get; set; }
 
         [Required]
@@ -26,32 +23,6 @@ namespace BuildingManagement.Models
         [Required]
         [Range(0, 9999999999999999.99)]
         public decimal Price { get; set; }
-
-        [Required]
-        public decimal ValueWithoutTVA
-        {
-            get
-            {
-                return Quantity * Price;
-            }
-            set
-            {
-                valueWithoutTVA = value;
-            }
-        }
-
-        [Required]
-        public decimal TVA
-        {
-            get
-            {
-                return valueWithoutTVA * QuotaTVA;
-            }
-            set
-            {
-                tva = value;
-            }
-        }
 
         [Required]
         public decimal QuotaTVA { get; set; }
@@ -73,6 +44,24 @@ namespace BuildingManagement.Models
         public virtual ICollection<Level> Levels { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; }
+
+        [NotMapped]
+        public decimal ValueWithoutTVA
+        {
+            get
+            {
+                return Quantity * Price;
+            }
+        }
+
+        [NotMapped]
+        public decimal TVA
+        {
+            get
+            {
+                return ValueWithoutTVA * QuotaTVA;
+            }
+        }
 
         [NotMapped]
         public List<string> ServiceSLSSelected { get; set; }

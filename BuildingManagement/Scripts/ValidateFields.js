@@ -128,9 +128,12 @@ function DateValidation() {
 }
 
 function DueDateValidation() {
-    var controlId = document.getElementById("DueDate");
-    if (controlId.value === "") {
+    var dueDateId = document.getElementById("DueDate");
+    var dateId = document.getElementById("Date");
+    if (dueDateId.value === "") {
         return "The DueDate field is required." + "\n";
+    } else if (dueDateId.value < dateId.value) {
+        return "The DueDate field is invalid. (DueDate must be equal or greater than Date)" + "\n";
     } else {
         return "";
     }
@@ -140,6 +143,8 @@ function CheckQuantityValidation() {
     var controlId = document.getElementById("CheckQuantity");
     if (controlId.value === "") {
         return "The CheckQuantity field is required." + "\n";
+    } else if (isNaN(controlId.value)) {
+        return "The CheckQuantity field is invalid." + "\n";
     } else {
         return "";
     }
@@ -149,6 +154,8 @@ function CheckTotalValueWithoutTVAValidation() {
     var controlId = document.getElementById("CheckTotalValueWithoutTVA");
     if (controlId.value === "") {
         return "The CheckTotalValueWithoutTVA field is required." + "\n";
+    } else if (isNaN(controlId.value)) {
+        return "The CheckTotalValueWithoutTVA field is invalid." + "\n";
     } else {
         return "";
     }
@@ -158,6 +165,8 @@ function CheckTotalTVAValidation() {
     var controlId = document.getElementById("CheckTotalTVA");
     if (controlId.value === "") {
         return "The CheckTotalTVA field is required." + "\n";
+    } else if (isNaN(controlId.value)) {
+        return "The CheckTotalTVA field is invalid." + "\n";
     } else {
         return "";
     }
@@ -309,6 +318,8 @@ function SurfaceValidation() {
     var controlId = document.getElementById("Surface");
     if (controlId.value === "") {
         return "The Surface field is required." + "\n";
+    } else if (isNaN(controlId.value) || controlId.value < 0) {
+        return "The Surface field is invalid." + "\n";
     } else {
         return "";
     }
@@ -381,6 +392,39 @@ function SpacesValidation() {
     var controlId = $("#spacesTree").jstree("get_selected");
     if (controlId.length === 0) {
         return "The Spaces field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function QuantityValidation() {
+    var controlId = document.getElementById("Quantity");
+    if (controlId.value === "") {
+        return "The Quantity field is required." + "\n";
+    } else if (isNaN(controlId.value) || controlId.value < 0) {
+        return "The Quantity field is invalid." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function PriceValidation() {
+    var controlId = document.getElementById("Price");
+    if (controlId.value === "") {
+        return "The Price field is required." + "\n";
+    } else if (isNaN(controlId.value) || controlId.value < 0) {
+        return "The Price field is invalid." + "\n";
+    } else {
+        return "";
+    }
+}
+
+function QuotaTVAValidation() {
+    var controlId = document.getElementById("QuotaTVA");
+    if (controlId.value === "") {
+        return "The QuotaTVA field is required." + "\n";
+    } else if (isNaN(controlId.value) || controlId.value < 0) {
+        return "The QuotaTVA field is invalid." + "\n";
     } else {
         return "";
     }
