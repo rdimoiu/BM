@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
@@ -48,6 +49,7 @@ namespace BuildingManagement.Controllers
             ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             ViewBag.DueDateSortParm = sortOrder == "DueDate" ? "dueDate_desc" : "DueDate";
+            ViewBag.PaidDateSortParm = sortOrder == "PaidDate" ? "paidDate_desc" : "PaidDate";
             ViewBag.QuantitySortParm = sortOrder == "Quantity" ? "quantity_desc" : "Quantity";
             ViewBag.CheckQuantitySortParm = sortOrder == "CheckQuantity" ? "checkQuantity_desc" : "CheckQuantity";
             ViewBag.TotalValueWithoutTVASortParm = sortOrder == "TotalValueWithoutTVA" ? "totalValueWithoutTVA_desc" : "TotalValueWithoutTVA";
@@ -55,6 +57,7 @@ namespace BuildingManagement.Controllers
             ViewBag.TotalTVASortParm = sortOrder == "TotalTVA" ? "totalTVA_desc" : "TotalTVA";
             ViewBag.CheckTotalTVASortParm = sortOrder == "CheckTotalTVA" ? "checkTotalTVA_desc" : "CheckTotalTVA";
             ViewBag.DiscountMonthSortParm = sortOrder == "DiscountMonth" ? "discountMonth_desc" : "DiscountMonth";
+            ViewBag.DateTimeNow = DateTime.Now;
             invoices = _unitOfWork.InvoiceRepository.OrderInvoices(invoices, sortOrder);
             ViewBag.OnePageOfInvoices = invoices.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfInvoices);
@@ -112,9 +115,6 @@ namespace BuildingManagement.Controllers
                     PopulateProvidersDropDownList(invoice.ProviderID);
                     return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
                 }
-                invoice.Quantity = 0.0m;
-                invoice.TotalValueWithoutTVA = 0.0m;
-                invoice.TotalTVA = 0.0m;
                 try
                 {
                     _unitOfWork.InvoiceRepository.Add(invoice);
@@ -226,26 +226,15 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
-
+        // POST: Invoice/Delete/5
+        [HttpPost, ActionName("Close")]
+        [ValidateAntiForgeryToken]
         public ActionResult Close(int id)
         {
             var invoice = _unitOfWork.InvoiceRepository.SingleOrDefault(s => s.ID == id);
             if (invoice == null)
             {
                 return HttpNotFound();
-            }
-
-            var checkTotalValueWithoutTVA = invoice.Services.Sum(service => service.ValueWithoutTVA);
-            if (checkTotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA)
-            {
-                ModelState.AddModelError("", "Sum of values without TVA from services is wrong.");
-                return RedirectToAction("Index", "InvoiceDistribution",
-                    new
-                    {
-                        discountMonth = invoice.DiscountMonth,
-                        clientId = invoice.ClientID,
-                        providerId = invoice.ProviderID
-                    });
             }
 
             foreach (var service in invoice.Services)
@@ -319,24 +308,48 @@ namespace BuildingManagement.Controllers
                 }
             }
             invoice.Closed = true;
-            _unitOfWork.Save();
-            return View(invoice);
+            invoice.PaidDate = DateTime.Now;
+            try
+            {
+                _unitOfWork.Save();
+                TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
+            }
+            catch (DataException)
+            {
+                return RedirectToAction("Close", new { id, saveChangesError = true });
+            }
+            return RedirectToAction("Index");
         }
 
-        public ActionResult Open(int invoiceId)
+        public ActionResult Open(int id)
         {
-            var invoice = _unitOfWork.InvoiceRepository.Get(invoiceId);
+            var invoice = _unitOfWork.InvoiceRepository.Get(id);
             foreach (var service in invoice.Services)
             {
                 var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
                 foreach (var cost in costs)
                 {
-                    _unitOfWork.CostRepository.Remove(cost);
+                    try
+                    {
+                        _unitOfWork.CostRepository.Remove(cost);
+                    }
+                    catch (DataException)
+                    {
+                        return RedirectToAction("Open", new { id, saveChangesError = true });
+                    }
                 }
             }
             invoice.Closed = false;
-            _unitOfWork.Save();
-            return View(invoice);
+            try
+            {
+                _unitOfWork.Save();
+                TempData["message"] = string.Format("Invoice {0} has been opened.", invoice.Number);
+            }
+            catch (DataException)
+            {
+                return RedirectToAction("Open", new { id, saveChangesError = true });
+            }
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

@@ -36,7 +36,10 @@
             @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("DueDate", "Index", new { sortOrder = ViewBag.DueDateSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink("DueDate", "Index", new {sortOrder = ViewBag.DueDateSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("PaidDate", "Index", new { sortOrder = ViewBag.PaidDateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("Quantity", "Index", new { sortOrder = ViewBag.QuantitySortParm, currentFilter = ViewBag.CurrentFilter })
@@ -59,9 +62,9 @@
         <th>
             @Html.ActionLink("DiscountMonth", "Index", new { sortOrder = ViewBag.DiscountMonthSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
-        @*<th>
+        <th>
             Services
-        </th>*@
+        </th>
         <th></th>
     </tr>
 
@@ -83,31 +86,41 @@
             <td>
                 @invoice.Date.ToString("dd/MM/yyyy")
             </td>
-            <td>
+            <td style="@(invoice.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
                 @invoice.DueDate.ToString("dd/MM/yyyy")
             </td>
-            <td>
+            
+                @if (invoice.PaidDate < invoice.Date)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
+                }
+            
+            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Red" : "color : Black")">
                 @invoice.Quantity
             </td>
-            <td>
+            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Red" : "color : Black")">
                 @invoice.CheckQuantity
             </td>
-            <td>
+            <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
                 @invoice.TotalValueWithoutTVA
             </td>
-            <td>
+            <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
                 @invoice.CheckTotalValueWithoutTVA
             </td>
-            <td>
+            <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
                 @invoice.TotalTVA
             </td>
-            <td>
+            <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
                 @invoice.CheckTotalTVA
             </td>
             <td>
                 @invoice.DiscountMonth.ToString("MM/yyyy")
             </td>
-            @*<td>
+            <td>
                 @{
                     foreach (var service in invoice.Services)
                     {
@@ -115,24 +128,28 @@
                         <br/>
                     }
                 }
-            </td>*@
+            </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" })
                 @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" })
                 @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" })
-                @if (!invoice.Closed)
+                @if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
                 {
-                    @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon" })
-                }
-                else
-                {
-                    @Html.ActionLink("Open", "Open", "Invoice", new { id = invoice.ID }, new { @class = "unlock-icon" })
+                    if (!invoice.Closed)
+                    {
+                        @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Open", "Open", "Invoice", new { id = invoice.ID }, new { @class = "unlock-icon" })
+                    }
                 }
             </td>
         </tr>
-        <tr>
+        @*<tr>
             <td colspan="13">
                 <details>
+                    <summary>Services</summary>
                     <table class="table">
                         <tr>
                             <th>
@@ -168,7 +185,7 @@
                     </table>
                 </details>
             </td>
-        </tr>
+        </tr>*@
     }
 </table>
 <br/>

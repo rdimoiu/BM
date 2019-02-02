@@ -35,6 +35,10 @@ namespace BuildingManagement.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime PaidDate { get; set; }
+
         [Range(0, 9999999999999999.99)]
         public decimal Quantity { get; set; }
 
@@ -65,7 +69,11 @@ namespace BuildingManagement.Models
         {
             Date = DateTime.Now;
             DueDate = DateTime.Now;
+            PaidDate = DateTime.Now.Subtract(TimeSpan.FromDays(1));
             DiscountMonth = DateTime.Now;
+            Quantity = 0.0m;
+            TotalValueWithoutTVA = 0.0m;
+            TotalTVA = 0.0m;
         }
     }
 }

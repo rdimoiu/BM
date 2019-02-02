@@ -47,6 +47,7 @@ namespace BuildingManagement.DAL
                     i.Number.ToLower().Contains(searchString) ||
                     i.Date.ToString().ToLower().Contains(searchString) ||
                     i.DueDate.ToString().ToLower().Contains(searchString) ||
+                    i.PaidDate.ToString().ToLower().Contains(searchString) ||
                     i.Quantity.ToString().ToLower().Contains(searchString) ||
                     i.CheckQuantity.ToString().ToLower().Contains(searchString) ||
                     i.TotalValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
@@ -92,6 +93,12 @@ namespace BuildingManagement.DAL
                     break;
                 case "dueDate_desc":
                     invoices = invoices.OrderByDescending(i => i.DueDate);
+                    break;
+                case "PaidDate":
+                    invoices = invoices.OrderBy(i => i.PaidDate);
+                    break;
+                case "paidDate_desc":
+                    invoices = invoices.OrderByDescending(i => i.PaidDate);
                     break;
                 case "Quantity":
                     invoices = invoices.OrderBy(i => i.Quantity);

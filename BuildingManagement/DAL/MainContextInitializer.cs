@@ -20,7 +20,7 @@ namespace BuildingManagement.DAL
             };
             var client2 = new Client
             {
-                Address = "Circumvalatiunii",
+                Address = "Piata 700",
                 Contact = "George Stanciu",
                 Email = "gergestanciu@gmail.com",
                 Name = "700",
@@ -161,29 +161,29 @@ namespace BuildingManagement.DAL
             var section1 = new Section
             {
                 Number = "Tronson AP",
-                Surface = 0m,
-                People = 0,
+                Surface = 80m,
+                People = 8,
                 Client = client1
             };
             var section2 = new Section
             {
                 Number = "Tronson PARC",
-                Surface = 0m,
-                People = 0,
+                Surface = 25m,
+                People = 5,
                 Client = client1
             };
             var section3 = new Section
             {
-                Number = "Tronson AP",
-                Surface = 0m,
-                People = 0,
+                Number = "Tronson AP 7",
+                Surface = 75m,
+                People = 6,
                 Client = client2
             };
             var section4 = new Section
             {
-                Number = "Tronson PARC",
-                Surface = 0m,
-                People = 0,
+                Number = "Tronson PARC 7",
+                Surface = 12m,
+                People = 4,
                 Client = client2
             };
             var sections = new List<Section>
@@ -199,50 +199,50 @@ namespace BuildingManagement.DAL
             var level1 = new Level
             {
                 Number = "Nivel 0 (PARC)",
-                Surface = 0m,
-                People = 0,
+                Surface = 15m,
+                People = 3,
                 Section = section2
             };
             var level2 = new Level
             {
                 Number = "Nivel 1 (PARC)",
-                Surface = 0m,
-                People = 0,
+                Surface = 10m,
+                People = 2,
                 Section = section2
             };
             var level3 = new Level
             {
                 Number = "Nivel 2 (AP)",
-                Surface = 0m,
-                People = 0,
+                Surface = 30m,
+                People = 3,
                 Section = section1
             };
             var level4 = new Level
             {
                 Number = "Nivel 3 (AP)",
-                Surface = 0m,
-                People = 0,
+                Surface = 50m,
+                People = 5,
                 Section = section1
             };
             var level5 = new Level
             {
-                Number = "Nivel 0 (PARC)",
-                Surface = 0m,
-                People = 0,
+                Number = "Nivel 0 (PARC) 7",
+                Surface = 12m,
+                People = 4,
                 Section = section4
             };
             var level6 = new Level
             {
-                Number = "Nivel 1 (AP)",
-                Surface = 0m,
-                People = 0,
+                Number = "Nivel 1 (AP) 7",
+                Surface = 40m,
+                People = 3,
                 Section = section3
             };
             var level7 = new Level
             {
-                Number = "Nivel 1.1 (AP)",
-                Surface = 0m,
-                People = 0,
+                Number = "Nivel 1.1 (AP) 7",
+                Surface = 35m,
+                People = 3,
                 Section = section3
             };
             var levels = new List<Level>
@@ -261,8 +261,8 @@ namespace BuildingManagement.DAL
             var space1 = new Space
             {
                 Number = "AP 2.1",
-                Surface = 0m,
-                People = 0,
+                Surface = 10m,
+                People = 1,
                 SpaceType = spaceType1,
                 SubClient = subClient1,
                 Level = level3
@@ -270,8 +270,8 @@ namespace BuildingManagement.DAL
             var space2 = new Space
             {
                 Number = "AP 2.2",
-                Surface = 0m,
-                People = 0,
+                Surface = 20m,
+                People = 2,
                 SpaceType = spaceType1,
                 SubClient = subClient2,
                 Level = level3
@@ -279,8 +279,8 @@ namespace BuildingManagement.DAL
             var space3 = new Space
             {
                 Number = "AP 3.1",
-                Surface = 0m,
-                People = 0,
+                Surface = 30m,
+                People = 3,
                 SpaceType = spaceType1,
                 SubClient = subClient3,
                 Level = level4
@@ -288,8 +288,8 @@ namespace BuildingManagement.DAL
             var space4 = new Space
             {
                 Number = "AP 3.2",
-                Surface = 0m,
-                People = 0,
+                Surface = 20m,
+                People = 2,
                 SpaceType = spaceType1,
                 SubClient = subClient4,
                 Level = level4
@@ -297,8 +297,8 @@ namespace BuildingManagement.DAL
             var space5 = new Space
             {
                 Number = "P 1",
-                Surface = 0m,
-                People = 0,
+                Surface = 5m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient1,
                 Level = level1
@@ -306,8 +306,8 @@ namespace BuildingManagement.DAL
             var space6 = new Space
             {
                 Number = "P 2",
-                Surface = 0m,
-                People = 0,
+                Surface = 5m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient2,
                 Level = level1
@@ -315,8 +315,8 @@ namespace BuildingManagement.DAL
             var space7 = new Space
             {
                 Number = "P 3",
-                Surface = 0m,
-                People = 0,
+                Surface = 5m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient3,
                 Level = level1
@@ -324,8 +324,8 @@ namespace BuildingManagement.DAL
             var space8 = new Space
             {
                 Number = "P 1.1",
-                Surface = 0m,
-                People = 0,
+                Surface = 5m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient4,
                 Level = level2
@@ -333,8 +333,8 @@ namespace BuildingManagement.DAL
             var space9 = new Space
             {
                 Number = "P 1.2",
-                Surface = 0m,
-                People = 0,
+                Surface = 5m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient1,
                 Level = level2
@@ -342,8 +342,8 @@ namespace BuildingManagement.DAL
             var space10 = new Space
             {
                 Number = "P 1",
-                Surface = 0m,
-                People = 0,
+                Surface = 3m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient6,
                 Level = level5
@@ -351,8 +351,8 @@ namespace BuildingManagement.DAL
             var space11 = new Space
             {
                 Number = "P 2",
-                Surface = 0m,
-                People = 0,
+                Surface = 3m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient5,
                 Level = level5
@@ -360,8 +360,8 @@ namespace BuildingManagement.DAL
             var space12 = new Space
             {
                 Number = "P 3",
-                Surface = 0m,
-                People = 0,
+                Surface = 3m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient5,
                 Level = level5
@@ -369,8 +369,8 @@ namespace BuildingManagement.DAL
             var space13 = new Space
             {
                 Number = "P 4",
-                Surface = 0m,
-                People = 0,
+                Surface = 3m,
+                People = 1,
                 SpaceType = spaceType2,
                 SubClient = subClient6,
                 Level = level5
@@ -378,8 +378,8 @@ namespace BuildingManagement.DAL
             var space14 = new Space
             {
                 Number = "AP 1.1",
-                Surface = 0m,
-                People = 0,
+                Surface = 15m,
+                People = 1,
                 SpaceType = spaceType1,
                 SubClient = subClient6,
                 Level = level6
@@ -387,8 +387,8 @@ namespace BuildingManagement.DAL
             var space15 = new Space
             {
                 Number = "AP 1.2",
-                Surface = 0m,
-                People = 0,
+                Surface = 25m,
+                People = 2,
                 SpaceType = spaceType1,
                 SubClient = subClient5,
                 Level = level6
@@ -396,8 +396,8 @@ namespace BuildingManagement.DAL
             var space16 = new Space
             {
                 Number = "AP 1.1.1",
-                Surface = 0m,
-                People = 0,
+                Surface = 10m,
+                People = 1,
                 SpaceType = spaceType1,
                 SubClient = subClient6,
                 Level = level7
@@ -405,8 +405,8 @@ namespace BuildingManagement.DAL
             var space17 = new Space
             {
                 Number = "AP 1.1.2",
-                Surface = 0m,
-                People = 0,
+                Surface = 25m,
+                People = 2,
                 SpaceType = spaceType1,
                 SubClient = subClient5,
                 Level = level7
@@ -537,7 +537,7 @@ namespace BuildingManagement.DAL
             {
                 context.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new EarlyExitException();
             }

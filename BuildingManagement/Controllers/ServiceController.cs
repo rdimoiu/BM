@@ -332,7 +332,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoicesDropDownList(object selectedInvoice = null)
         {
-            var invoicesQuery = _unitOfWork.InvoiceRepository.GetAll();
+            var invoicesQuery = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.Closed == false);
             ViewBag.InvoiceID = new SelectList(invoicesQuery, "ID", "Number", selectedInvoice);
         }
 

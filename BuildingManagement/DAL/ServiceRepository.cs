@@ -2,7 +2,6 @@
 using System.Linq;
 using BuildingManagement.Models;
 using System.Data.Entity;
-using System.Data.Entity;
 
 namespace BuildingManagement.DAL
 {
