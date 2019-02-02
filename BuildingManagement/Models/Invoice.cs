@@ -60,10 +60,10 @@ namespace BuildingManagement.Models
 
         public virtual ICollection<Service> Services { get; set; }
 
+        public bool Closed { get; set; }
+
         [NotMapped]
         public string PreviousPage { get; set; }
-
-        public bool Closed { get; set; }
 
         public Invoice()
         {

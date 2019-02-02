@@ -21,9 +21,6 @@ namespace BuildingManagement.Models
         public int DistributionModeID { get; set; }
         public virtual DistributionMode DistributionMode { get; set; }
 
-        [NotMapped]
-        public List<string> MeterTypesSelected { get; set; }
-
         public virtual ICollection<MeterType> MeterTypes { get; set; }
 
         public virtual ICollection<Space> Spaces { get; set; }
@@ -31,6 +28,9 @@ namespace BuildingManagement.Models
         public virtual ICollection<Level> Levels { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; }
+
+        [NotMapped]
+        public List<string> MeterTypesSelected { get; set; }
 
         [NotMapped]
         public List<string> MeterSLSSelected { get; set; }

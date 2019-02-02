@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Policy;
 
 namespace BuildingManagement.Models
 {
@@ -68,5 +69,10 @@ namespace BuildingManagement.Models
 
         [NotMapped]
         public string PreviousPage { get; set; }
+
+        public Service()
+        {
+            Inhabited = true;
+        }
     }
 }

@@ -116,9 +116,9 @@
                     @Html.DisplayFor(modelItem => invoice.PaidDate.ToString("dd/MM/yyyy"))
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", "Invoice", new { invoiceId = invoice.ID }, null) |
-                    @Html.ActionLink("Details", "Details", "Invoice", new { invoiceId = invoice.ID }, null) |
-                    @Html.ActionLink("Delete", "Delete", "Invoice", new { invoiceId = invoice.ID}, null) |
+                    @Html.ActionLink("Edit", "Edit", "Invoice", new { invoiceId = invoice.ID }, null) 
+                    @Html.ActionLink("Details", "Details", "Invoice", new { invoiceId = invoice.ID }, null) 
+                    @Html.ActionLink("Delete", "Delete", "Invoice", new { invoiceId = invoice.ID}, null) 
                     @if (!invoice.Closed)
                     {
                         @Html.ActionLink("Close", "Close", "Invoice", new { invoiceId = invoice.ID}, null)
@@ -194,8 +194,8 @@
                                         @Html.DisplayFor(modelItem => service.Fixed)
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Edit", "Edit", "Service", new {serviceId = service.ID}, null) |
-                                        @Html.ActionLink("Details", "Details", "Service", new { serviceId = service.ID}, null) |
+                                        @Html.ActionLink("Edit", "Edit", "Service", new {serviceId = service.ID}, null) 
+                                        @Html.ActionLink("Details", "Details", "Service", new { serviceId = service.ID}, null) 
                                         @Html.ActionLink("Delete", "Delete", "Service", new { serviceId = service.ID}, null)
                                     </td>
                                 </tr>

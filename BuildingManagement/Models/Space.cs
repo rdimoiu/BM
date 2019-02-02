@@ -19,18 +19,6 @@ namespace BuildingManagement.Models
         
         public bool Inhabited { get; set; }
 
-        [NotMapped]
-        public int ClientID { get; set; }
-
-        [NotMapped]
-        public Client Client { get; set; }
-
-        [NotMapped]
-        public int SectionID { get; set; }
-
-        [NotMapped]
-        public Section Section { get; set; }
-
         public int LevelID { get; set; }
 
         public Level Level { get; set; }
@@ -50,5 +38,22 @@ namespace BuildingManagement.Models
         public virtual ICollection<SubSubMeter> SubSubMeters { get; set; }
 
         public virtual ICollection<Service> Services { get; set; }
+
+        [NotMapped]
+        public int ClientID { get; set; }
+
+        [NotMapped]
+        public Client Client { get; set; }
+
+        [NotMapped]
+        public int SectionID { get; set; }
+
+        [NotMapped]
+        public Section Section { get; set; }
+
+        public Space()
+        {
+            Inhabited = true;
+        }
     }
 }

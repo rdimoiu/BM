@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
+using System.Xml.Schema;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using X.PagedList;
@@ -226,55 +227,59 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST: Invoice/Delete/5
-        [HttpPost, ActionName("Close")]
-        [ValidateAntiForgeryToken]
         public ActionResult Close(int id)
         {
-            var invoice = _unitOfWork.InvoiceRepository.SingleOrDefault(s => s.ID == id);
+            var invoice = _unitOfWork.InvoiceRepository.GetInvoiceIncludingServices(id);
             if (invoice == null)
             {
                 return HttpNotFound();
             }
-
             foreach (var service in invoice.Services)
             {
-                List<Space> spaces = new List<Space>();
-                List<Level> levels = new List<Level>();
+                var totalSurface = 0.0m;
+                var totalPeople = 0.0m;
+                var totalSpaces = new List<Space>();
                 foreach (var section in service.Sections)
                 {
-                    var sectionLevels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
-                    foreach (var level in sectionLevels)
+                    var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
+                    foreach (var level in levels)
                     {
-                        levels.Add(level);
+                        var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                        foreach (var space in spaces)
+                        {
+                            totalSpaces.Add(space);
+                        }
                     }
                 }
-                levels.AddRange(service.Levels);
-                foreach (var level in levels)
+                foreach (var level in service.Levels)
                 {
-                    var levelSpaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
-                    foreach (var space in levelSpaces)
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                    foreach (var space in spaces)
                     {
-                        spaces.Add(space);
+                        totalSpaces.Add(space);
                     }
                 }
-                spaces.AddRange(service.Spaces);
-                decimal totalSurface = 0;
-                decimal totalPeople = 0;
-                foreach (var space in spaces)
+                foreach (var space in service.Spaces)
                 {
-                    if (!space.Inhabited)
-                    {
-                        totalSurface = totalSurface + space.Surface;
-                        totalPeople = totalPeople + space.People;
-                    }
+                    totalSpaces.Add(space);
                 }
-                var valueWithTVA = service.TVA*service.QuotaTVA*service.ValueWithoutTVA;
+                foreach (var space in totalSpaces)
+                {
+                    if (service.Inhabited && space.Inhabited)
+                    {
+                        totalPeople += space.People;
+                    }
+                    totalSurface += space.Surface;
+                }
+                
+                var valueWithTVA = service.ValueWithoutTVA + service.TVA;
+
+                //DistributionMode = cote parti
                 if (service.DistributionModeID == 1)
                 {
                     if (totalSurface > 0)
                     {
-                        foreach (var space in spaces)
+                        foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
                             if (!space.Inhabited)
@@ -288,11 +293,12 @@ namespace BuildingManagement.Controllers
                         }
                     }
                 }
-                else
+                //DistributionMode = numar persoane
+                else if (service.DistributionModeID == 2)
                 {
                     if (totalPeople > 0)
                     {
-                        foreach (var space in spaces)
+                        foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
                             if (!space.Inhabited)

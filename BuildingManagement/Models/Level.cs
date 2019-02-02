@@ -21,12 +21,6 @@ namespace BuildingManagement.Models
 
         public Section Section { get; set; }
         
-        [NotMapped]
-        public int ClientID { get; set; }
-        
-        [NotMapped]
-        public Client Client { get; set; }
-
         public virtual ICollection<Meter> Meters { get; set; }
 
         public virtual ICollection<SubMeter> SubMeters { get; set; }
@@ -34,5 +28,11 @@ namespace BuildingManagement.Models
         public virtual ICollection<SubSubMeter> SubSubMeters { get; set; }
 
         public virtual ICollection<Service> Services { get; set; }
+
+        [NotMapped]
+        public int ClientID { get; set; }
+
+        [NotMapped]
+        public Client Client { get; set; }
     }
 }

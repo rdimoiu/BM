@@ -85,7 +85,6 @@ namespace BuildingManagement.DAL
                     s.Number.ToLower().Contains(searchString) ||
                     s.Surface.ToString().ToLower().Contains(searchString) ||
                     s.People.ToString().ToLower().Contains(searchString) ||
-                    s.Inhabited.ToString().ToLower().Contains(searchString) ||
                     s.Level.Number.ToLower().Contains(searchString) ||
                     s.SpaceType.Type.ToLower().Contains(searchString) ||
                     s.SubClient.Name.ToLower().Contains(searchString));

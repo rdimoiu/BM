@@ -24,6 +24,13 @@ namespace BuildingManagement.DAL
                 .SingleOrDefault(i => i.ID == id);
         }
 
+        public Invoice GetInvoiceIncludingServices(int id)
+        {
+            return MainContext.Invoices
+                .Include(i => i.Services)
+                .SingleOrDefault(i => i.ID == id);
+        }
+
         public IEnumerable<Invoice> GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices()
         {
             return MainContext.Invoices
