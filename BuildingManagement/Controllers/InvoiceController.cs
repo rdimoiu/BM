@@ -227,6 +227,7 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: Invoice/Close/5
         public ActionResult Close(int id)
         {
             var invoice = _unitOfWork.InvoiceRepository.GetInvoiceIncludingServices(id);
@@ -236,8 +237,6 @@ namespace BuildingManagement.Controllers
             }
             foreach (var service in invoice.Services)
             {
-                var totalSurface = 0.0m;
-                var totalPeople = 0.0m;
                 var totalSpaces = new List<Space>();
                 foreach (var section in service.Sections)
                 {
@@ -247,6 +246,10 @@ namespace BuildingManagement.Controllers
                         var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
                         foreach (var space in spaces)
                         {
+                            if (service.Inhabited && !space.Inhabited)
+                            {
+                                continue;
+                            }
                             totalSpaces.Add(space);
                         }
                     }
@@ -256,20 +259,20 @@ namespace BuildingManagement.Controllers
                     var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
                     foreach (var space in spaces)
                     {
+                        if (service.Inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
                         totalSpaces.Add(space);
                     }
                 }
                 foreach (var space in service.Spaces)
                 {
-                    totalSpaces.Add(space);
-                }
-                foreach (var space in totalSpaces)
-                {
-                    if (service.Inhabited && space.Inhabited)
+                    if (service.Inhabited && !space.Inhabited)
                     {
-                        totalPeople += space.People;
+                        continue;
                     }
-                    totalSurface += space.Surface;
+                    totalSpaces.Add(space);
                 }
                 
                 var valueWithTVA = service.ValueWithoutTVA + service.TVA;
@@ -277,38 +280,34 @@ namespace BuildingManagement.Controllers
                 //DistributionMode = cote parti
                 if (service.DistributionModeID == 1)
                 {
+                    var totalSurface = totalSpaces.Sum(s => s.Surface);
                     if (totalSurface > 0)
                     {
                         foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
-                            if (!space.Inhabited)
-                            {
-                                var quota = space.Surface/totalSurface;
-                                cost.Value = quota*valueWithTVA;
-                                cost.ServiceID = service.ID;
-                                cost.SpaceID = space.ID;
-                                _unitOfWork.CostRepository.Add(cost);
-                            }
+                            var quota = space.Surface/totalSurface;
+                            cost.Value = quota*valueWithTVA;
+                            cost.ServiceID = service.ID;
+                            cost.SpaceID = space.ID;
+                            _unitOfWork.CostRepository.Add(cost);
                         }
                     }
                 }
                 //DistributionMode = numar persoane
                 else if (service.DistributionModeID == 2)
                 {
+                    var totalPeople = totalSpaces.Sum(s => s.People);
                     if (totalPeople > 0)
                     {
                         foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
-                            if (!space.Inhabited)
-                            {
-                                var cota = space.People/totalPeople;
-                                cost.Value = cota*valueWithTVA;
-                                cost.ServiceID = service.ID;
-                                cost.SpaceID = space.ID;
-                                _unitOfWork.CostRepository.Add(cost);
-                            }
+                            var cota = ((decimal)space.People)/((decimal)totalPeople);
+                            cost.Value = cota*valueWithTVA;
+                            cost.ServiceID = service.ID;
+                            cost.SpaceID = space.ID;
+                            _unitOfWork.CostRepository.Add(cost);
                         }
                     }
                 }
@@ -327,6 +326,7 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: Invoice/Open/5
         public ActionResult Open(int id)
         {
             var invoice = _unitOfWork.InvoiceRepository.Get(id);
@@ -335,16 +335,10 @@ namespace BuildingManagement.Controllers
                 var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
                 foreach (var cost in costs)
                 {
-                    try
-                    {
-                        _unitOfWork.CostRepository.Remove(cost);
-                    }
-                    catch (DataException)
-                    {
-                        return RedirectToAction("Open", new { id, saveChangesError = true });
-                    }
+                    _unitOfWork.CostRepository.Remove(cost);
                 }
             }
+            invoice.PaidDate = invoice.Date.Subtract(TimeSpan.FromDays(1));
             invoice.Closed = false;
             try
             {

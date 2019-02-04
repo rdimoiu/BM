@@ -133,7 +133,8 @@
                 @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" })
                 @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" })
                 @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" })
-                @if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
+                @*@if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)*@
+                @if (invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
                 {
                     if (!invoice.Closed)
                     {
@@ -146,46 +147,6 @@
                 }
             </td>
         </tr>
-        @*<tr>
-            <td colspan="13">
-                <details>
-                    <summary>Services</summary>
-                    <table class="table">
-                        <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Quantity
-                            </th>
-                            <th>
-                                ValueWithoutTVA
-                            </th>
-                            <th>
-                                TVA
-                            </th>
-                        </tr>
-                        @foreach (var service in invoice.Services)
-                        {
-                            <tr>
-                                <td>
-                                    @service.Name
-                                </td>
-                                <td>
-                                    @service.Quantity
-                                </td>
-                                <td>
-                                    @service.ValueWithoutTVA
-                                </td>
-                                <td>
-                                    @service.TVA
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </details>
-            </td>
-        </tr>*@
     }
 </table>
 <br/>

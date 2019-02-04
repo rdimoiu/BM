@@ -121,7 +121,7 @@ function DateValidation() {
     if (controlId.value === "") {
         return "The Date field is required." + "\n";
     } else if (isValidDate(controlId.value)) {
-        return "The Date field is invalid." + "\n";;
+        return "The Date field is invalid." + "\n";
     } else {
         return "";
     }
