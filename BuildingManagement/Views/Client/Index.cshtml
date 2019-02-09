@@ -35,7 +35,8 @@
         <th>
             @Html.ActionLink("Email", "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
-        <th></th>
+        <th>
+        </th>
     </tr>
 
     @foreach (var item in ViewBag.OnePageOfClients)
@@ -58,9 +59,9 @@
                 @item.Email
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
-                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" })
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class =  "delete-icon" })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" }) 
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" }) 
             </td>
         </tr>
     }
@@ -71,7 +72,7 @@
 <script src="~/Scripts/jquery-1.10.2.js"></script>
 <script>
     function Edit() {
-        var id = document.getElementById('ID').value;
+        var id = document.getElementById("ID").value;
         window.location.href = "/Client/Edit/" + id;
     }
 </script>

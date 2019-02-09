@@ -6,10 +6,8 @@
 
 <h2>Index</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Index", "InvoiceDistribution", FormMethod.Get))
 {
-    @Html.AntiForgeryToken()
-
     <div class="form-horizontal">
         <h4>InvoiceDistribution</h4>
         <hr />
@@ -18,7 +16,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new {@class = "form-control", onchange = "GetInvoices()"}})
+                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new { @id = "DiscountMonth", @class = "form-control", onchange = "GetInvoices()"}})
                 @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})
             </div>
         </div>
@@ -52,7 +50,25 @@
                 Provider
             </th>
             <th>
+                InvoiceType
+            </th>
+            <th>
                 Number
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                DueDate
+            </th>
+            <th>
+                PaidDate
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                CheckQuantity
             </th>
             <th>
                 TotalValueWithoutTVA
@@ -67,15 +83,10 @@
                 CheckTotalTVA
             </th>
             <th>
-                Date
+                DiscountMonth
             </th>
             <th>
-                DueDate
             </th>
-            <th>
-                PaidDate
-            </th>
-            <th></th>
         </tr>
         @foreach (var invoice in Model.Invoices)
         {
@@ -86,57 +97,71 @@
             }
             <tr onclick="javascript:GetInvoices(@invoice.ID);" style="background-color: @ViewBag.backgroundColor">
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.Client.Name)
+                    @invoice.Client.Name
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.Provider.Name)
+                    @invoice.Provider.Name
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.Number)
+                    @invoice.InvoiceType.Type
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.TotalValueWithoutTVA)
+                    @invoice.Number
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.CheckTotalValueWithoutTVA)
+                    @invoice.Date.ToString("dd/MM/yyyy")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.TotalTVA)
+                    @invoice.DueDate.ToString("dd/MM/yyyy")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.CheckTotalTVA)
+                    @invoice.PaidDate.ToString("dd/MM/yyyy")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.Date.ToString("dd/MM/yyyy"))
+                    @invoice.Quantity
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.DueDate.ToString("dd/MM/yyyy"))
+                    @invoice.CheckQuantity
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => invoice.PaidDate.ToString("dd/MM/yyyy"))
+                    @invoice.TotalValueWithoutTVA
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", "Invoice", new { invoiceId = invoice.ID }, null) 
-                    @Html.ActionLink("Details", "Details", "Invoice", new { invoiceId = invoice.ID }, null) 
-                    @Html.ActionLink("Delete", "Delete", "Invoice", new { invoiceId = invoice.ID}, null) 
-                    @if (!invoice.Closed)
+                    @invoice.CheckTotalValueWithoutTVA
+                </td>
+                <td>
+                    @invoice.TotalTVA
+                </td>
+                <td>
+                    @invoice.CheckTotalTVA
+                </td>
+                <td>
+                    @invoice.DiscountMonth.ToString("MM/yyyy")
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "Invoice", new { id = invoice.ID }, new { @class = "edit-icon" }) 
+                    @Html.ActionLink("Delete", "Delete", "Invoice", new { id = invoice.ID }, new { @class = "delete-icon" }) 
+                    @Html.ActionLink("Details", "Details", "Invoice", new { id = invoice.ID }, new { @class = "details-icon" })                     
+                    @*@if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)*@
+                    @if (invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
                     {
-                        @Html.ActionLink("Close", "Close", "Invoice", new { invoiceId = invoice.ID}, null)
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Open", "Open", "Invoice", new { invoiceId = invoice.ID }, null)
+                        if (!invoice.Closed)
+                        {
+                            @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon", @style="display:inline-block"})
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Open", "Open", "Invoice", new { id = invoice.ID }, new { @class = "unlock-icon", @style = "display:inline-block" })
+                        }
                     }
                 </td>
             </tr>
             <tr>
                 <td colspan="10">
                     <details>
+                        <summary>Services</summary>
                         <table class="table">
                             <tr>
-                                <th>
-                                    Invoice
-                                </th>
                                 <th>
                                     Name
                                 </th>
@@ -159,44 +184,39 @@
                                     QuotaTVA
                                 </th>
                                 <th>
-                                    Fixed
                                 </th>
-                                <th></th>
                             </tr>
                             @foreach (var service in invoice.Services)
                             {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.Invoice.Number)
+                                        @service.Name
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.Name)
+                                        @service.Quantity
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.Quantity)
+                                        @service.Unit
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.Unit)
+                                        @service.Price
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.Price)
+                                        @service.TVA
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.TVA)
+                                        @service.ValueWithoutTVA
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.ValueWithoutTVA)
+                                        @service.QuotaTVA
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => service.QuotaTVA)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => service.Fixed)
-                                    </td>
-                                    <td>
-                                        @Html.ActionLink("Edit", "Edit", "Service", new {serviceId = service.ID}, null) 
-                                        @Html.ActionLink("Details", "Details", "Service", new { serviceId = service.ID}, null) 
-                                        @Html.ActionLink("Delete", "Delete", "Service", new { serviceId = service.ID}, null)
+                                        @if (!invoice.Closed)
+                                        {
+                                            @Html.ActionLink("Edit", "Edit", "Service", new { id = service.ID }, new { @class = "edit-icon" })
+                                            @Html.ActionLink("Delete", "Delete", "Service", new { id = service.ID }, new { @class = "delete-icon" })
+                                        }
+                                        @Html.ActionLink("Details", "Details", "Service", new { id = service.ID }, new { @class = "details-icon" })
                                     </td>
                                 </tr>
                             }
@@ -214,16 +234,24 @@
     </table>
 }
 <p>
-    @Html.ActionLink("Create Invoice", "Create", "Invoice", new { clientId = @Model.ClientID, providerId = @Model.ProviderID }, null)
+    @Html.ActionLink("Create Invoice", "Create", "Invoice", new { discountMonth = @Model.DiscountMonth, clientId = @Model.ClientID, providerId = @Model.ProviderID }, null)
 </p>
 
 <script src="~/Scripts/jquery-1.10.2.js"></script>
 
 <script>
+    $(document).ready(function() {
+        var minDate = (new Date('0001-01-01')).toUTCString();
+        var discountMonth = new Date(document.getElementById("DiscountMonth").value).toUTCString();
+        if (discountMonth === minDate) {
+            document.getElementById("DiscountMonth").value = "";
+        }
+    });
+
     function GetInvoices() {
-        var discountMonth = document.getElementById('DiscountMonth').value;
-        var clientId = document.getElementById('ClientID').value;
-        var providerId = document.getElementById('ProviderID').value;
+        var discountMonth = document.getElementById("DiscountMonth").value;
+        var clientId = document.getElementById("ClientID").value;
+        var providerId = document.getElementById("ProviderID").value;
         window.location.href = "/InvoiceDistribution/Index/?discountMonth=" + discountMonth + "&clientId=" + clientId + "&providerId=" + providerId;
     }
 </script>

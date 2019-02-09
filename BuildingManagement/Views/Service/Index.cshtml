@@ -59,7 +59,8 @@
         <th>
             Space
         </th>
-        <th></th>
+        <th>
+        </th>
     </tr>
 
     @foreach (var item in ViewBag.OnePageOfServices)
@@ -127,13 +128,10 @@
             <td>
                 @if (!item.Invoice.Closed)
                 {
-                    @Html.ActionLink("Edit", "Edit", new {id = item.ID}) 
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" }) 
                 }
-                @Html.ActionLink("Details", "Details", new {id = item.ID}) 
-                @if (!item.Invoice.Closed)
-                {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-                }
+                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" }) 
             </td>
         </tr>
     }

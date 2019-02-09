@@ -65,7 +65,8 @@
         <th>
             Services
         </th>
-        <th></th>
+        <th>
+        </th>
     </tr>
 
     @foreach (var invoice in ViewBag.OnePageOfInvoices)
@@ -130,9 +131,9 @@
                 }
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" })
-                @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" })
-                @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" })
+                @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" }) 
+                @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" }) 
+                @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" }) 
                 @*@if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)*@
                 @if (invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
                 {

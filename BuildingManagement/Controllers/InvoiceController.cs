@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Xml.Schema;
@@ -76,9 +77,13 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: Invoice/Create
-        public ActionResult Create(int? clientId, int? providerId)
+        public ActionResult Create(string discountMonth, int? clientId, int? providerId)
         {
             var invoice = new Invoice();
+            if (discountMonth != null)
+            {
+                invoice.DiscountMonth = DateTime.ParseExact(discountMonth, "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture);
+            }
             if (clientId != null)
             {
                 invoice.ClientID = (int) clientId;
@@ -87,13 +92,9 @@ namespace BuildingManagement.Controllers
             {
                 invoice.ProviderID = (int) providerId;
             }
-            if (Request.UrlReferrer != null && Request.UrlReferrer.AbsoluteUri.Contains("Distribution"))
+            if (Request.UrlReferrer != null)
             {
-                invoice.PreviousPage = "InvoiceDistribution";
-            }
-            else
-            {
-                invoice.PreviousPage = "Invoice";
+                invoice.PreviousPage = Request.UrlReferrer.AbsolutePath;
             }
             PopulateInvoiceTypesDropDownList();
             PopulateClientsDropDownList();
@@ -121,11 +122,7 @@ namespace BuildingManagement.Controllers
                     _unitOfWork.InvoiceRepository.Add(invoice);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice {0} has been created.", invoice.Number);
-                    if (invoice.PreviousPage.Equals("Invoice"))
-                    {
-                        return Json(invoice.ID);
-                    }
-                    return RedirectToAction("Index", "InvoiceDistribution", new {invoice.ClientID, invoice.ProviderID});
+                    return Json(invoice.ID);
                 }
                 catch (DataException)
                 {
@@ -145,6 +142,10 @@ namespace BuildingManagement.Controllers
             if (invoice == null)
             {
                 return HttpNotFound();
+            }
+            if (Request.UrlReferrer != null)
+            {
+                invoice.PreviousPage = Request.UrlReferrer.AbsolutePath;
             }
             PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
             PopulateClientsDropDownList(invoice.ClientID);
@@ -201,13 +202,17 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
+            if (Request.UrlReferrer != null)
+            {
+                invoice.PreviousPage = Request.UrlReferrer.AbsolutePath;
+            }
             return View(invoice);
         }
 
         // POST: Invoice/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, string PreviousPage)
         {
             try
             {
@@ -219,12 +224,19 @@ namespace BuildingManagement.Controllers
                 _unitOfWork.InvoiceRepository.Remove(invoice);
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been deleted.", invoice.Number);
+                if (PreviousPage.Equals("/Invoice/Index"))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "InvoiceDistribution");
+                }
             }
             catch (DataException)
             {
                 return RedirectToAction("Delete", new {id, saveChangesError = true});
             }
-            return RedirectToAction("Index");
         }
 
         // POST: Invoice/Close/5

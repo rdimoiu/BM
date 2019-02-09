@@ -23,7 +23,8 @@
         <th>
             @Html.DisplayNameFor(model => model.AccountConfirmed)
         </th>
-        <th></th>
+        <th>
+        </th>
     </tr>
 
     @foreach (var item in Model)
@@ -43,8 +44,8 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }) 
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id }) 
                 @Html.ActionLink("Restore", "Reactivate", new { id = item.Id }) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
             </td>
         </tr>
     }

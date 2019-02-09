@@ -41,7 +41,8 @@
         <th>
             @Html.ActionLink("SubClient", "Index", new {sortOrder = ViewBag.SubClientSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
-        <th></th>
+        <th>
+        </th>
     </tr>
 
     @foreach (var item in ViewBag.OnePageOfSpaces)
@@ -69,9 +70,9 @@
                 @item.SubClient.Name
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) 
-                @Html.ActionLink("Details", "Details", new {id = item.ID}) 
-                @Html.ActionLink("Delete", "Delete", new {id = item.ID})
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) 
             </td>
         </tr>
     }

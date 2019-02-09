@@ -79,13 +79,9 @@ namespace BuildingManagement.Controllers
             {
                 service.InvoiceID = (int) invoiceId;
             }
-            if (Request.UrlReferrer != null && Request.UrlReferrer.AbsoluteUri.Contains("Distribution"))
+            if (Request.UrlReferrer != null)
             {
-                service.PreviousPage = "InvoiceDistribution";
-            }
-            else
-            {
-                service.PreviousPage = "Invoice";
+                service.PreviousPage = Request.UrlReferrer.AbsolutePath;
             }
             PopulateInvoicesDropDownList();
             PopulateDistributionModesDropDownList();
@@ -159,11 +155,7 @@ namespace BuildingManagement.Controllers
                     _unitOfWork.ServiceRepository.Add(service);
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Service {0} has been created.", service.Name);
-                    if (service.PreviousPage.Equals("Invoice"))
-                    {
-                        return Json(service.ID);
-                    }
-                    return RedirectToAction("Index", "InvoiceDistribution", new { service.Invoice.ClientID, service.Invoice.ProviderID });
+                    return Json(service.ID);
                 }
                 catch (DataException)
                 {
@@ -176,12 +168,16 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: Service/Edit/5
-        public ActionResult Edit(int id, int? invoiceId)
+        public ActionResult Edit(int id)
         {
             var service = _unitOfWork.ServiceRepository.Get(id);
             if (service == null)
             {
                 return HttpNotFound();
+            }
+            if (Request.UrlReferrer != null)
+            {
+                service.PreviousPage = Request.UrlReferrer.AbsolutePath;
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
@@ -262,8 +258,7 @@ namespace BuildingManagement.Controllers
                     invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Service {0} has been edited.", serviceToUpdate.Name);
-                    //return RedirectToAction("Index");
-                    return Json(service.ID);
+                    return Json(serviceToUpdate.ID);
                 }
                 catch (DataException)
                 {
@@ -272,7 +267,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
-            return View(service);
+            return View(serviceToUpdate);
         }
 
         // GET: Service/Delete/5
@@ -287,13 +282,17 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
+            if (Request.UrlReferrer != null)
+            {
+                service.PreviousPage = Request.UrlReferrer.AbsolutePath;
+            }
             return View(service);
         }
 
         // POST: Service/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, string PreviousPage)
         {
             try
             {
@@ -313,6 +312,14 @@ namespace BuildingManagement.Controllers
                 _unitOfWork.ServiceRepository.Remove(service);
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Service {0} has been deleted.", service.Name);
+                if (PreviousPage.Equals("/Service/Index"))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "InvoiceDistribution");
+                }
             }
             catch (DataException)
             {

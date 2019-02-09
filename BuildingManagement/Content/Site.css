@@ -29,7 +29,7 @@ textarea {
 a.edit-icon
 {
     background: url(../Content/icons/icons8-edit-32.png) no-repeat top left;
-    display: block;
+    display: inline-block;
     float: left;
     width: 32px;
     height: 32px;
@@ -38,7 +38,7 @@ a.edit-icon
 a.details-icon
 {
     background: url(../Content/icons/icons8-info-32.png) no-repeat top left;
-    display: block;
+    display: inline-block;
     float: left;
     width: 32px;
     height: 32px;
@@ -47,7 +47,7 @@ a.details-icon
 a.delete-icon
 {
     background: url(../Content/icons/icons8-trash-32.png) no-repeat top left;
-    display: block;
+    display: inline-block;
     float: left;
     width: 32px;
     height: 32px;
@@ -55,7 +55,7 @@ a.delete-icon
 }
 a.lock-icon {
     background: url(../Content/icons/icons8-close-32.png) no-repeat top left;
-    display: block;
+    display: inline-block;
     float: left;
     width: 32px;
     height: 32px;
@@ -64,7 +64,7 @@ a.lock-icon {
 a.unlock-icon
 {
     background: url(../Content/icons/icons8-open-32.png) no-repeat top left;
-    display: block;
+    display: inline-block;
     float: left;
     width: 32px;
     height: 32px;

@@ -29,7 +29,12 @@
             PreviousPage: document.getElementById("PreviousPage").value
         };
         var url = "/Invoice/Create";
-        var indexUrl = "/Invoice/Index";
+        var indexUrl = PreviousPage.value;
+        if (indexUrl != "/Invoice/Index") {
+            indexUrl += "?discountMonth=" + DiscountMonth.value;
+            indexUrl += "&clientId=" + ClientID.value;
+            indexUrl += "&providerId=" + ProviderID.value;
+        }
         if (operation === "Edit") {
             data["ID"] = document.getElementById("ID").value;
             url = "../Edit";
