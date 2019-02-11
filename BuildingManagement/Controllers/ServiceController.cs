@@ -325,7 +325,6 @@ namespace BuildingManagement.Controllers
             {
                 return RedirectToAction("Delete", new {id, saveChangesError = true});
             }
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
