@@ -7,6 +7,7 @@ namespace BuildingManagement.DAL
     {
         Service GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(int id);
         Service GetServiceIncludingSectionsAndLevelsAndSpaces(int id);
+        Service GetServiceIncludingSpacesAndCosts(int id);
         IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces();
         IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(string searchString);
         IEnumerable<Service> OrderServices(IEnumerable<Service> services, string sortOrder);

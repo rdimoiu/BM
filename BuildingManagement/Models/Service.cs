@@ -46,6 +46,8 @@ namespace BuildingManagement.Models
 
         public virtual ICollection<Section> Sections { get; set; }
 
+        public virtual ICollection<Cost> Costs { get; set; }
+
         [NotMapped]
         public decimal ValueWithoutTVA
         {

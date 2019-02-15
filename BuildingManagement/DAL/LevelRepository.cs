@@ -44,6 +44,13 @@ namespace BuildingManagement.DAL
                 .Where(l => l.SectionID == sectionId);
         }
 
+        public IEnumerable<Level> GetLevelsIncludingServicesBySection(int sectionId)
+        {
+            return MainContext.Levels
+                .Include(l => l.Services)
+                .Where(l => l.SectionID == sectionId);
+        }
+
         public IEnumerable<Level> OrderLevels(IEnumerable<Level> levels, string sortOrder)
         {
             switch (sortOrder)

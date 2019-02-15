@@ -34,6 +34,14 @@ namespace BuildingManagement.DAL
                 .SingleOrDefault(s => s.ID == id);
         }
 
+        public Service GetServiceIncludingSpacesAndCosts(int id)
+        {
+            return MainContext.Services
+                .Include(s => s.Spaces)
+                .Include(s => s.Costs)
+                .SingleOrDefault(s => s.ID == id);
+        }
+
         public IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces()
         {
             return MainContext.Services

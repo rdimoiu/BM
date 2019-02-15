@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -19,7 +20,7 @@ namespace BuildingManagement.Controllers
         }
         
         // GET: Costs
-        public ActionResult Index()
+        public ActionResult Index(DateTime? discountMonth, int? sectionId)
         {
             CostsIndexData costsIndexData = new CostsIndexData
             {
@@ -29,8 +30,56 @@ namespace BuildingManagement.Controllers
                 Spaces = new List<Space>(),
                 Costs = new List<Cost>(),
                 Invoices = new List<Invoice>(),
-                Services = new List<Service>()
+                Services = new HashSet<Service>()
             };
+
+            if (discountMonth != null && sectionId != null)
+            {
+                costsIndexData.DiscountMonth = (DateTime)discountMonth;
+                costsIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month);
+
+                foreach (var x in costsIndexData.Invoices)
+                {
+                    var service1 =
+                        _unitOfWork.ServiceRepository.GetServiceIncludingSpacesAndCosts(x.Services.FirstOrDefault().ID);
+                }
+                
+
+                costsIndexData.Section = _unitOfWork.SectionRepository.GetSectionIncludingClientAndServices((int)sectionId);
+                foreach (var service in costsIndexData.Section.Services)
+                {
+                    costsIndexData.Services.Add(service);
+                }
+                var levels = _unitOfWork.LevelRepository.GetLevelsIncludingServicesBySection((int)sectionId).ToList();
+                foreach (var level in levels)
+                {
+                    foreach (var service in level.Services)
+                    {
+                        costsIndexData.Services.Add(service);
+                    }
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesIncludingServicesByLevel(level.ID).ToList();
+                    foreach (var space in spaces)
+                    {
+                        costsIndexData.Spaces.Add(space);
+                        foreach (var service in space.Services)
+                        {
+                            costsIndexData.Services.Add(service);
+                        }
+                    }
+                }
+
+                costsIndexData.Rows = new Dictionary<string, Dictionary<string, string>>();
+                costsIndexData.Cols = new Dictionary<string, string>();
+                foreach (var service in costsIndexData.Services)
+                {
+                    costsIndexData.Cols.Add(service.Name, "");
+                }
+                foreach (var space in costsIndexData.Spaces)
+                {
+                    costsIndexData.Rows.Add(space.Number + " " + space.Level.Number, costsIndexData.Cols);
+                }
+            }
+
             PopulateClientsDropDownList();
             PopulateSectionsDropDownList();
             return View(costsIndexData);

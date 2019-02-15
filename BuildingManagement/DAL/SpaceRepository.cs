@@ -140,7 +140,14 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Spaces
                 .Where(s => s.LevelID == levelId);
-        } 
+        }
+
+        public IEnumerable<Space> GetSpacesIncludingServicesByLevel(int levelId)
+        {
+            return MainContext.Spaces
+                .Include(s => s.Services)
+                .Where(s => s.LevelID == levelId);
+        }
 
         // to be deleted
         public IEnumerable<Space> OrderSpaces(IEnumerable<Space> spaces, string sortOrder)

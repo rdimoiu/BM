@@ -1,7 +1,7 @@
 body {
     margin: 0px;
     padding: 0px;
-  }
+}
 
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
@@ -17,17 +17,16 @@ textarea {
     max-width: 280px;
 }
 
-.layout-menu-area{
+.layout-menu-area {
     width: 300px;
 }
 
-.layout-page-content-area{
+.layout-page-content-area {
     padding-left: 320px;
     padding-top: 40px;
 }
 
-a.edit-icon
-{
+a.edit-icon {
     background: url(../Content/icons/icons8-edit-32.png) no-repeat top left;
     display: inline-block;
     float: left;
@@ -35,8 +34,7 @@ a.edit-icon
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
-a.details-icon
-{
+a.details-icon {
     background: url(../Content/icons/icons8-info-32.png) no-repeat top left;
     display: inline-block;
     float: left;
@@ -44,8 +42,7 @@ a.details-icon
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
-a.delete-icon
-{
+a.delete-icon {
     background: url(../Content/icons/icons8-trash-32.png) no-repeat top left;
     display: inline-block;
     float: left;
@@ -61,14 +58,19 @@ a.lock-icon {
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
-a.unlock-icon
-{
+a.unlock-icon {
     background: url(../Content/icons/icons8-open-32.png) no-repeat top left;
     display: inline-block;
     float: left;
     width: 32px;
     height: 32px;
     text-indent: -9999px; /* hides the link text */
+}
+
+td.table-head-vertical {
+    transform: rotate(90deg);
+    line-height: 100px;
+    border-style: solid;
 }
 
 .nav-side-menu {

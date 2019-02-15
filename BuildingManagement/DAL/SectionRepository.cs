@@ -21,6 +21,14 @@ namespace BuildingManagement.DAL
                 .SingleOrDefault(s => s.ID == id);
         }
 
+        public Section GetSectionIncludingClientAndServices(int id)
+        {
+            return MainContext.Sections
+                .Include(s => s.Client)
+                .Include(s => s.Services)
+                .SingleOrDefault(s => s.ID == id);
+        }
+
         public IEnumerable<Section> GetAllSectionsIncludingClient()
         {
             return MainContext.Sections

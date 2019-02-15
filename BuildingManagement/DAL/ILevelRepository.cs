@@ -8,7 +8,8 @@ namespace BuildingManagement.DAL
         Level GetLevelIncludingSection(int id);
         IEnumerable<Level> GetAllLevelsIncludingSection();
         IEnumerable<Level> GetFilteredLevelsIncludingSection(string searchString);
-        IEnumerable<Level> GetLevelsBySection(int sectionId); 
+        IEnumerable<Level> GetLevelsBySection(int sectionId);
+        IEnumerable<Level> GetLevelsIncludingServicesBySection(int sectionId);
         IEnumerable<Level> OrderLevels(IEnumerable<Level> levels, string sortOrder);
     }
 }

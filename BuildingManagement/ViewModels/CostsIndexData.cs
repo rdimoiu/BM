@@ -26,7 +26,7 @@ namespace BuildingManagement.ViewModels
         public virtual Section Section { get; set; }
 
         [NotMapped]
-        public virtual IEnumerable<Space> Spaces { get; set; }
+        public List<Space> Spaces { get; set; }
 
         [NotMapped]
         public virtual IEnumerable<Cost> Costs { get; set; }
@@ -35,8 +35,12 @@ namespace BuildingManagement.ViewModels
         public virtual IEnumerable<Invoice> Invoices { get; set; }
 
         [NotMapped]
-        public virtual IEnumerable<Service> Services { get; set; }
+        public HashSet<Service> Services { get; set; }
 
+        [NotMapped]
+        public Dictionary<string, Dictionary<string, string>> Rows;
 
+        [NotMapped]
+        public Dictionary<string, string> Cols;
     }
 }

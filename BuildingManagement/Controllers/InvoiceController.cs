@@ -298,8 +298,8 @@ namespace BuildingManagement.Controllers
                         foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
-                            var quota = space.Surface/totalSurface;
-                            cost.Value = quota*valueWithTVA;
+                            var quota = space.Surface / totalSurface;
+                            cost.Value = quota * valueWithTVA;
                             cost.ServiceID = service.ID;
                             cost.SpaceID = space.ID;
                             _unitOfWork.CostRepository.Add(cost);
@@ -315,8 +315,8 @@ namespace BuildingManagement.Controllers
                         foreach (var space in totalSpaces)
                         {
                             var cost = new Cost();
-                            var cota = ((decimal)space.People)/((decimal)totalPeople);
-                            cost.Value = cota*valueWithTVA;
+                            var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                            cost.Value = quota * valueWithTVA;
                             cost.ServiceID = service.ID;
                             cost.SpaceID = space.ID;
                             _unitOfWork.CostRepository.Add(cost);
@@ -330,8 +330,16 @@ namespace BuildingManagement.Controllers
             {
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
+                //if (PreviousPage.Equals("/Invoice/Index"))
+                //{
+                //    return RedirectToAction("Index");
+                //}
+                //else
+                //{
+                //    return RedirectToAction("Index", "InvoiceDistribution");
+                //}
             }
-            catch (DataException)
+            catch (DataException ex)
             {
                 return RedirectToAction("Close", new { id, saveChangesError = true });
             }
@@ -356,6 +364,14 @@ namespace BuildingManagement.Controllers
             {
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been opened.", invoice.Number);
+                //if (PreviousPage.Equals("/Invoice/Index"))
+                //{
+                //    return RedirectToAction("Index");
+                //}
+                //else
+                //{
+                //    return RedirectToAction("Index", "InvoiceDistribution");
+                //}
             }
             catch (DataException)
             {
