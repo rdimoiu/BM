@@ -30,54 +30,102 @@ namespace BuildingManagement.Controllers
                 Spaces = new List<Space>(),
                 Costs = new List<Cost>(),
                 Invoices = new List<Invoice>(),
-                Services = new HashSet<Service>()
+                Services = new List<Service>(),
+                Cols = new Dictionary<string, string>(),
+                Rows = new Dictionary<string, Dictionary<string, string>>()
             };
 
             if (discountMonth != null && sectionId != null)
             {
-                costsIndexData.DiscountMonth = (DateTime)discountMonth;
-                costsIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month);
-
-                foreach (var x in costsIndexData.Invoices)
-                {
-                    var service1 =
-                        _unitOfWork.ServiceRepository.GetServiceIncludingSpacesAndCosts(x.Services.FirstOrDefault().ID);
-                }
-                
-
                 costsIndexData.Section = _unitOfWork.SectionRepository.GetSectionIncludingClientAndServices((int)sectionId);
-                foreach (var service in costsIndexData.Section.Services)
-                {
-                    costsIndexData.Services.Add(service);
-                }
+                //foreach (var service in costsIndexData.Section.Services)
+                //{
+                //    costsIndexData.Services.Add(service);
+                //}
+                costsIndexData.Spaces = new List<Space>();
+                costsIndexData.Services = new List<Service>();
                 var levels = _unitOfWork.LevelRepository.GetLevelsIncludingServicesBySection((int)sectionId).ToList();
                 foreach (var level in levels)
                 {
-                    foreach (var service in level.Services)
-                    {
-                        costsIndexData.Services.Add(service);
-                    }
+                    //foreach (var service in level.Services)
+                    //{
+                    //    costsIndexData.Services.Add(service);
+                    //}
                     var spaces = _unitOfWork.SpaceRepository.GetSpacesIncludingServicesByLevel(level.ID).ToList();
                     foreach (var space in spaces)
                     {
                         costsIndexData.Spaces.Add(space);
                         foreach (var service in space.Services)
                         {
-                            costsIndexData.Services.Add(service);
+                            if (!costsIndexData.Services.Contains(service))
+                            {
+                                costsIndexData.Services.Add(service);
+                            }
                         }
                     }
                 }
 
                 costsIndexData.Rows = new Dictionary<string, Dictionary<string, string>>();
                 costsIndexData.Cols = new Dictionary<string, string>();
-                foreach (var service in costsIndexData.Services)
-                {
-                    costsIndexData.Cols.Add(service.Name, "");
-                }
+
+                costsIndexData.Cols.Add("Space", "");
+                costsIndexData.Cols.Add("SpaceType", "");
+                costsIndexData.Cols.Add("SubClient", "");
+                costsIndexData.Cols.Add("Surface", "");
+                costsIndexData.Cols.Add("People", "");
+
+                //foreach (var service in totalServices)
+                //{
+                //    costsIndexData.Cols.Add(service.Name, "");
+                //}
+                //foreach (var space in totalSpaces)
+                //{
+                //    costsIndexData.Rows.Add(space.Number + " " + space.Level.Number, costsIndexData.Cols);
+                //}
+
+                //Console.WriteLine(costsIndexData.Rows["AP 2.1 Nivel 2 (AP)"]["1.1"]);
+
                 foreach (var space in costsIndexData.Spaces)
                 {
-                    costsIndexData.Rows.Add(space.Number + " " + space.Level.Number, costsIndexData.Cols);
+                    var col = new Dictionary<string, string>();
+                    col.Add("Space", space.Number + " " + space.Level.Number);
+                    col.Add("SpaceType", space.SpaceType.Type);
+                    col.Add("SubClient", space.SubClient.Name);
+                    col.Add("Surface", space.Surface.ToString());
+                    col.Add("People", space.People.ToString());
+                    
+                    foreach (var service in costsIndexData.Services)
+                    {
+                        if (!costsIndexData.Cols.ContainsKey(service.Name))
+                        {
+                            costsIndexData.Cols.Add(service.Name, "1");
+                        }
+                        var cost = _unitOfWork.CostRepository.GetCostsByServiceAndSpace(service.ID, space.ID);
+                        if (cost != null)
+                        {
+                            col.Add(service.Name, cost.Value.ToString());
+                        }
+                        else
+                        {
+                            col.Add(service.Name, "");
+                        }
+                    }
+                    costsIndexData.Rows.Add(space.Number + " " + space.Level.Number, col);
                 }
+
+
+                //costsIndexData.DiscountMonth = (DateTime)discountMonth;
+
+                //var invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetAll();
+                //foreach (var invoiceType in invoiceTypes)
+                //{
+                //    var invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.InvoiceTypeID == invoiceType.ID).ToList();
+                //    foreach (var invoice in invoices)
+                //    {
+                //        var services = _unitOfWork.ServiceRepository.GetAll().Where(s => s.InvoiceID == invoice.ID).ToList();
+
+                //    }
+                //}
             }
 
             PopulateClientsDropDownList();

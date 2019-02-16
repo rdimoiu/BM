@@ -45,22 +45,26 @@
     </div>
     <table>
         <thead>
-            <tr style="height: auto">
-                <td class="table-head-vertical">Level</td>
-                <td class="table-head-vertical">SpaceType</td>
-                <td class="table-head-vertical">Number</td>
-                <td class="table-head-vertical">SubClient</td>
-                <td class="table-head-vertical">Surface</td>
-                <td class="table-head-vertical">People</td>
-            </tr>
+        <tr style="height: auto">
+            @foreach (var col in Model.Cols)
+            {
+                <td class="table-head-vertical">@col.Key</td>
+            }
+        </tr>
         </thead>
         <tbody>
         @foreach (var space in Model.Spaces)
         {
             <tr>
+                <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number]["Space"]</td>
+                <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number]["SpaceType"]</td>
+                <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number]["SubClient"]</td>
+                <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number]["Surface"]</td>
+                <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number]["People"]</td>
+
                 @foreach (var service in Model.Services)
                 {
-                    <td>@Model.Rows[space.Number + " " + space.Level.Number][@Model.Cols[service.Name]]</td>
+                    <td style="border: solid">@Model.Rows[space.Number + " " + space.Level.Number][service.Name]</td>
                 }
             </tr>
         }

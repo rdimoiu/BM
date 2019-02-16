@@ -339,7 +339,7 @@ namespace BuildingManagement.Controllers
                 //    return RedirectToAction("Index", "InvoiceDistribution");
                 //}
             }
-            catch (DataException ex)
+            catch (DataException)
             {
                 return RedirectToAction("Close", new { id, saveChangesError = true });
             }

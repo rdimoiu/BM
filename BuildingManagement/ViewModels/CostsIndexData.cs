@@ -35,7 +35,7 @@ namespace BuildingManagement.ViewModels
         public virtual IEnumerable<Invoice> Invoices { get; set; }
 
         [NotMapped]
-        public HashSet<Service> Services { get; set; }
+        public List<Service> Services { get; set; }
 
         [NotMapped]
         public Dictionary<string, Dictionary<string, string>> Rows;

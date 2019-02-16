@@ -650,8 +650,6 @@
     <Content Include="Views\InvoiceType\Details.cshtml" />
     <Content Include="Views\InvoiceType\Edit.cshtml" />
     <Content Include="Views\InvoiceType\Index.cshtml" />
-    <Content Include="Views\Invoice\Close.cshtml" />
-    <Content Include="Views\Invoice\Open.cshtml" />
     <Content Include="Views\UserManagement\Index.cshtml" />
     <Content Include="Views\UserManagement\Delete.cshtml" />
     <Content Include="Views\UserManagement\Edit.cshtml" />

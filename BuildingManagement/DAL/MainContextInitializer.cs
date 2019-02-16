@@ -434,6 +434,51 @@ namespace BuildingManagement.DAL
             spaces.ForEach(s => context.Spaces.Add(s));
             context.SaveChanges();
 
+            var provider1 = new Provider
+            {
+                Name = "Enel",
+                Address = "Banat",
+                Bank = "Transilvania",
+                BankAccount = "1",
+                Email = "1@enel.com",
+                FiscalCode = "1",
+                Phone = "0356111111",
+                TradeRegister = "1",
+                TVAPayer = true
+            };
+            var provider2 = new Provider
+            {
+                Name = "Eon",
+                Address = "Banat",
+                Bank = "BCR",
+                BankAccount = "2",
+                Email = "2@eon.com",
+                FiscalCode = "2",
+                Phone = "0356222222",
+                TradeRegister = "2",
+                TVAPayer = true
+            };
+            var provider3 = new Provider
+            {
+                Name = "Luna si bec",
+                Address = "Banat",
+                Bank = "BRD",
+                BankAccount = "3",
+                Email = "3@lunasibec.com",
+                FiscalCode = "3",
+                Phone = "0356333333",
+                TradeRegister = "3",
+                TVAPayer = false
+            };
+            var providers = new List<Provider>
+            {
+                provider1,
+                provider2,
+                provider3
+            };
+            providers.ForEach(p => context.Providers.Add(p));
+            context.SaveChanges();
+
             var invoiceType1 = new InvoiceType
             {
                 Type = "Utilitati"
