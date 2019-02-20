@@ -476,6 +476,8 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Properties\PublishProfiles\Custom.pubxml" />
+    <None Include="Properties\PublishProfiles\IISLocal.pubxml" />
+    <None Include="Properties\PublishProfiles\SmartASP.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -498,7 +500,6 @@
     <Content Include="Scripts\SubMeterReadingUtils.js" />
     <Content Include="Scripts\SubSubMeterReadingUtils.js" />
     <Content Include="Scripts\ValidateClient.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

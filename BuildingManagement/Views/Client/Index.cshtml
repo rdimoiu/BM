@@ -69,7 +69,7 @@
 <br/>
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfClients, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
-<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
 <script>
     function Edit() {
         var id = document.getElementById("ID").value;
