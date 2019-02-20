@@ -111,28 +111,33 @@
                 <td>
                     @invoice.Date.ToString("dd/MM/yyyy")
                 </td>
-                <td>
+                <td style="@(invoice.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
                     @invoice.DueDate.ToString("dd/MM/yyyy")
                 </td>
-                <td>
-                    @invoice.PaidDate.ToString("dd/MM/yyyy")
-                </td>
-                <td>
+                    @if (invoice.PaidDate < invoice.Date)
+                    {
+                    <td></td>
+                    }
+                    else
+                    {
+                        <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
+                    }
+                <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
                     @invoice.Quantity
                 </td>
-                <td>
+                <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
                     @invoice.CheckQuantity
                 </td>
-                <td>
+                <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
                     @invoice.TotalValueWithoutTVA
                 </td>
-                <td>
+                <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
                     @invoice.CheckTotalValueWithoutTVA
                 </td>
-                <td>
+                <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
                     @invoice.TotalTVA
                 </td>
-                <td>
+                <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
                     @invoice.CheckTotalTVA
                 </td>
                 <td>

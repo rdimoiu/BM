@@ -90,7 +90,6 @@
             <td style="@(invoice.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
                 @invoice.DueDate.ToString("dd/MM/yyyy")
             </td>
-            
                 @if (invoice.PaidDate < invoice.Date)
                 {
                     <td></td>
@@ -99,11 +98,10 @@
                 {
                     <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
                 }
-            
-            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Red" : "color : Black")">
+            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
                 @invoice.Quantity
             </td>
-            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Red" : "color : Black")">
+            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
                 @invoice.CheckQuantity
             </td>
             <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
