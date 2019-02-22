@@ -330,20 +330,19 @@ namespace BuildingManagement.Controllers
             {
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
-                //if (PreviousPage.Equals("/Invoice/Index"))
-                //{
-                //    return RedirectToAction("Index");
-                //}
-                //else
-                //{
-                //    return RedirectToAction("Index", "InvoiceDistribution");
-                //}
+                if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "InvoiceDistribution");
+                }
             }
             catch (DataException)
             {
                 return RedirectToAction("Close", new { id, saveChangesError = true });
             }
-            return RedirectToAction("Index");
         }
 
         // POST: Invoice/Open/5
@@ -364,20 +363,19 @@ namespace BuildingManagement.Controllers
             {
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been opened.", invoice.Number);
-                //if (PreviousPage.Equals("/Invoice/Index"))
-                //{
-                //    return RedirectToAction("Index");
-                //}
-                //else
-                //{
-                //    return RedirectToAction("Index", "InvoiceDistribution");
-                //}
+                if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "InvoiceDistribution");
+                }
             }
             catch (DataException)
             {
                 return RedirectToAction("Open", new { id, saveChangesError = true });
             }
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

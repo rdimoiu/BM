@@ -67,6 +67,14 @@ a.unlock-icon {
     text-indent: -9999px; /* hides the link text */
 }
 
+.closedInvoice {
+    background: #ddcdf4;
+}
+
+.openedInvoice {
+    background: #cddcf4;
+}
+
 td.table-head-vertical {
     transform: rotate(90deg);
     line-height: 100px;
