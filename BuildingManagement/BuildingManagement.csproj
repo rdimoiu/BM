@@ -243,7 +243,7 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
-    <Compile Include="Controllers\CostsController.cs" />
+    <Compile Include="Controllers\CostsTableController.cs" />
     <Compile Include="Controllers\DistributionModeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
@@ -670,7 +670,7 @@
     <Content Include="Views\SubSubMeterReading\Details.cshtml" />
     <Content Include="Views\SubSubMeterReading\Edit.cshtml" />
     <Content Include="Views\SubSubMeterReading\Index.cshtml" />
-    <Content Include="Views\Costs\Index.cshtml" />
+    <Content Include="Views\CostsTable\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

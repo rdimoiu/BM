@@ -4,7 +4,6 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using System.Xml.Schema;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using X.PagedList;
@@ -82,7 +81,7 @@ namespace BuildingManagement.Controllers
             var invoice = new Invoice();
             if (discountMonth != null)
             {
-                invoice.DiscountMonth = DateTime.ParseExact(discountMonth, "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture);
+                invoice.DiscountMonth = DateTime.ParseExact(discountMonth, "MM/dd/yyyy hh:mm:ss", CultureInfo.InvariantCulture);
             }
             if (clientId != null)
             {
@@ -247,46 +246,11 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
+            var totalCost = 0.0m;
             foreach (var service in invoice.Services)
             {
-                var totalSpaces = new List<Space>();
-                foreach (var section in service.Sections)
-                {
-                    var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
-                    foreach (var level in levels)
-                    {
-                        var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
-                        foreach (var space in spaces)
-                        {
-                            if (service.Inhabited && !space.Inhabited)
-                            {
-                                continue;
-                            }
-                            totalSpaces.Add(space);
-                        }
-                    }
-                }
-                foreach (var level in service.Levels)
-                {
-                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
-                    foreach (var space in spaces)
-                    {
-                        if (service.Inhabited && !space.Inhabited)
-                        {
-                            continue;
-                        }
-                        totalSpaces.Add(space);
-                    }
-                }
-                foreach (var space in service.Spaces)
-                {
-                    if (service.Inhabited && !space.Inhabited)
-                    {
-                        continue;
-                    }
-                    totalSpaces.Add(space);
-                }
-                
+                var totalSpaces = GetSpaces(service);
+
                 var valueWithTVA = service.ValueWithoutTVA + service.TVA;
 
                 //DistributionMode = cote parti
@@ -299,9 +263,11 @@ namespace BuildingManagement.Controllers
                         {
                             var cost = new Cost();
                             var quota = space.Surface / totalSurface;
+                            cost.Quota = quota;
                             cost.Value = quota * valueWithTVA;
                             cost.ServiceID = service.ID;
                             cost.SpaceID = space.ID;
+                            totalCost += cost.Value;
                             _unitOfWork.CostRepository.Add(cost);
                         }
                     }
@@ -316,9 +282,11 @@ namespace BuildingManagement.Controllers
                         {
                             var cost = new Cost();
                             var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                            cost.Quota = quota;
                             cost.Value = quota * valueWithTVA;
                             cost.ServiceID = service.ID;
                             cost.SpaceID = space.ID;
+                            totalCost += cost.Value;
                             _unitOfWork.CostRepository.Add(cost);
                         }
                     }
@@ -326,23 +294,70 @@ namespace BuildingManagement.Controllers
             }
             invoice.Closed = true;
             invoice.PaidDate = DateTime.Now;
-            try
+            if (totalCost == invoice.TotalValueWithoutTVA + invoice.TotalTVA)
             {
-                _unitOfWork.Save();
-                TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
-                if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+                try
                 {
-                    return RedirectToAction("Index");
+                    _unitOfWork.Save();
+                    TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
+                    
                 }
-                else
+                catch (DataException)
                 {
-                    return RedirectToAction("Index", "InvoiceDistribution");
+                    return RedirectToAction("Close", new { id, saveChangesError = true });
                 }
             }
-            catch (DataException)
+            else
             {
-                return RedirectToAction("Close", new { id, saveChangesError = true });
+                TempData["message"] = string.Format("Invoice {0} can not be closed. Invoice value {1} is different from total costs value {2}.", invoice.Number, invoice.TotalValueWithoutTVA + invoice.TotalTVA, totalCost);
             }
+            if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "InvoiceDistribution");
+        }
+
+        private List<Space> GetSpaces(Service service)
+        {
+            var totalSpaces = new List<Space>();
+            foreach (var section in service.Sections)
+            {
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
+                foreach (var level in levels)
+                {
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                    foreach (var space in spaces)
+                    {
+                        if (service.Inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
+                        totalSpaces.Add(space);
+                    }
+                }
+            }
+            foreach (var level in service.Levels)
+            {
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                foreach (var space in spaces)
+                {
+                    if (service.Inhabited && !space.Inhabited)
+                    {
+                        continue;
+                    }
+                    totalSpaces.Add(space);
+                }
+            }
+            foreach (var space in service.Spaces)
+            {
+                if (service.Inhabited && !space.Inhabited)
+                {
+                    continue;
+                }
+                totalSpaces.Add(space);
+            }
+            return totalSpaces;
         }
 
         // POST: Invoice/Open/5

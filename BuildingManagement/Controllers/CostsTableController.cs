@@ -10,11 +10,11 @@ using BuildingManagement.ViewModels;
 
 namespace BuildingManagement.Controllers
 {
-    public class CostsController : Controller
+    public class CostsTableController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CostsController(IUnitOfWork unitOfWork)
+        public CostsTableController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
