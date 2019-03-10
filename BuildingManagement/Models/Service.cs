@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Policy;
 
 namespace BuildingManagement.Models
 {
@@ -34,11 +33,16 @@ namespace BuildingManagement.Models
 
         public bool Inhabited { get; set; }
 
+        public bool Distributed { get; set; }
+
         public int InvoiceID { get; set; }
         public virtual Invoice Invoice { get; set; }
 
         public int? DistributionModeID { get; set; }
         public DistributionMode DistributionMode { get; set; }
+
+        public int? MeterTypeID { get; set; }
+        public MeterType MeterType { get; set; }
 
         public virtual ICollection<Space> Spaces { get; set; }
 
@@ -49,6 +53,7 @@ namespace BuildingManagement.Models
         public virtual ICollection<Cost> Costs { get; set; }
 
         [NotMapped]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:N2}")]
         public decimal ValueWithoutTVA
         {
             get

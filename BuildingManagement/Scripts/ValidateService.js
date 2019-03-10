@@ -6,7 +6,7 @@
     validationSummary += QuantityValidation();
     validationSummary += PriceValidation();
     validationSummary += QuotaTVAValidation();
-    validationSummary += DistributionModeValidation();
+    validationSummary += DistributionModeOrMeterTypeValidation();
     validationSummary += SpacesValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
@@ -24,11 +24,17 @@
             Fixed: document.getElementById("Fixed").checked,
             Inhabited: document.getElementById("Inhabited").checked,
             DistributionModeID: document.getElementById("DistributionModeID").value,
+            MeterTypeID: document.getElementById("MeterTypeID").value,
             Counted: document.getElementById("Counted").checked,
             ServiceSLSSelected: $("#spacesTree").jstree("get_selected"),
             //this is only for navigation
             PreviousPage: document.getElementById("PreviousPage").value
         };
+        if (data.Counted) {
+            data.DistributionModeID = null;
+        } else {
+            data.MeterTypeID = null;
+        }
         var url = "/Service/Create";
         var indexUrl = PreviousPage.value;
         if (operation === "Edit") {

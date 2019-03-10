@@ -21,7 +21,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Type", "Index", new {sortOrder = ViewBag.TypeSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -34,14 +34,14 @@
                 @item.Type
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-                @Html.ActionLink("Details", "Details", new {id = item.ID}) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
     }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfMeterTypes, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

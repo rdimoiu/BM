@@ -36,16 +36,19 @@
             @Html.ActionLink("Price", "Index", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("ValueWithoutTVA", "Index", new { sortOrder = ViewBag.ValueWithoutTVASortParm, currentFilter = ViewBag.CurrentFilter })
+            ValueWithoutTVA
         </th>
         <th>
-            @Html.ActionLink("TVA", "Index", new { sortOrder = ViewBag.TVASortParm, currentFilter = ViewBag.CurrentFilter })
+            TVA
         </th>
         <th>
-            @Html.ActionLink("QuotaTVA", "Index", new {sortOrder = ViewBag.QuotaTVASortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("QuotaTVA", "Index", new { sortOrder = ViewBag.QuotaTVASortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("DistributionMode", "Index", new { sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter })
+            DistributionMode
+        </th>
+        <th>
+            MeterType
         </th>
         <th>
             @Html.ActionLink("Fixed", "Index", new { sortOrder = ViewBag.FixedSortParm, currentFilter = ViewBag.CurrentFilter })
@@ -73,26 +76,39 @@
                 @item.Name
             </td>
             <td>
-                @item.Quantity
+                @item.Quantity.ToString("0.##")
             </td>
             <td>
                 @item.Unit
             </td>
             <td>
-                @item.Price
+                @item.Price.ToString("0.##")
             </td>
             <td>
-                @item.ValueWithoutTVA
+                @item.ValueWithoutTVA.ToString("0.##")
             </td>
             <td>
-                @item.TVA
+                @item.TVA.ToString("0.##")
             </td>
             <td>
-                @item.QuotaTVA
+                @item.QuotaTVA.ToString("0.##")
             </td>
-            <td>
-                @item.DistributionMode.Mode
-            </td>
+            @if (item.DistributionMode == null)
+            {
+                <td>-</td>
+            }
+            else
+            {
+                <td>@item.DistributionMode.Mode</td>
+            }
+            @if (item.MeterType == null)
+            {
+                <td>-</td>
+            }
+            else
+            {
+                <td>@item.MeterType.Type</td>
+            }
             <td>
                 <input type="checkbox" checked=@item.Fixed disabled />
             </td>
@@ -121,22 +137,27 @@
                     foreach (var spc in item.Spaces)
                     {
                         @spc.Number
-                        <br/>
+                        <br />
                     }
                 }
             </td>
             <td>
-                @if (!item.Invoice.Closed)
+                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" })
+                @if (!item.Distributed)
                 {
+                    @Html.ActionLink("Distribute", "Distribute", new { id = item.ID }, new { @class = "distribute-icon" })
                     @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" }) 
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" })
                 }
-                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" }) 
+                else
+                {
+                    @Html.ActionLink("Undistribute", "Undistribute", new { id = item.ID }, new { @class = "undistribute-icon" })
+                }
             </td>
         </tr>
-    }
+                    }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfServices, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

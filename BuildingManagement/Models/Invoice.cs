@@ -49,6 +49,8 @@ namespace BuildingManagement.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DiscountMonth { get; set; }
 
+        public bool Closed { get; set; }
+
         public int InvoiceTypeID { get; set; }
         public virtual InvoiceType InvoiceType { get; set; }
 
@@ -59,8 +61,6 @@ namespace BuildingManagement.Models
         public virtual Client Client { get; set; }
 
         public virtual ICollection<Service> Services { get; set; }
-
-        public bool Closed { get; set; }
 
         [NotMapped]
         public string PreviousPage { get; set; }

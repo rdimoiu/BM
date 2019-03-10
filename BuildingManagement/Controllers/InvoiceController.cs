@@ -223,19 +223,16 @@ namespace BuildingManagement.Controllers
                 _unitOfWork.InvoiceRepository.Remove(invoice);
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been deleted.", invoice.Number);
-                if (PreviousPage.Equals("/Invoice/Index"))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "InvoiceDistribution");
-                }
             }
             catch (DataException)
             {
                 return RedirectToAction("Delete", new {id, saveChangesError = true});
             }
+            if (PreviousPage.Equals("/Invoice/Index"))
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "InvoiceDistribution");
         }
 
         // POST: Invoice/Close/5
@@ -249,48 +246,7 @@ namespace BuildingManagement.Controllers
             var totalCost = 0.0m;
             foreach (var service in invoice.Services)
             {
-                var totalSpaces = GetSpaces(service);
-
-                var valueWithTVA = service.ValueWithoutTVA + service.TVA;
-
-                //DistributionMode = cote parti
-                if (service.DistributionModeID == 1)
-                {
-                    var totalSurface = totalSpaces.Sum(s => s.Surface);
-                    if (totalSurface > 0)
-                    {
-                        foreach (var space in totalSpaces)
-                        {
-                            var cost = new Cost();
-                            var quota = space.Surface / totalSurface;
-                            cost.Quota = quota;
-                            cost.Value = quota * valueWithTVA;
-                            cost.ServiceID = service.ID;
-                            cost.SpaceID = space.ID;
-                            totalCost += cost.Value;
-                            _unitOfWork.CostRepository.Add(cost);
-                        }
-                    }
-                }
-                //DistributionMode = numar persoane
-                else if (service.DistributionModeID == 2)
-                {
-                    var totalPeople = totalSpaces.Sum(s => s.People);
-                    if (totalPeople > 0)
-                    {
-                        foreach (var space in totalSpaces)
-                        {
-                            var cost = new Cost();
-                            var quota = ((decimal)space.People) / ((decimal)totalPeople);
-                            cost.Quota = quota;
-                            cost.Value = quota * valueWithTVA;
-                            cost.ServiceID = service.ID;
-                            cost.SpaceID = space.ID;
-                            totalCost += cost.Value;
-                            _unitOfWork.CostRepository.Add(cost);
-                        }
-                    }
-                }
+                //tbd
             }
             invoice.Closed = true;
             invoice.PaidDate = DateTime.Now;
@@ -300,10 +256,10 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.Save();
                     TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
-                    
                 }
                 catch (DataException)
                 {
+                    TempData["message"] = string.Format("Unexpected error occurred. Invoice {0} can not be closed.", invoice.Number);
                     return RedirectToAction("Close", new { id, saveChangesError = true });
                 }
             }
@@ -318,59 +274,13 @@ namespace BuildingManagement.Controllers
             return RedirectToAction("Index", "InvoiceDistribution");
         }
 
-        private List<Space> GetSpaces(Service service)
-        {
-            var totalSpaces = new List<Space>();
-            foreach (var section in service.Sections)
-            {
-                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
-                foreach (var level in levels)
-                {
-                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
-                    foreach (var space in spaces)
-                    {
-                        if (service.Inhabited && !space.Inhabited)
-                        {
-                            continue;
-                        }
-                        totalSpaces.Add(space);
-                    }
-                }
-            }
-            foreach (var level in service.Levels)
-            {
-                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
-                foreach (var space in spaces)
-                {
-                    if (service.Inhabited && !space.Inhabited)
-                    {
-                        continue;
-                    }
-                    totalSpaces.Add(space);
-                }
-            }
-            foreach (var space in service.Spaces)
-            {
-                if (service.Inhabited && !space.Inhabited)
-                {
-                    continue;
-                }
-                totalSpaces.Add(space);
-            }
-            return totalSpaces;
-        }
-
         // POST: Invoice/Open/5
         public ActionResult Open(int id)
         {
             var invoice = _unitOfWork.InvoiceRepository.Get(id);
-            foreach (var service in invoice.Services)
+            if (invoice == null)
             {
-                var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
-                foreach (var cost in costs)
-                {
-                    _unitOfWork.CostRepository.Remove(cost);
-                }
+                return HttpNotFound();
             }
             invoice.PaidDate = invoice.Date.Subtract(TimeSpan.FromDays(1));
             invoice.Closed = false;
@@ -378,19 +288,16 @@ namespace BuildingManagement.Controllers
             {
                 _unitOfWork.Save();
                 TempData["message"] = string.Format("Invoice {0} has been opened.", invoice.Number);
-                if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "InvoiceDistribution");
-                }
             }
             catch (DataException)
             {
                 return RedirectToAction("Open", new { id, saveChangesError = true });
             }
+            if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "InvoiceDistribution");
         }
 
         protected override void Dispose(bool disposing)

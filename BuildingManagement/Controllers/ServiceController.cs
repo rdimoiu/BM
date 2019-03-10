@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using BuildingManagement.ViewModels;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -27,18 +28,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(searchString);
+                services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString);
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(searchString);
+                    services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString);
                 }
                 else
                 {
-                    services = _unitOfWork.ServiceRepository.GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces();
+                    services = _unitOfWork.ServiceRepository.GetAllServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -48,10 +49,7 @@ namespace BuildingManagement.Controllers
             ViewBag.QuantitySortParm = sortOrder == "Quantity" ? "quantity_desc" : "Quantity";
             ViewBag.UnitSortParm = sortOrder == "Unit" ? "unit_desc" : "Unit";
             ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
-            ViewBag.ValueWithoutTVASortParm = sortOrder == "ValueWithoutTVA" ? "valueWithoutTVA_desc" : "ValueWithoutTVA";
-            ViewBag.TVASortParm = sortOrder == "TVA" ? "tva_desc" : "TVA";
             ViewBag.QuotaTVASortParm = sortOrder == "QuotaTVA" ? "quotaTVA_desc" : "QuotaTVA";
-            ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
             ViewBag.FixedSortParm = sortOrder == "Fixed" ? "fixed_desc" : "Fixed";
             ViewBag.CountedSortParm = sortOrder == "Counted" ? "counted_desc" : "Counted";
             ViewBag.InhabitedSortParm = sortOrder == "Inhabited" ? "inhabited_desc" : "Inhabited";
@@ -85,6 +83,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList();
             PopulateDistributionModesDropDownList();
+            PopulateMeterTypesDropDownList();
             return View(service);
         }
 
@@ -100,6 +99,7 @@ namespace BuildingManagement.Controllers
                 {
                     PopulateInvoicesDropDownList(service.InvoiceID);
                     PopulateDistributionModesDropDownList(service.DistributionModeID);
+                    PopulateMeterTypesDropDownList(service.MeterTypeID);
                     return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
                 }
                 var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
@@ -110,10 +110,23 @@ namespace BuildingManagement.Controllers
                     invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
                     service.Invoice = invoice;
                 }
-                var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
-                if (distributionMode != null)
+                if (service.Counted)
                 {
-                    service.DistributionMode = distributionMode;
+                    var meterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.ID == service.MeterTypeID);
+                    if (meterType != null)
+                    {
+                        service.MeterType = meterType;
+                        service.DistributionMode = null;
+                    }
+                }
+                else
+                {
+                    var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
+                    if (distributionMode != null)
+                    {
+                        service.DistributionMode = distributionMode;
+                        service.MeterType = null;
+                    }
                 }
                 if (service.ServiceSLSSelected != null)
                 {
@@ -154,7 +167,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.ServiceRepository.Add(service);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Service {0} has been created.", service.Name);
+                    TempData["message"] = $"Service {service.Name} has been created.";
                     return Json(service.ID);
                 }
                 catch (DataException)
@@ -164,6 +177,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
+            PopulateMeterTypesDropDownList(service.MeterTypeID);
             return View(service);
         }
 
@@ -181,6 +195,7 @@ namespace BuildingManagement.Controllers
             }
             PopulateInvoicesDropDownList(service.InvoiceID);
             PopulateDistributionModesDropDownList(service.DistributionModeID);
+            PopulateMeterTypesDropDownList(service.MeterTypeID);
             return View(service);
         }
 
@@ -188,7 +203,7 @@ namespace BuildingManagement.Controllers
         [HttpPost]
         public ActionResult Edit(Service service)
         {
-            var serviceToUpdate = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(service.ID);
+            var serviceToUpdate = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(service.ID);
             if (serviceToUpdate == null)
             {
                 return HttpNotFound();
@@ -201,7 +216,7 @@ namespace BuildingManagement.Controllers
             oldInvoice.Quantity = oldInvoice.Quantity - serviceToUpdate.Quantity;
             oldInvoice.TotalValueWithoutTVA = oldInvoice.TotalValueWithoutTVA - serviceToUpdate.ValueWithoutTVA;
             oldInvoice.TotalTVA = oldInvoice.TotalTVA - serviceToUpdate.TVA;
-            if (TryUpdateModel(serviceToUpdate, "", new[]{"Name", "Quantity", "Unit", "Price", "TVA", "ValueWithoutTVA", "QuotaTVA", "Fixed", "Inhabited", "InvoiceID", "DistributionModeID", "Counted"}))
+            if (TryUpdateModel(serviceToUpdate, "", new[]{"Name", "Quantity", "Unit", "Price", "QuotaTVA", "Fixed", "Inhabited", "InvoiceID", "DistributionModeID", "MeterTypeID", "Counted"}))
             {
                 try
                 {
@@ -211,6 +226,7 @@ namespace BuildingManagement.Controllers
                     {
                         PopulateInvoicesDropDownList(service.InvoiceID);
                         PopulateDistributionModesDropDownList(service.DistributionModeID);
+                        PopulateMeterTypesDropDownList(service.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
                     }
                     if (service.ServiceSLSSelected != null)
@@ -257,7 +273,7 @@ namespace BuildingManagement.Controllers
                     invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA + service.Quantity * service.Price;
                     invoice.TotalTVA = invoice.TotalTVA + service.ValueWithoutTVA * service.QuotaTVA;
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Service {0} has been edited.", serviceToUpdate.Name);
+                    TempData["message"] = $"Service {serviceToUpdate.Name} has been edited.";
                     return Json(serviceToUpdate.ID);
                 }
                 catch (DataException)
@@ -265,8 +281,9 @@ namespace BuildingManagement.Controllers
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateInvoicesDropDownList(service.InvoiceID);
-            PopulateDistributionModesDropDownList(service.DistributionModeID);
+            PopulateInvoicesDropDownList(serviceToUpdate.InvoiceID);
+            PopulateDistributionModesDropDownList(serviceToUpdate.DistributionModeID);
+            PopulateMeterTypesDropDownList(serviceToUpdate.MeterTypeID);
             return View(serviceToUpdate);
         }
 
@@ -277,7 +294,7 @@ namespace BuildingManagement.Controllers
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var service = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(id);
+            var service = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(id);
             if (service == null)
             {
                 return HttpNotFound();
@@ -311,20 +328,162 @@ namespace BuildingManagement.Controllers
                 invoice.TotalTVA = invoice.TotalTVA - service.TVA;
                 _unitOfWork.ServiceRepository.Remove(service);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Service {0} has been deleted.", service.Name);
-                if (PreviousPage.Equals("/Service/Index"))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "InvoiceDistribution");
-                }
+                TempData["message"] = $"Service {service.Name} has been deleted.";
             }
             catch (DataException)
             {
                 return RedirectToAction("Delete", new {id, saveChangesError = true});
             }
+            if (PreviousPage.Equals("/Service/Index"))
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "InvoiceDistribution");
+        }
+
+        // GET: Service/Distribute/5
+        public ActionResult Distribute(int id)
+        {
+            var serviceDistributeData = new ServiceDistributeData();
+            var service = _unitOfWork.ServiceRepository.Get(id);
+            if (service == null)
+            {
+                return HttpNotFound();
+            }
+            serviceDistributeData.Service = service;
+            serviceDistributeData.Costs = new List<Cost>();
+            var totalCost = 0.0m;
+            var totalSpaces = GetSpaces(service);
+            var valueWithTVA = service.ValueWithoutTVA + service.TVA;
+            //DistributionMode = cote parti
+            if (service.DistributionModeID == 1)
+            {
+                var totalSurface = totalSpaces.Sum(s => s.Surface);
+                if (totalSurface > 0)
+                {
+                    foreach (var space in totalSpaces)
+                    {
+                        var cost = new Cost();
+                        var quota = space.Surface / totalSurface;
+                        cost.Quota = quota;
+                        cost.Value = quota * valueWithTVA;
+                        cost.ServiceID = service.ID;
+                        cost.SpaceID = space.ID;
+                        totalCost += cost.Value;
+                        serviceDistributeData.Costs.Add(cost);
+                        _unitOfWork.CostRepository.Add(cost);
+                    }
+                }
+            }
+            //DistributionMode = numar persoane
+            else if (service.DistributionModeID == 2)
+            {
+                var totalPeople = totalSpaces.Sum(s => s.People);
+                if (totalPeople > 0)
+                {
+                    foreach (var space in totalSpaces)
+                    {
+                        var cost = new Cost();
+                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                        cost.Quota = quota;
+                        cost.Value = quota * valueWithTVA;
+                        cost.ServiceID = service.ID;
+                        cost.SpaceID = space.ID;
+                        totalCost += cost.Value;
+                        serviceDistributeData.Costs.Add(cost);
+                        _unitOfWork.CostRepository.Add(cost);
+                    }
+                }
+            }
+            service.Distributed = true;
+            try
+            {
+                _unitOfWork.Save();
+                TempData["message"] = $"Service {service.Name} has been distributed.";
+            }
+            catch (DataException)
+            {
+                TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be distributed.";
+                return RedirectToAction("Distribute", new { id, saveChangesError = true });
+            }
+            if (Request.UrlReferrer != null)
+            {
+                service.PreviousPage = Request.UrlReferrer.AbsolutePath;
+            }
+            return View(serviceDistributeData);
+        }
+
+        private List<Space> GetSpaces(Service service)
+        {
+            var totalSpaces = new List<Space>();
+            foreach (var section in service.Sections)
+            {
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
+                foreach (var level in levels)
+                {
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                    foreach (var space in spaces)
+                    {
+                        if (service.Inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
+                        totalSpaces.Add(space);
+                    }
+                }
+            }
+            foreach (var level in service.Levels)
+            {
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                foreach (var space in spaces)
+                {
+                    if (service.Inhabited && !space.Inhabited)
+                    {
+                        continue;
+                    }
+                    totalSpaces.Add(space);
+                }
+            }
+            foreach (var space in service.Spaces)
+            {
+                if (service.Inhabited && !space.Inhabited)
+                {
+                    continue;
+                }
+                totalSpaces.Add(space);
+            }
+            return totalSpaces;
+        }
+
+        // GET: Service/Undistribute/5
+        public ActionResult Undistribute(int id)
+        {
+            var service = _unitOfWork.ServiceRepository.Get(id);
+            if (service == null)
+            {
+                return HttpNotFound();
+            }
+            var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
+            foreach (var cost in costs)
+            {
+                _unitOfWork.CostRepository.Remove(cost);
+            }
+            service.Distributed = false;
+            try
+            {
+                _unitOfWork.Save();
+                TempData["message"] = $"Service {service.Name} has been undistributed.";
+            }
+            catch (DataException)
+            {
+                TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be undistributed.";
+                return RedirectToAction("Undistribute", new { id, saveChangesError = true });
+            }
+            if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index", "InvoiceDistribution");
         }
 
         protected override void Dispose(bool disposing)
@@ -346,6 +505,12 @@ namespace BuildingManagement.Controllers
         {
             var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
+        }
+
+        private void PopulateMeterTypesDropDownList(object selectedMeterType = null)
+        {
+            var meterTypesQuery = _unitOfWork.MeterTypeRepository.GetAll();
+            ViewBag.MeterTypeID = new SelectList(meterTypesQuery, "ID", "Type", selectedMeterType);
         }
 
         [HttpGet]

@@ -217,6 +217,16 @@ function DistributionModeValidation() {
     }
 }
 
+function DistributionModeOrMeterTypeValidation() {
+    var distributionModeId = document.getElementById("DistributionModeID");
+    var meterTypeId = document.getElementById("MeterTypeID");
+    if ((distributionModeId.value === "" || distributionModeId.value === "0") && (meterTypeId.value === "" || meterTypeId.value === "0")) {
+        return "The DistributionMode or MeterType field is required." + "\n";
+    } else {
+        return "";
+    }
+}
+
 function IndexValidation() {
     var controlId = document.getElementById("Index");
     if (controlId.value === "") {

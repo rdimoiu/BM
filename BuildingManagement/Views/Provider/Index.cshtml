@@ -21,31 +21,31 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Name", "Index", new {sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("FiscalCode", "Index", new {sortOrder = ViewBag.FiscalCodeSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("FiscalCode", "Index", new { sortOrder = ViewBag.FiscalCodeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("TradeRegister", "Index", new {sortOrder = ViewBag.TradeRegisterSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("TradeRegister", "Index", new { sortOrder = ViewBag.TradeRegisterSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Address", "Index", new {sortOrder = ViewBag.AddressSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Address", "Index", new { sortOrder = ViewBag.AddressSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Phone", "Index", new {sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Phone", "Index", new { sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Email", "Index", new {sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Email", "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("BankAccount", "Index", new {sortOrder = ViewBag.BankAccountSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("BankAccount", "Index", new { sortOrder = ViewBag.BankAccountSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Bank", "Index", new {sortOrder = ViewBag.BankSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Bank", "Index", new { sortOrder = ViewBag.BankSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("TVAPayer", "Index", new {sortOrder = ViewBag.TVAPayerSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("TVAPayer", "Index", new { sortOrder = ViewBag.TVAPayerSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -82,14 +82,14 @@
                 <input type="checkbox" checked=@item.TVAPayer disabled />
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
     }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfProviders, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

@@ -129,25 +129,25 @@ namespace BuildingManagement.DAL
 
             //many to many Service-Section
             modelBuilder.Entity<Service>()
-                .HasMany(m => m.Sections).WithMany(s => s.Services)
+                .HasMany(s => s.Sections).WithMany(s => s.Services)
                 .Map(t => t.MapLeftKey("ServiceID")
                     .MapRightKey("SectionID")
                     .ToTable("ServiceSection"));
 
             //many to many Service-Level
             modelBuilder.Entity<Service>()
-                .HasMany(m => m.Levels).WithMany(s => s.Services)
+                .HasMany(s => s.Levels).WithMany(l => l.Services)
                 .Map(t => t.MapLeftKey("ServiceID")
                     .MapRightKey("LevelID")
                     .ToTable("ServiceLevel"));
 
             //many to many Service-Space
             modelBuilder.Entity<Service>()
-                .HasMany(m => m.Spaces).WithMany(s => s.Services)
+                .HasMany(s => s.Spaces).WithMany(s => s.Services)
                 .Map(t => t.MapLeftKey("ServiceID")
                     .MapRightKey("SpaceID")
                     .ToTable("ServiceSpace"));
-            
+
             //composed primary key for Cost 
             modelBuilder.Entity<Cost>().HasKey(c => new {c.ServiceID, c.SpaceID});
 

@@ -39,6 +39,8 @@ namespace BuildingManagement.Models
 
         public virtual ICollection<Service> Services { get; set; }
 
+        public virtual ICollection<Cost> Costs { get; set; }
+
         [NotMapped]
         public int ClientID { get; set; }
 

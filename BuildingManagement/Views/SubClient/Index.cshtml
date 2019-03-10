@@ -21,43 +21,43 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Name", "Index", new {sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Phone", "Index", new {sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Phone", "Index", new { sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Country", "Index", new {sortOrder = ViewBag.CountrySortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Country", "Index", new { sortOrder = ViewBag.CountrySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("State", "Index", new {sortOrder = ViewBag.StateSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("State", "Index", new { sortOrder = ViewBag.StateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("City", "Index", new {sortOrder = ViewBag.CitySortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("City", "Index", new { sortOrder = ViewBag.CitySortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("Street", "Index", new { sortOrder = ViewBag.StreetSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Contact", "Index", new {sortOrder = ViewBag.ContactSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Contact", "Index", new { sortOrder = ViewBag.ContactSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Email", "Index", new {sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Email", "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("IBAN", "Index", new {sortOrder = ViewBag.IBANSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("IBAN", "Index", new { sortOrder = ViewBag.IBANSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Bank", "Index", new {sortOrder = ViewBag.BankSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Bank", "Index", new { sortOrder = ViewBag.BankSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("CNP", "Index", new {sortOrder = ViewBag.CNPSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("CNP", "Index", new { sortOrder = ViewBag.CNPSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("FiscalCode", "Index", new { sortOrder = ViewBag.FiscalCodeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Client", "Index", new {sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Client", "Index", new { sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -106,14 +106,14 @@
                 @item.Client.Name
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-                @Html.ActionLink("Details", "Details", new {id = item.ID}) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
     }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfSubClients, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

@@ -1,0 +1,138 @@
+﻿@model BuildingManagement.ViewModels.ServiceDistributeData
+
+@{
+    ViewBag.Title = "Distribute";
+}
+
+<h2>Distribute</h2>
+
+<div>
+    <h4>Service</h4>
+    <hr/>
+    @Html.Hidden("PreviousPage", @Model.Service.PreviousPage, htmlAttributes: new { @id = "PreviousPage" })
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Invoice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Invoice.Number)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Unit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Unit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.ValueWithoutTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.ValueWithoutTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.TVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.TVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.QuotaTVA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.QuotaTVA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Fixed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Fixed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Inhabited)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Inhabited)
+        </dd>
+    </dl>
+    <table>
+        <thead>
+        <tr>
+            <td>
+                Space
+            </td>
+            <td>
+                Quota
+            </td>
+            <td>
+                Value
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in @Model.Costs)
+        {
+            <tr>
+                <td>
+                    @item.Space.Number
+                </td>
+                <td>
+                    @item.Quota.ToString("0.##")
+                </td>
+                <td>
+                    @item.Value.ToString("0.##")
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<p>
+    <div>
+        <a onclick="ReturnToPreviousPage()">Back to List</a>
+    </div>
+</p>
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+
+<script>
+    function ReturnToPreviousPage() {
+        window.location.href = document.getElementById("PreviousPage").value;
+    }
+</script>

@@ -36,7 +36,7 @@
             @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("DueDate", "Index", new {sortOrder = ViewBag.DueDateSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("DueDate", "Index", new { sortOrder = ViewBag.DueDateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("PaidDate", "Index", new { sortOrder = ViewBag.PaidDateSortParm, currentFilter = ViewBag.CurrentFilter })
@@ -69,86 +69,85 @@
         </th>
     </tr>
 
-    @foreach (var invoice in ViewBag.OnePageOfInvoices)
+    @foreach (var item in ViewBag.OnePageOfInvoices)
     {
         <tr>
             <td>
-                @invoice.Client.Name
+                @item.Client.Name
             </td>
             <td>
-                @invoice.Provider.Name
+                @item.Provider.Name
             </td>
             <td>
-                @invoice.InvoiceType.Type
+                @item.InvoiceType.Type
             </td>
             <td>
-                @invoice.Number
+                @item.Number
             </td>
             <td>
-                @invoice.Date.ToString("dd/MM/yyyy")
+                @item.Date.ToString("dd/MM/yyyy")
             </td>
-            <td style="@(invoice.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
-                @invoice.DueDate.ToString("dd/MM/yyyy")
+            <td style="@(item.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
+                @item.DueDate.ToString("dd/MM/yyyy")
             </td>
-                @if (invoice.PaidDate < invoice.Date)
+            @if (item.PaidDate < item.Date)
                 {
-                    <td></td>
-                }
-                else
-                {
-                    <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
-                }
-            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
-                @invoice.Quantity
+                <td></td>
+            }
+            else
+            {
+                <td>@item.PaidDate.ToString("dd/MM/yyyy")</td>
+            }
+            <td style="@(item.Quantity != item.CheckQuantity ? "color : Orange" : "color : Black")">
+                @item.Quantity.ToString("0.##")
             </td>
-            <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
-                @invoice.CheckQuantity
+            <td style="@(item.Quantity != item.CheckQuantity ? "color : Orange" : "color : Black")">
+                @item.CheckQuantity.ToString("0.##")
             </td>
-            <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
-                @invoice.TotalValueWithoutTVA
+            <td style="@(item.TotalValueWithoutTVA != item.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
+                @item.TotalValueWithoutTVA.ToString("0.##")
             </td>
-            <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
-                @invoice.CheckTotalValueWithoutTVA
+            <td style="@(item.TotalValueWithoutTVA != item.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
+                @item.CheckTotalValueWithoutTVA.ToString("0.##")
             </td>
-            <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
-                @invoice.TotalTVA
+            <td style="@(item.TotalTVA != item.CheckTotalTVA ? "color : Red" : "color : Black")">
+                @item.TotalTVA.ToString("0.##")
             </td>
-            <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
-                @invoice.CheckTotalTVA
+            <td style="@(item.TotalTVA != item.CheckTotalTVA ? "color : Red" : "color : Black")">
+                @item.CheckTotalTVA.ToString("0.##")
             </td>
             <td>
-                @invoice.DiscountMonth.ToString("MM/yyyy")
+                @item.DiscountMonth.ToString("MM/yyyy")
             </td>
             <td>
                 @{
-                    foreach (var service in invoice.Services)
+                    foreach (var service in item.Services)
                     {
                         @service.Name
-                        <br/>
+                        <br />
                     }
                 }
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = invoice.ID }, new { @class = "edit-icon" }) 
-                @Html.ActionLink("Delete", "Delete", new { id = invoice.ID }, new { @class = "delete-icon" }) 
-                @Html.ActionLink("Details", "Details", new { id = invoice.ID }, new { @class = "details-icon" }) 
-                @*@if (invoice.Quantity == invoice.CheckQuantity && invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)*@
-                @if (invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
+                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" })
+                @if (item.TotalValueWithoutTVA == item.CheckTotalValueWithoutTVA && item.TotalTVA == item.CheckTotalTVA)
                 {
-                    if (!invoice.Closed)
+                    if (!item.Closed)
                     {
-                        @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon" })
+                        @Html.ActionLink("Close", "Close", new { id = item.ID }, new { @class = "lock-icon" })
                     }
                     else
                     {
-                        @Html.ActionLink("Open", "Open", "Invoice", new { id = invoice.ID }, new { @class = "unlock-icon" })
+                        @Html.ActionLink("Open", "Open", new { id = item.ID }, new { @class = "unlock-icon" })
                     }
                 }
             </td>
         </tr>
-    }
+                    }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfInvoices, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

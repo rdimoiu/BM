@@ -59,14 +59,14 @@
                 @item.Email
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" }) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" }) 
-                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" })
             </td>
         </tr>
     }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfClients, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

@@ -63,20 +63,20 @@
     </div>
 
     @*<div class="form-group">
-        @Html.LabelFor(model => model.ValueWithoutTVA, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.ValueWithoutTVA, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.ValueWithoutTVA, "", new { @class = "text-danger" })
-        </div>
-    </div>*@
+            @Html.LabelFor(model => model.ValueWithoutTVA, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ValueWithoutTVA, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ValueWithoutTVA, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
 
     @*<div class="form-group">
-        @Html.LabelFor(model => model.TVA, htmlAttributes: new {@class = "control-label col-md-2"})
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.TVA, new {htmlAttributes = new {@class = "form-control"}})
-            @Html.ValidationMessageFor(model => model.TVA, "", new {@class = "text-danger"})
-        </div>
-    </div>*@
+            @Html.LabelFor(model => model.TVA, htmlAttributes: new {@class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TVA, new {htmlAttributes = new {@class = "form-control"}})
+                @Html.ValidationMessageFor(model => model.TVA, "", new {@class = "text-danger"})
+            </div>
+        </div>*@
 
     <div class="form-group">
         @Html.LabelFor(model => model.QuotaTVA, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -107,6 +107,16 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(model => model.Counted, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox" onclick="OnChangeEvent()">
+                @Html.EditorFor(model => model.Counted)
+                @Html.ValidationMessageFor(model => model.Counted, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="DistributionMode" style="display: initial;">
         @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
@@ -114,13 +124,11 @@
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Counted, htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="form-group" id="MeterType" style="display: none;">
+        @Html.LabelFor(model => model.MeterType, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <div class="checkbox">
-                @Html.EditorFor(model => model.Counted)
-                @Html.ValidationMessageFor(model => model.Counted, "", new { @class = "text-danger" })
-            </div>
+            @Html.DropDownList("MeterTypeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.MeterTypeID, "", new { @class = "text-danger" })
         </div>
     </div>
 
@@ -155,4 +163,19 @@
     $(document).ready(function() {
         GetSpacesForService(@Model.ID, @Model.InvoiceID, "Create");
     });
+
+    function OnChangeEvent() {
+        var counted = document.getElementById("Counted");
+        var distributionMode = document.getElementById("DistributionMode");
+        var meterType = document.getElementById("MeterType");
+        if (counted.checked) {
+            distributionMode.style.display = "none";
+            distributionMode.value = null;
+            meterType.style.display = "initial";
+        } else {
+            distributionMode.style.display = "initial";
+            meterType.style.display = "none";
+            meterType.value = null;
+        }
+    };
 </script>

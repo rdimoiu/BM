@@ -14,11 +14,12 @@ namespace BuildingManagement.DAL
 
         public MainContext MainContext => Context as MainContext;
 
-        public Service GetServiceIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(int id)
+        public Service GetServiceIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(int id)
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
                 .Include(s => s.DistributionMode)
+                .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)
                 .Include(s => s.Spaces)
@@ -42,21 +43,23 @@ namespace BuildingManagement.DAL
                 .SingleOrDefault(s => s.ID == id);
         }
 
-        public IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces()
+        public IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces()
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
                 .Include(s => s.DistributionMode)
+                .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)
                 .Include(s => s.Spaces);
         }
 
-        public IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndSectionsAndLevelsAndSpaces(string searchString)
+        public IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(string searchString)
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
                 .Include(s => s.DistributionMode)
+                .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)
                 .Include(s => s.Spaces)
@@ -65,11 +68,8 @@ namespace BuildingManagement.DAL
                     s.Quantity.ToString().ToLower().Contains(searchString) ||
                     s.Unit.ToLower().Contains(searchString) ||
                     s.Price.ToString().ToLower().Contains(searchString) ||
-                    s.ValueWithoutTVA.ToString().ToLower().Contains(searchString) ||
-                    s.TVA.ToString().ToLower().Contains(searchString) ||
                     s.QuotaTVA.ToString().ToLower().Contains(searchString) ||
-                    s.Invoice.Number.ToLower().Contains(searchString) ||
-                    s.DistributionMode.Mode.ToLower().Contains(searchString));
+                    s.Invoice.Number.ToLower().Contains(searchString));
         }
 
         public IEnumerable<Service> OrderServices(IEnumerable<Service> services, string sortOrder)
@@ -103,29 +103,11 @@ namespace BuildingManagement.DAL
                 case "price_desc":
                     services = services.OrderByDescending(s => s.Price);
                     break;
-                case "ValueWithoutTVA":
-                    services = services.OrderBy(s => s.ValueWithoutTVA);
-                    break;
-                case "valueWithoutTVA_desc":
-                    services = services.OrderByDescending(s => s.ValueWithoutTVA);
-                    break;
-                case "TVA":
-                    services = services.OrderBy(s => s.TVA);
-                    break;
-                case "tva_desc":
-                    services = services.OrderByDescending(s => s.TVA);
-                    break;
                 case "QuotaTVA":
                     services = services.OrderBy(s => s.QuotaTVA);
                     break;
                 case "quotaTVA_desc":
                     services = services.OrderByDescending(s => s.QuotaTVA);
-                    break;
-                case "DistributionMode":
-                    services = services.OrderBy(s => s.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    services = services.OrderByDescending(s => s.DistributionMode.Mode);
                     break;
                 case "Fixed":
                     services = services.OrderBy(s => s.Fixed);

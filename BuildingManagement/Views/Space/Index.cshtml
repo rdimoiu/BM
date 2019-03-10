@@ -24,22 +24,22 @@
             @Html.ActionLink("Level", "Index", new { sortOrder = ViewBag.LevelSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Number", "Index", new {sortOrder = ViewBag.NumberSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Number", "Index", new { sortOrder = ViewBag.NumberSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Surface", "Index", new {sortOrder = ViewBag.SurfaceSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Surface", "Index", new { sortOrder = ViewBag.SurfaceSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("People", "Index", new {sortOrder = ViewBag.PeopleSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("People", "Index", new { sortOrder = ViewBag.PeopleSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Inhabited", "Index", new {sortOrder = ViewBag.InhabitedSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Inhabited", "Index", new { sortOrder = ViewBag.InhabitedSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("SpaceType", "Index", new {sortOrder = ViewBag.SpaceTypeSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("SpaceType", "Index", new { sortOrder = ViewBag.SpaceTypeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("SubClient", "Index", new {sortOrder = ViewBag.SubClientSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("SubClient", "Index", new { sortOrder = ViewBag.SubClientSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -70,14 +70,14 @@
                 @item.SubClient.Name
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
     }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfSpaces, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

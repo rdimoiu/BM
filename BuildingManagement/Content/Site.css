@@ -67,6 +67,24 @@ a.unlock-icon {
     text-indent: -9999px; /* hides the link text */
 }
 
+a.distribute-icon {
+    background: url(../Content/icons/icons8-drag-32.png) no-repeat top left;
+    display: inline-block;
+    float: left;
+    width: 32px;
+    height: 32px;
+    text-indent: -9999px; /* hides the link text */
+}
+
+a.undistribute-icon {
+    background: url(../Content/icons/icons8-drop-32.png) no-repeat top left;
+    display: inline-block;
+    float: left;
+    width: 32px;
+    height: 32px;
+    text-indent: -9999px; /* hides the link text */
+}
+
 .closedInvoice {
     background: #ddcdf4;
 }

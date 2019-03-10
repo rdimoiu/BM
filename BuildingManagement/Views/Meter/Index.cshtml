@@ -21,16 +21,16 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Code", "Index", new {sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Code", "Index", new { sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Details", "Index", new {sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Details", "Index", new { sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("Defect", "Index", new {sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("Defect", "Index", new { sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("DistributionMode", "Index", new {sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter})
+            @Html.ActionLink("DistributionMode", "Index", new { sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
             @Html.ActionLink("Client", "Index", new { sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter })
@@ -55,7 +55,7 @@
                 @item.Details
             </td>
             <td>
-                <input type="checkbox" checked=@item.Defect disabled/>
+                <input type="checkbox" checked=@item.Defect disabled />
             </td>
             <td>
                 @item.DistributionMode.Mode
@@ -68,7 +68,7 @@
                     foreach (var meterType in item.MeterTypes)
                     {
                         @meterType.Type
-                        <br/>
+                        <br />
                     }
                 }
             </td>
@@ -77,33 +77,33 @@
                     foreach (var sct in item.Sections)
                     {
                         @sct.Number
-                        <br/>
+                        <br />
                     }
                 }
                 @{
                     foreach (var lvl in item.Levels)
                     {
                         @lvl.Number
-                        <br/>
+                        <br />
                     }
                 }
                 @{
                     foreach (var spc in item.Spaces)
                     {
                         @spc.Number
-                        <br/>
+                        <br />
                     }
                 }
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id = item.ID}) 
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-                @Html.ActionLink("Details", "Details", new {id = item.ID})                 
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
         </tr>
-    }
+                    }
 </table>
-<br/>
+<br />
 @Html.PagedListPager((IPagedList)ViewBag.OnePageOfMeters, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

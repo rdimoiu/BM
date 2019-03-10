@@ -12,12 +12,12 @@
         <h4>InvoiceDistribution</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        
+
         <div class="form-group">
-            @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new {@class = "control-label col-md-2"})
+            @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DiscountMonth, new {htmlAttributes = new { @id = "DiscountMonth", @class = "form-control", onchange = "GetInvoices()"}})
-                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new {@class = "text-danger"})
+                @Html.EditorFor(model => model.DiscountMonth, new { htmlAttributes = new { @id = "DiscountMonth", @class = "form-control", onchange = "GetInvoices()" } })
+                @Html.ValidationMessageFor(model => model.DiscountMonth, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -110,44 +110,44 @@
                 <td style="@(invoice.DueDate < @DateTime.Now ? "color : Orange" : "color : Black")">
                     @invoice.DueDate.ToString("dd/MM/yyyy")
                 </td>
-                    @if (invoice.PaidDate < invoice.Date)
+                @if (invoice.PaidDate < invoice.Date)
                     {
                     <td></td>
-                    }
-                    else
-                    {
-                        <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
-                    }
+                }
+                else
+                {
+                    <td>@invoice.PaidDate.ToString("dd/MM/yyyy")</td>
+                }
                 <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
-                    @invoice.Quantity
+                    @invoice.Quantity.ToString("0.##")
                 </td>
                 <td style="@(invoice.Quantity != invoice.CheckQuantity ? "color : Orange" : "color : Black")">
-                    @invoice.CheckQuantity
+                    @invoice.CheckQuantity.ToString("0.##")
                 </td>
                 <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
-                    @invoice.TotalValueWithoutTVA
+                    @invoice.TotalValueWithoutTVA.ToString("0.##")
                 </td>
                 <td style="@(invoice.TotalValueWithoutTVA != invoice.CheckTotalValueWithoutTVA ? "color : Red" : "color : Black")">
-                    @invoice.CheckTotalValueWithoutTVA
+                    @invoice.CheckTotalValueWithoutTVA.ToString("0.##")
                 </td>
                 <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
-                    @invoice.TotalTVA
+                    @invoice.TotalTVA.ToString("0.##")
                 </td>
                 <td style="@(invoice.TotalTVA != invoice.CheckTotalTVA ? "color : Red" : "color : Black")">
-                    @invoice.CheckTotalTVA
+                    @invoice.CheckTotalTVA.ToString("0.##")
                 </td>
                 <td>
                     @invoice.DiscountMonth.ToString("MM/yyyy")
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", "Invoice", new { id = invoice.ID }, new { @class = "edit-icon" }) 
-                    @Html.ActionLink("Delete", "Delete", "Invoice", new { id = invoice.ID }, new { @class = "delete-icon" }) 
-                    @Html.ActionLink("Details", "Details", "Invoice", new { id = invoice.ID }, new { @class = "details-icon" })                     
+                    @Html.ActionLink("Details", "Details", "Invoice", new { id = invoice.ID }, new { @class = "details-icon" })
+                    @Html.ActionLink("Edit", "Edit", "Invoice", new { id = invoice.ID }, new { @class = "edit-icon" })
+                    @Html.ActionLink("Delete", "Delete", "Invoice", new { id = invoice.ID }, new { @class = "delete-icon" })
                     @if (invoice.TotalValueWithoutTVA == invoice.CheckTotalValueWithoutTVA && invoice.TotalTVA == invoice.CheckTotalTVA)
                     {
                         if (!invoice.Closed)
                         {
-                            @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon", @style="display:inline-block"})
+                            @Html.ActionLink("Close", "Close", "Invoice", new { id = invoice.ID }, new { @class = "lock-icon", @style = "display:inline-block" })
                         }
                         else
                         {
@@ -193,30 +193,35 @@
                                         @service.Name
                                     </td>
                                     <td>
-                                        @service.Quantity
+                                        @service.Quantity.ToString("0.##")
                                     </td>
                                     <td>
                                         @service.Unit
                                     </td>
                                     <td>
-                                        @service.Price
+                                        @service.Price.ToString("0.##")
                                     </td>
                                     <td>
-                                        @service.TVA
+                                        @service.TVA.ToString("0.##")
                                     </td>
                                     <td>
-                                        @service.ValueWithoutTVA
+                                        @service.ValueWithoutTVA.ToString("0.##")
                                     </td>
                                     <td>
-                                        @service.QuotaTVA
+                                        @service.QuotaTVA.ToString("0.##")
                                     </td>
                                     <td>
-                                        @if (!invoice.Closed)
+                                        @Html.ActionLink("Details", "Details", "Service", new { id = service.ID }, new { @class = "details-icon" })
+                                        @if (!service.Distributed)
                                         {
                                             @Html.ActionLink("Edit", "Edit", "Service", new { id = service.ID }, new { @class = "edit-icon" })
                                             @Html.ActionLink("Delete", "Delete", "Service", new { id = service.ID }, new { @class = "delete-icon" })
+                                            @Html.ActionLink("Distribute", "Distribute", "Service", new { id = service.ID }, new { @class = "distribute-icon" })
                                         }
-                                        @Html.ActionLink("Details", "Details", "Service", new { id = service.ID }, new { @class = "details-icon" })
+                                        else
+                                        {
+                                            @Html.ActionLink("Undistribute", "Undistribute", "Service", new { id = service.ID }, new { @class = "undistribute-icon" })
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -224,7 +229,7 @@
                         @if (!invoice.Closed)
                         {
                             <p>
-                                @Html.ActionLink("Create Service", "Create", "Service", new {invoiceId = invoice.ID}, null)
+                                @Html.ActionLink("Create Service", "Create", "Service", new { invoiceId = invoice.ID }, null)
                             </p>
                         }
                     </details>
@@ -240,7 +245,7 @@
 <script src="~/Scripts/jquery-3.3.1.js"></script>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var minDate = (new Date('0001-01-01')).toUTCString();
         var discountMonth = new Date(document.getElementById("DiscountMonth").value).toUTCString();
         if (discountMonth === minDate) {
