@@ -48,7 +48,7 @@ namespace BuildingManagement.Controllers
             ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
             ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
             ViewBag.MeterSortParm = sortOrder == "Meter" ? "meter_desc" : "Meter";
-            subMeters = _unitOfWork.SubMeterRepository.OrderSubMeters(subMeters, sortOrder);
+            subMeters = _unitOfWork.SubMeterRepository.OrderSubMeters(subMeters, sortOrder).ToList();
             ViewBag.OnePageOfSubMeters = subMeters.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSubMeters);
         }
@@ -313,13 +313,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
+            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         private void PopulateMetersDropDownList(object selectedMeter = null)
         {
-            var metersQuery = _unitOfWork.MeterRepository.GetAll();
+            var metersQuery = _unitOfWork.MeterRepository.GetAll().ToList();
             ViewBag.MeterID = new SelectList(metersQuery, "ID", "Code", selectedMeter);
         }
 

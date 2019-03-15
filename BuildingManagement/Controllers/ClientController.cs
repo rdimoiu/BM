@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -26,18 +27,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString);
+                clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString);
+                    clients = _unitOfWork.ClientRepository.GetFilteredClients(searchString).ToList();
                 }
                 else
                 {
-                    clients = _unitOfWork.ClientRepository.GetAll();
+                    clients = _unitOfWork.ClientRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,24 +26,24 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString);
+                meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString);
+                    meterTypes = _unitOfWork.MeterTypeRepository.GetFilteredMeterTypes(searchString).ToList();
                 }
                 else
                 {
-                    meterTypes = _unitOfWork.MeterTypeRepository.GetAll();
+                    meterTypes = _unitOfWork.MeterTypeRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
             ViewBag.CurrentSort = sortOrder;
             ViewBag.TypeSortParm = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
-            meterTypes = _unitOfWork.MeterTypeRepository.OrderMeterTypes(meterTypes, sortOrder);
+            meterTypes = _unitOfWork.MeterTypeRepository.OrderMeterTypes(meterTypes, sortOrder).ToList();
             ViewBag.OnePageOfMeterTypes = meterTypes.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfMeterTypes);
         }

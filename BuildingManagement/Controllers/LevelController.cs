@@ -26,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString);
+                levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString);
+                    levels = _unitOfWork.LevelRepository.GetFilteredLevelsIncludingSection(searchString).ToList();
                 }
                 else
                 {
-                    levels = _unitOfWork.LevelRepository.GetAllLevelsIncludingSection();
+                    levels = _unitOfWork.LevelRepository.GetAllLevelsIncludingSection().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -46,7 +46,7 @@ namespace BuildingManagement.Controllers
             ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
             ViewBag.SurfaceSortParm = sortOrder == "Surface" ? "surface_desc" : "Surface";
             ViewBag.PeopleSortParm = sortOrder == "People" ? "people_desc" : "People";
-            levels = _unitOfWork.LevelRepository.OrderLevels(levels, sortOrder);
+            levels = _unitOfWork.LevelRepository.OrderLevels(levels, sortOrder).ToList();
             ViewBag.OnePageOfLevels = levels.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfLevels);
         }
@@ -220,13 +220,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSectionsDropDownList(object selectedSection = null)
         {
-            var sectionsQuery = _unitOfWork.SectionRepository.GetAll();
+            var sectionsQuery = _unitOfWork.SectionRepository.GetAll().ToList();
             ViewBag.SectionID = new SelectList(sectionsQuery, "ID", "Number", selectedSection);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll().ToList();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 

@@ -26,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                subClients = _unitOfWork.SubClientRepository.GetFilteredSubClientsIncludingClient(searchString);
+                subClients = _unitOfWork.SubClientRepository.GetFilteredSubClientsIncludingClient(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    subClients = _unitOfWork.SubClientRepository.GetFilteredSubClientsIncludingClient(searchString);
+                    subClients = _unitOfWork.SubClientRepository.GetFilteredSubClientsIncludingClient(searchString).ToList();
                 }
                 else
                 {
-                    subClients = _unitOfWork.SubClientRepository.GetAllSubClientsIncludingClient();
+                    subClients = _unitOfWork.SubClientRepository.GetAllSubClientsIncludingClient().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -55,7 +55,7 @@ namespace BuildingManagement.Controllers
             ViewBag.CNPSortParm = sortOrder == "CNP" ? "cnp_desc" : "CNP";
             ViewBag.FiscalCodeSortParm = sortOrder == "FiscalCode" ? "fiscalCode_desc" : "FiscalCode";
             ViewBag.ClientSortParm = sortOrder == "Client" ? "client_desc" : "Client";
-            subClients = _unitOfWork.SubClientRepository.OrderSubClients(subClients, sortOrder);
+            subClients = _unitOfWork.SubClientRepository.OrderSubClients(subClients, sortOrder).ToList();
             ViewBag.OnePageOfSubClients = subClients.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSubClients);
         }
@@ -202,7 +202,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll().ToList();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
     }

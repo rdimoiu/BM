@@ -33,7 +33,7 @@ namespace BuildingManagement.Controllers
             if (discountMonth != null)
             {
                 invoiceDistributionIndexData.DiscountMonth = (DateTime) discountMonth;
-                invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime) discountMonth).Month);
+                invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime) discountMonth).Month).ToList();
             }
             if (clientId != null)
             {
@@ -49,11 +49,11 @@ namespace BuildingManagement.Controllers
                     if (providerId != null)
                     {
                         invoiceDistributionIndexData.ProviderID = (int)providerId;
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId && i.ProviderID == providerId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId && i.ProviderID == providerId).ToList();
                     }
                     else
                     {
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ClientID == clientId).ToList();
                     }
                 }
                 else
@@ -61,11 +61,11 @@ namespace BuildingManagement.Controllers
                     if (providerId != null)
                     {
                         invoiceDistributionIndexData.ProviderID = (int)providerId;
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ProviderID == providerId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month && i.ProviderID == providerId).ToList();
                     }
                     else
                     {
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month).ToList();
                     }
                 }
             }
@@ -77,11 +77,11 @@ namespace BuildingManagement.Controllers
                     if (providerId != null)
                     {
                         invoiceDistributionIndexData.ProviderID = (int)providerId;
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.ClientID == clientId && i.ProviderID == providerId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.ClientID == clientId && i.ProviderID == providerId).ToList();
                     }
                     else
                     {
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.ClientID == clientId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.ClientID == clientId).ToList();
                     }
                 }
                 else
@@ -89,11 +89,11 @@ namespace BuildingManagement.Controllers
                     if (providerId != null)
                     {
                         invoiceDistributionIndexData.ProviderID = (int) providerId;
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.ProviderID == providerId);
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.ProviderID == providerId).ToList();
                     }
                     else
                     {
-                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAll();
+                        invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().ToList();
                     }
                 }
             }
@@ -104,13 +104,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll() select c;
+            var clientsQuery = from c in _unitOfWork.ClientRepository.GetAll().ToList() select c;
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateProvidersDropDownList(object selectedProvider = null)
         {
-            var providersQuery = from p in _unitOfWork.ProviderRepository.GetAll() select p;
+            var providersQuery = from p in _unitOfWork.ProviderRepository.GetAll().ToList() select p;
             ViewBag.ProviderID = new SelectList(providersQuery, "ID", "Name", selectedProvider);
         }
     }

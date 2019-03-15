@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,24 +26,24 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString);
+                distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString);
+                    distributionModes = _unitOfWork.DistributionModeRepository.GetFilteredDistributionModes(searchString).ToList();
                 }
                 else
                 {
-                    distributionModes = _unitOfWork.DistributionModeRepository.GetAll();
+                    distributionModes = _unitOfWork.DistributionModeRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
             ViewBag.CurrentSort = sortOrder;
             ViewBag.ModeSortParm = string.IsNullOrEmpty(sortOrder) ? "mode_desc" : "";
-            distributionModes = _unitOfWork.DistributionModeRepository.OrderDistributionModes(distributionModes, sortOrder);
+            distributionModes = _unitOfWork.DistributionModeRepository.OrderDistributionModes(distributionModes, sortOrder).ToList();
             ViewBag.OnePageOfDistributionModes = distributionModes.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfDistributionModes);
         }

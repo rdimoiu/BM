@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,24 +26,24 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetFilteredInvoiceTypes(searchString);
+                invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetFilteredInvoiceTypes(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetFilteredInvoiceTypes(searchString);
+                    invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetFilteredInvoiceTypes(searchString).ToList();
                 }
                 else
                 {
-                    invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetAll();
+                    invoiceTypes = _unitOfWork.InvoiceTypeRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
             ViewBag.CurrentSort = sortOrder;
             ViewBag.TypeSortParm = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
-            invoiceTypes = _unitOfWork.InvoiceTypeRepository.OrderInvoiceTypes(invoiceTypes, sortOrder);
+            invoiceTypes = _unitOfWork.InvoiceTypeRepository.OrderInvoiceTypes(invoiceTypes, sortOrder).ToList();
             ViewBag.OnePageOfInvoiceTypes = invoiceTypes.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfInvoiceTypes);
         }

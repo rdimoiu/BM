@@ -283,31 +283,31 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll().ToList();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateSectionsDropDownList(object selectedSection = null)
         {
-            var sectionsQuery = _unitOfWork.SectionRepository.GetAll();
+            var sectionsQuery = _unitOfWork.SectionRepository.GetAll().ToList();
             ViewBag.SectionID = new SelectList(sectionsQuery, "ID", "Number", selectedSection);
         }
 
         private void PopulateLevelsDropDownList(object selectedLevel = null)
         {
-            var levelsQuery = _unitOfWork.LevelRepository.GetAll();
+            var levelsQuery = _unitOfWork.LevelRepository.GetAll().ToList();
             ViewBag.LevelID = new SelectList(levelsQuery, "ID", "Number", selectedLevel);
         }
 
         private void PopulateSpaceTypesDropDownList(object selectedSpaceType = null)
         {
-            var spaceTypesQuery = _unitOfWork.SpaceTypeRepository.GetAll();
+            var spaceTypesQuery = _unitOfWork.SpaceTypeRepository.GetAll().ToList();
             ViewBag.SpaceTypeID = new SelectList(spaceTypesQuery, "ID", "Type", selectedSpaceType);
         }
 
         private void PopulateSubClientsDropDownList(object selectedSubClient = null)
         {
-            var subClientsQuery = _unitOfWork.SubClientRepository.GetAll();
+            var subClientsQuery = _unitOfWork.SubClientRepository.GetAll().ToList();
             ViewBag.SubClientID = new SelectList(subClientsQuery, "ID", "Name", selectedSubClient);
         }
 

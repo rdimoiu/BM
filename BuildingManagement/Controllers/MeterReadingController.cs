@@ -26,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                meterReadings = _unitOfWork.MeterReadingRepository.GetFilteredMeterReadingsIncludingMeterAndMeterType(searchString);
+                meterReadings = _unitOfWork.MeterReadingRepository.GetFilteredMeterReadingsIncludingMeterAndMeterType(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    meterReadings = _unitOfWork.MeterReadingRepository.GetFilteredMeterReadingsIncludingMeterAndMeterType(searchString);
+                    meterReadings = _unitOfWork.MeterReadingRepository.GetFilteredMeterReadingsIncludingMeterAndMeterType(searchString).ToList();
                 }
                 else
                 {
-                    meterReadings = _unitOfWork.MeterReadingRepository.GetAllMeterReadingsIncludingMeterAndMeterType();
+                    meterReadings = _unitOfWork.MeterReadingRepository.GetAllMeterReadingsIncludingMeterAndMeterType().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -46,7 +46,7 @@ namespace BuildingManagement.Controllers
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             ViewBag.MeterSortParm = sortOrder == "Meter" ? "meter_desc" : "Meter";
             ViewBag.MeterTypeSortParm = sortOrder == "MeterType" ? "meterType_desc" : "MeterType";
-            meterReadings = _unitOfWork.MeterReadingRepository.OrderMeterReadings(meterReadings, sortOrder);
+            meterReadings = _unitOfWork.MeterReadingRepository.OrderMeterReadings(meterReadings, sortOrder).ToList();
             ViewBag.OnePageOfMeterReadings = meterReadings.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfMeterReadings);
         }
@@ -210,7 +210,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateMetersDropDownList(object selectedMeter = null)
         {
-            var metersQuery = _unitOfWork.MeterRepository.GetAll();
+            var metersQuery = _unitOfWork.MeterRepository.GetAll().ToList();
             ViewBag.MeterID = new SelectList(metersQuery, "ID", "Code", selectedMeter);
         }
 

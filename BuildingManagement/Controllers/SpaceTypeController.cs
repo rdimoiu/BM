@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,24 +26,24 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString);
+                spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString);
+                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetFilteredSpaceTypes(searchString).ToList();
                 }
                 else
                 {
-                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetAll();
+                    spaceTypes = _unitOfWork.SpaceTypeRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
             ViewBag.CurrentSort = sortOrder;
             ViewBag.TypeSortParm = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
-            spaceTypes = _unitOfWork.SpaceTypeRepository.OrderSpaceTypes(spaceTypes, sortOrder);
+            spaceTypes = _unitOfWork.SpaceTypeRepository.OrderSpaceTypes(spaceTypes, sortOrder).ToList();
             ViewBag.OnePageOfSpaceTypes = spaceTypes.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSpaceTypes);
         }

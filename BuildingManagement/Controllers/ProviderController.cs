@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString);
+                providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString);
+                    providers = _unitOfWork.ProviderRepository.GetFilteredProviders(searchString).ToList();
                 }
                 else
                 {
-                    providers = _unitOfWork.ProviderRepository.GetAll();
+                    providers = _unitOfWork.ProviderRepository.GetAll().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -50,7 +51,7 @@ namespace BuildingManagement.Controllers
             ViewBag.BankAccountSortParm = sortOrder == "BankAccount" ? "bankAccount_desc" : "BankAccount";
             ViewBag.BankSortParm = sortOrder == "Bank" ? "bank_desc" : "Bank";
             ViewBag.TVAPayerSortParm = sortOrder == "TVAPayer" ? "tvaPayer_desc" : "TVAPayer";
-            providers = _unitOfWork.ProviderRepository.OrderProviders(providers, sortOrder);
+            providers = _unitOfWork.ProviderRepository.OrderProviders(providers, sortOrder).ToList();
             ViewBag.OnePageOfProviders = providers.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfProviders);
         }

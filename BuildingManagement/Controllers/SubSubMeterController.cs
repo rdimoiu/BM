@@ -27,18 +27,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                subSubMeters = _unitOfWork.SubSubMeterRepository.GetFilteredSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(searchString);
+                subSubMeters = _unitOfWork.SubSubMeterRepository.GetFilteredSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    subSubMeters = _unitOfWork.SubSubMeterRepository.GetFilteredSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(searchString);
+                    subSubMeters = _unitOfWork.SubSubMeterRepository.GetFilteredSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces(searchString).ToList();
                 }
                 else
                 {
-                    subSubMeters = _unitOfWork.SubSubMeterRepository.GetAllSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces();
+                    subSubMeters = _unitOfWork.SubSubMeterRepository.GetAllSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -48,7 +48,7 @@ namespace BuildingManagement.Controllers
             ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
             ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
             ViewBag.SubMeterSortParm = sortOrder == "SubMeter" ? "SubMeter_desc" : "SubMeter";
-            subSubMeters = _unitOfWork.SubSubMeterRepository.OrderSubSubMeters(subSubMeters, sortOrder);
+            subSubMeters = _unitOfWork.SubSubMeterRepository.OrderSubSubMeters(subSubMeters, sortOrder).ToList();
             ViewBag.OnePageOfSubSubMeters = subSubMeters.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSubSubMeters);
         }
@@ -313,13 +313,13 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
+            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         private void PopulateSubMetersDropDownList(object selectedSubMeter = null)
         {
-            var subMetersQuery = _unitOfWork.SubMeterRepository.GetAll();
+            var subMetersQuery = _unitOfWork.SubMeterRepository.GetAll().ToList();
             ViewBag.SubMeterID = new SelectList(subMetersQuery, "ID", "Code", selectedSubMeter);
         }
 

@@ -26,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString);
+                sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString);
+                    sections = _unitOfWork.SectionRepository.GetFilteredSectionsIncludingClient(searchString).ToList();
                 }
                 else
                 {
-                    sections = _unitOfWork.SectionRepository.GetAllSectionsIncludingClient();
+                    sections = _unitOfWork.SectionRepository.GetAllSectionsIncludingClient().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -46,7 +46,7 @@ namespace BuildingManagement.Controllers
             ViewBag.NumberSortParm = sortOrder == "Number" ? "number_desc" : "Number";
             ViewBag.SurfaceSortParm = sortOrder == "Surface" ? "surface_desc" : "Surface";
             ViewBag.PeopleSortParm = sortOrder == "People" ? "people_desc" : "People";
-            sections = _unitOfWork.SectionRepository.OrderSections(sections, sortOrder);
+            sections = _unitOfWork.SectionRepository.OrderSections(sections, sortOrder).ToList();
             ViewBag.OnePageOfSections = sections.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSections);
         }
@@ -200,7 +200,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll().ToList();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
     }

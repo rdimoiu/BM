@@ -28,18 +28,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString);
+                invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString);
+                    invoices = _unitOfWork.InvoiceRepository.GetFilteredInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices(searchString).ToList();
                 }
                 else
                 {
-                    invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices();
+                    invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -59,7 +59,7 @@ namespace BuildingManagement.Controllers
             ViewBag.CheckTotalTVASortParm = sortOrder == "CheckTotalTVA" ? "checkTotalTVA_desc" : "CheckTotalTVA";
             ViewBag.DiscountMonthSortParm = sortOrder == "DiscountMonth" ? "discountMonth_desc" : "DiscountMonth";
             ViewBag.DateTimeNow = DateTime.Now;
-            invoices = _unitOfWork.InvoiceRepository.OrderInvoices(invoices, sortOrder);
+            invoices = _unitOfWork.InvoiceRepository.OrderInvoices(invoices, sortOrder).ToList();
             ViewBag.OnePageOfInvoices = invoices.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfInvoices);
         }
@@ -311,19 +311,19 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoiceTypesDropDownList(object selectedInvoiceType = null)
         {
-            var invoiceTypesQuery = _unitOfWork.InvoiceTypeRepository.GetAll();
+            var invoiceTypesQuery = _unitOfWork.InvoiceTypeRepository.GetAll().ToList();
             ViewBag.InvoiceTypeID = new SelectList(invoiceTypesQuery, "ID", "Type", selectedInvoiceType);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)
         {
-            var clientsQuery = _unitOfWork.ClientRepository.GetAll();
+            var clientsQuery = _unitOfWork.ClientRepository.GetAll().ToList();
             ViewBag.ClientID = new SelectList(clientsQuery, "ID", "Name", selectedClient);
         }
 
         private void PopulateProvidersDropDownList(object selectedProvider = null)
         {
-            var providersQuery = _unitOfWork.ProviderRepository.GetAll();
+            var providersQuery = _unitOfWork.ProviderRepository.GetAll().ToList();
             ViewBag.ProviderID = new SelectList(providersQuery, "ID", "Name", selectedProvider);
         }
     }

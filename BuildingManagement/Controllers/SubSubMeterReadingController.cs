@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -25,18 +26,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetFilteredSubSubMeterReadingsIncludingSubSubMeterAndMeterType(searchString);
+                subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetFilteredSubSubMeterReadingsIncludingSubSubMeterAndMeterType(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetFilteredSubSubMeterReadingsIncludingSubSubMeterAndMeterType(searchString);
+                    subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetFilteredSubSubMeterReadingsIncludingSubSubMeterAndMeterType(searchString).ToList();
                 }
                 else
                 {
-                    subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetAllSubSubMeterReadingsIncludingSubSubMeterAndMeterType();
+                    subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.GetAllSubSubMeterReadingsIncludingSubSubMeterAndMeterType().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -45,7 +46,7 @@ namespace BuildingManagement.Controllers
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             ViewBag.SubSubMeterSortParm = sortOrder == "SubSubMeter" ? "subSubMeter_desc" : "SubSubMeter";
             ViewBag.MeterTypeSortParm = sortOrder == "MeterType" ? "meterType_desc" : "MeterType";
-            subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.OrderSubSubMeterReadings(subSubMeterReadings, sortOrder);
+            subSubMeterReadings = _unitOfWork.SubSubMeterReadingRepository.OrderSubSubMeterReadings(subSubMeterReadings, sortOrder).ToList();
             ViewBag.OnePageOfSubSubMeterReadings = subSubMeterReadings.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfSubSubMeterReadings);
         }
@@ -209,7 +210,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSubSubMetersDropDownList(object selectedSubSubMeter = null)
         {
-            var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAll();
+            var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAll().ToList();
             ViewBag.SubSubMeterID = new SelectList(subSubMeters, "ID", "Code", selectedSubSubMeter);
         }
 

@@ -28,18 +28,18 @@ namespace BuildingManagement.Controllers
             if (searchString != null)
             {
                 pageNumber = 1;
-                services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString);
+                services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString).ToList();
             }
             else
             {
                 if (currentFilter != null)
                 {
                     searchString = currentFilter;
-                    services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString);
+                    services = _unitOfWork.ServiceRepository.GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(searchString).ToList();
                 }
                 else
                 {
-                    services = _unitOfWork.ServiceRepository.GetAllServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces();
+                    services = _unitOfWork.ServiceRepository.GetAllServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces().ToList();
                 }
             }
             ViewBag.CurrentFilter = searchString;
@@ -53,7 +53,7 @@ namespace BuildingManagement.Controllers
             ViewBag.FixedSortParm = sortOrder == "Fixed" ? "fixed_desc" : "Fixed";
             ViewBag.CountedSortParm = sortOrder == "Counted" ? "counted_desc" : "Counted";
             ViewBag.InhabitedSortParm = sortOrder == "Inhabited" ? "inhabited_desc" : "Inhabited";
-            services = _unitOfWork.ServiceRepository.OrderServices(services, sortOrder);
+            services = _unitOfWork.ServiceRepository.OrderServices(services, sortOrder).ToList();
             ViewBag.OnePageOfServices = services.ToPagedList(pageNumber, pageSize);
             return View(ViewBag.OnePageOfServices);
         }
@@ -424,10 +424,10 @@ namespace BuildingManagement.Controllers
             var totalSpaces = new List<Space>();
             foreach (var section in service.Sections)
             {
-                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID);
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
                 foreach (var level in levels)
                 {
-                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
                     foreach (var space in spaces)
                     {
                         if (service.Inhabited && !space.Inhabited)
@@ -440,7 +440,7 @@ namespace BuildingManagement.Controllers
             }
             foreach (var level in service.Levels)
             {
-                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID);
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
                 foreach (var space in spaces)
                 {
                     if (service.Inhabited && !space.Inhabited)
@@ -469,7 +469,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID);
+            var costs = _unitOfWork.CostRepository.GetCostsByService(service.ID).ToList();
             foreach (var cost in costs)
             {
                 _unitOfWork.CostRepository.Remove(cost);
@@ -503,19 +503,19 @@ namespace BuildingManagement.Controllers
 
         private void PopulateInvoicesDropDownList(object selectedInvoice = null)
         {
-            var invoicesQuery = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.Closed == false);
+            var invoicesQuery = _unitOfWork.InvoiceRepository.GetAll().Where(i => i.Closed == false).ToList();
             ViewBag.InvoiceID = new SelectList(invoicesQuery, "ID", "Number", selectedInvoice);
         }
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll();
+            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
             ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
         }
 
         private void PopulateMeterTypesDropDownList(object selectedMeterType = null)
         {
-            var meterTypesQuery = _unitOfWork.MeterTypeRepository.GetAll();
+            var meterTypesQuery = _unitOfWork.MeterTypeRepository.GetAll().ToList();
             ViewBag.MeterTypeID = new SelectList(meterTypesQuery, "ID", "Type", selectedMeterType);
         }
 
