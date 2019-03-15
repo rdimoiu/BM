@@ -80,7 +80,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == provider.FiscalCode);
+                var duplicateProvider = _unitOfWork.ProviderRepository.FirstOrDefault(p => p.FiscalCode == provider.FiscalCode);
                 if (duplicateProvider != null)
                 {
                     return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");
@@ -125,7 +125,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateProvider = _unitOfWork.ProviderRepository.SingleOrDefault(p => p.FiscalCode == providerToUpdate.FiscalCode);
+                    var duplicateProvider = _unitOfWork.ProviderRepository.FirstOrDefault(p => p.FiscalCode == providerToUpdate.FiscalCode);
                     if (duplicateProvider != null && duplicateProvider.ID != providerToUpdate.ID)
                     {
                         return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");

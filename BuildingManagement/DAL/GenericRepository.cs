@@ -36,6 +36,11 @@ namespace BuildingManagement.DAL
             return Context.Set<TEntity>().SingleOrDefault(predicate);
         }
 
+        public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().FirstOrDefault(predicate);
+        }
+
         public void Add(TEntity entity)
         {
             Context.Set<TEntity>().Add(entity);

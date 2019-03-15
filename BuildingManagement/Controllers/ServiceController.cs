@@ -94,7 +94,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+                var duplicateService = _unitOfWork.ServiceRepository.FirstOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
                 if (duplicateService != null)
                 {
                     PopulateInvoicesDropDownList(service.InvoiceID);
@@ -112,20 +112,26 @@ namespace BuildingManagement.Controllers
                 }
                 if (service.Counted)
                 {
-                    var meterType = _unitOfWork.MeterTypeRepository.SingleOrDefault(mt => mt.ID == service.MeterTypeID);
-                    if (meterType != null)
+                    if (service.MeterTypeID != null)
                     {
-                        service.MeterType = meterType;
-                        service.DistributionMode = null;
+                        var meterType = _unitOfWork.MeterTypeRepository.Get((int)service.MeterTypeID);
+                        if (meterType != null)
+                        {
+                            service.MeterType = meterType;
+                            service.DistributionMode = null;
+                        }
                     }
                 }
                 else
                 {
-                    var distributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(d => d.ID == service.DistributionModeID);
-                    if (distributionMode != null)
+                    if (service.DistributionModeID != null)
                     {
-                        service.DistributionMode = distributionMode;
-                        service.MeterType = null;
+                        var distributionMode = _unitOfWork.DistributionModeRepository.Get((int)service.DistributionModeID);
+                        if (distributionMode != null)
+                        {
+                            service.DistributionMode = distributionMode;
+                            service.MeterType = null;
+                        }
                     }
                 }
                 if (service.ServiceSLSSelected != null)
@@ -221,7 +227,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateService = _unitOfWork.ServiceRepository.SingleOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+                    var duplicateService = _unitOfWork.ServiceRepository.FirstOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
                     if (duplicateService != null && duplicateService.ID != service.ID)
                     {
                         PopulateInvoicesDropDownList(service.InvoiceID);

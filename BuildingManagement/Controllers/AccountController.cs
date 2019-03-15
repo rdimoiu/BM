@@ -85,7 +85,7 @@ namespace BuildingManagement.Controllers
         [AllowAnonymous, HttpPost]
         public ActionResult ConfirmAccount(string username)
         {
-            var user = _unitOfWork.UserRepository.SingleOrDefault(item => item.Email == username);
+            var user = _unitOfWork.UserRepository.FirstOrDefault(item => item.Email == username);
             if (user != null && !user.AccountConfirmed)
             {
                 ViewBag.UserName = user.FirstName + " " + user.LastName;
@@ -97,7 +97,7 @@ namespace BuildingManagement.Controllers
         [AllowAnonymous]
         public ActionResult SetAccountPassword(LoginViewModel model)
         {
-            var user = _unitOfWork.UserRepository.SingleOrDefault(item => item.Email == model.Email);
+            var user = _unitOfWork.UserRepository.FirstOrDefault(item => item.Email == model.Email);
             user.Password = Cryptography.SimpleAes.Encrypt(model.Password);
             user.AccountConfirmed = true;
             _unitOfWork.Save();

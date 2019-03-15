@@ -86,7 +86,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                     //uniqueness condition check
-                    var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
+                    var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
                     if (duplicateSubClient != null)
                     {
                         PopulateClientsDropDownList(subClient.ClientID);
@@ -134,7 +134,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSubClient = _unitOfWork.SubClientRepository.SingleOrDefault(sc => sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
+                    var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
                     if (duplicateSubClient != null && duplicateSubClient.ID != subClientToUpdate.ID)
                     {
                         PopulateClientsDropDownList(subClientToUpdate.ClientID);

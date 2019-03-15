@@ -77,14 +77,14 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date >= meterReading.Date && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                var duplicateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date >= meterReading.Date && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
                 if (duplicateMeterReading != null)
                 {
                     PopulateMetersDropDownList(meterReading.MeterID);
                     PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                     return new HttpStatusCodeResult(409, "A meter reading on the same or later date already exists.");
                 }
-                var greaterMeterReadings = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && mr.Index > meterReading.Index);
+                var greaterMeterReadings = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && mr.Index > meterReading.Index);
                 if (greaterMeterReadings != null)
                 {
                     PopulateMetersDropDownList(meterReading.MeterID);
@@ -133,14 +133,14 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.Date == meterReadingToUpdate.Date && mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID);
+                    var duplicateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date == meterReadingToUpdate.Date && mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID);
                     if (duplicateMeterReading != null && duplicateMeterReading.ID != meterReadingToUpdate.ID)
                     {
                         PopulateMetersDropDownList(meterReadingToUpdate.MeterID);
                         PopulateMeterTypesDropDownList(meterReadingToUpdate.MeterID, meterReadingToUpdate.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A meter reading on the same or later date already exists.");
                     }
-                    var greaterMeterReading = _unitOfWork.MeterReadingRepository.SingleOrDefault(mr => mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID && mr.Index > meterReadingToUpdate.Index);
+                    var greaterMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.MeterID == meterReadingToUpdate.MeterID && mr.MeterTypeID == meterReadingToUpdate.MeterTypeID && mr.Index > meterReadingToUpdate.Index);
                     if (greaterMeterReading != null && greaterMeterReading.ID != meterReadingToUpdate.ID)
                     {
                         PopulateMetersDropDownList(meterReadingToUpdate.MeterID);

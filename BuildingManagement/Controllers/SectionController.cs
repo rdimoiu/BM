@@ -77,7 +77,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
+                var duplicateSection = _unitOfWork.SectionRepository.FirstOrDefault(s => s.Number == section.Number && s.ClientID == section.ClientID);
                 if (duplicateSection != null)
                 {
                     PopulateClientsDropDownList(section.ClientID);
@@ -132,7 +132,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSection = _unitOfWork.SectionRepository.SingleOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
+                    var duplicateSection = _unitOfWork.SectionRepository.FirstOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
                     if (duplicateSection != null && duplicateSection.ID != sectionToUpdate.ID)
                     {
                         PopulateClientsDropDownList(sectionToUpdate.ClientID);

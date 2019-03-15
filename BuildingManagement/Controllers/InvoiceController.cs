@@ -108,7 +108,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
+                var duplicateInvoice = _unitOfWork.InvoiceRepository.FirstOrDefault(i => i.Number == invoice.Number && i.Date == invoice.Date && i.ProviderID == invoice.ProviderID);
                 if (duplicateInvoice != null)
                 {
                     PopulateInvoiceTypesDropDownList(invoice.InvoiceTypeID);
@@ -166,7 +166,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateInvoice = _unitOfWork.InvoiceRepository.SingleOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
+                    var duplicateInvoice = _unitOfWork.InvoiceRepository.FirstOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
                     if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
                     {
                         PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);

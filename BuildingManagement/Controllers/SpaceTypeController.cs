@@ -72,7 +72,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceType.Type);
+                var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.FirstOrDefault(st => st.Type == spaceType.Type);
                 if (duplicateSpaceType != null)
                 {
                     return new HttpStatusCodeResult(409, "A space type with this type already exists.");
@@ -117,7 +117,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.SingleOrDefault(st => st.Type == spaceTypeToUpdate.Type);
+                    var duplicateSpaceType = _unitOfWork.SpaceTypeRepository.FirstOrDefault(st => st.Type == spaceTypeToUpdate.Type);
                     if (duplicateSpaceType != null && duplicateSpaceType.ID != spaceTypeToUpdate.ID)
                     {
                         return new HttpStatusCodeResult(409, "A space type with this type already exists.");

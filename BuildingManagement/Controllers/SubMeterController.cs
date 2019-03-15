@@ -82,7 +82,7 @@ namespace BuildingManagement.Controllers
                 //uniqueness condition check
                 if (subMeter.Code != null)
                 {
-                    var duplicateSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(sm => sm.Code == subMeter.Code);
+                    var duplicateSubMeter = _unitOfWork.SubMeterRepository.FirstOrDefault(sm => sm.Code == subMeter.Code);
                     if (duplicateSubMeter != null)
                     {
                         PopulateMetersDropDownList(subMeter.MeterID);
@@ -194,7 +194,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSubMeter = _unitOfWork.SubMeterRepository.SingleOrDefault(sm => sm.Code == subMeterToUpdate.Code);
+                    var duplicateSubMeter = _unitOfWork.SubMeterRepository.FirstOrDefault(sm => sm.Code == subMeterToUpdate.Code);
                     if (duplicateSubMeter != null && duplicateSubMeter.ID != subMeterToUpdate.ID)
                     {
                         PopulateMetersDropDownList(subMeterToUpdate.MeterID);

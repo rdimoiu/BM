@@ -84,7 +84,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID);
+                var duplicateSpace = _unitOfWork.SpaceRepository.FirstOrDefault(s => s.Number == space.Number && s.LevelID == space.LevelID && s.SpaceTypeID == space.SpaceTypeID);
                 if (duplicateSpace != null)
                 {
                     PopulateClientsDropDownList(space.ClientID);
@@ -179,7 +179,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpace = _unitOfWork.SpaceRepository.SingleOrDefault(s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
+                    var duplicateSpace = _unitOfWork.SpaceRepository.FirstOrDefault(s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
                     if (duplicateSpace != null && duplicateSpace.ID != spaceToUpdate.ID)
                     {
                         PopulateClientsDropDownList(spaceToUpdate.ClientID);

@@ -78,7 +78,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == level.Number && l.SectionID == level.SectionID);
+                var duplicateLevel = _unitOfWork.LevelRepository.FirstOrDefault(l => l.Number == level.Number && l.SectionID == level.SectionID);
                 if (duplicateLevel != null)
                 {
                     PopulateSectionsDropDownList(level.SectionID);
@@ -143,7 +143,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateLevel = _unitOfWork.LevelRepository.SingleOrDefault(l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
+                    var duplicateLevel = _unitOfWork.LevelRepository.FirstOrDefault(l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
                     if (duplicateLevel != null && duplicateLevel.ID != levelToUpdate.ID)
                     {
                         PopulateSectionsDropDownList(levelToUpdate.SectionID);
@@ -193,7 +193,7 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                var level = _unitOfWork.LevelRepository.SingleOrDefault(l => l.ID == id);
+                var level = _unitOfWork.LevelRepository.Get(id);
                 if (level == null)
                 {
                     return HttpNotFound();

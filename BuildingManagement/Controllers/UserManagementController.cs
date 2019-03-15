@@ -101,7 +101,7 @@ namespace BuildingManagement.Controllers
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            var user = _unitOfWork.UserRepository.SingleOrDefault(l => l.Id == id);
+            var user = _unitOfWork.UserRepository.Get((int)id);
             if (user == null)
             {
                 return HttpNotFound();

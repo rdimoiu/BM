@@ -77,7 +77,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == client.Name);
+                var duplicateClient = _unitOfWork.ClientRepository.FirstOrDefault(c => c.Name == client.Name);
                 if (duplicateClient != null)
                 {
                     return new HttpStatusCodeResult(409, "A client with this name already exists.");
@@ -122,7 +122,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateClient = _unitOfWork.ClientRepository.SingleOrDefault(c => c.Name == clientToUpdate.Name);
+                    var duplicateClient = _unitOfWork.ClientRepository.FirstOrDefault(c => c.Name == clientToUpdate.Name);
                     if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
                     {
                         return new HttpStatusCodeResult(409, "A client with this name already exists.");

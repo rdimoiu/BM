@@ -100,7 +100,7 @@ namespace BuildingManagement.Controllers
                         {
                             costsIndexData.Cols.Add(service.Name, "1");
                         }
-                        var cost = _unitOfWork.CostRepository.GetCostsByServiceAndSpace(service.ID, space.ID);
+                        var cost = _unitOfWork.CostRepository.FirstOrDefault(c => c.ServiceID == service.ID && c.SpaceID == space.ID);
                         if (cost != null)
                         {
                             col.Add(service.Name, cost.Value.ToString());

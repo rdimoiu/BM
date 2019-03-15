@@ -72,7 +72,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionMode.Mode);
+                var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.FirstOrDefault(dm => dm.Mode == distributionMode.Mode);
                 if (duplicateDistributionMode != null)
                 {
                     return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");
@@ -117,7 +117,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.SingleOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
+                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.FirstOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
                     if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
                     {
                         return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");

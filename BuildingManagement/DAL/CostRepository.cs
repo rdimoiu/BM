@@ -17,10 +17,5 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Costs.Where(c => c.ServiceID == serviceId);
         }
-
-        public Cost GetCostsByServiceAndSpace(int serviceId, int spaceId)
-        {
-            return MainContext.Costs.FirstOrDefault(c => c.ServiceID == serviceId && c.SpaceID == spaceId);
-        }
     }
 }

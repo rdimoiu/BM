@@ -72,7 +72,7 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceType.Type);
+                var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.FirstOrDefault(it => it.Type == invoiceType.Type);
                 if (duplicateInvoiceType != null)
                 {
                     return new HttpStatusCodeResult(409, "An invoice type with this type already exists.");
@@ -117,7 +117,7 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.SingleOrDefault(it => it.Type == invoiceTypeToUpdate.Type);
+                    var duplicateInvoiceType = _unitOfWork.InvoiceTypeRepository.FirstOrDefault(it => it.Type == invoiceTypeToUpdate.Type);
                     if (duplicateInvoiceType != null && duplicateInvoiceType.ID != invoiceTypeToUpdate.ID)
                     {
                         return new HttpStatusCodeResult(409, "An invoice type with this type already exists.");
