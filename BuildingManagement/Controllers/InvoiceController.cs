@@ -120,7 +120,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.InvoiceRepository.Add(invoice);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice {0} has been created.", invoice.Number);
+                    TempData["message"] = $"Invoice {invoice.Number} has been created.";
                     return Json(invoice.ID);
                 }
                 catch (DataException)
@@ -175,7 +175,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "An invoice with this number, on this date, from this provider, already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice {0} has been edited.", invoiceToUpdate.Number);
+                    TempData["message"] = $"Invoice {invoiceToUpdate.Number} has been edited.";
                     return Json(invoiceToUpdate.ID);
                 }
                 catch (DataException)
@@ -222,7 +222,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.InvoiceRepository.Remove(invoice);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Invoice {0} has been deleted.", invoice.Number);
+                TempData["message"] = $"Invoice {invoice.Number} has been deleted.";
             }
             catch (DataException)
             {
@@ -255,17 +255,17 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice {0} has been closed.", invoice.Number);
+                    TempData["message"] = $"Invoice {invoice.Number} has been closed.";
                 }
                 catch (DataException)
                 {
-                    TempData["message"] = string.Format("Unexpected error occurred. Invoice {0} can not be closed.", invoice.Number);
+                    TempData["message"] = $"Unexpected error occurred. Invoice {invoice.Number} can not be closed.";
                     return RedirectToAction("Close", new { id, saveChangesError = true });
                 }
             }
             else
             {
-                TempData["message"] = string.Format("Invoice {0} can not be closed. Invoice value {1} is different from total costs value {2}.", invoice.Number, invoice.TotalValueWithoutTVA + invoice.TotalTVA, totalCost);
+                TempData["message"] = $"Invoice {invoice.Number} can not be closed. Invoice value {invoice.TotalValueWithoutTVA + invoice.TotalTVA} is different from total costs value {totalCost}.";
             }
             if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
             {
@@ -287,7 +287,7 @@ namespace BuildingManagement.Controllers
             try
             {
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Invoice {0} has been opened.", invoice.Number);
+                TempData["message"] = $"Invoice {invoice.Number} has been opened.";
             }
             catch (DataException)
             {

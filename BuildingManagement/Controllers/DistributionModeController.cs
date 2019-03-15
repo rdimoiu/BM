@@ -81,7 +81,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.DistributionModeRepository.Add(distributionMode);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Distribution mode {0} has been created.", distributionMode.Mode);
+                    TempData["message"] = $"Distribution mode {distributionMode.Mode} has been created.";
                     return Json(distributionMode.ID);
                 }
                 catch (DataException)
@@ -123,7 +123,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Distribution mode {0} has been edited.", distributionModeToUpdate.Mode);
+                    TempData["message"] = $"Distribution mode {distributionModeToUpdate.Mode} has been edited.";
                     return Json(distributionModeToUpdate.ID);
                 }
                 catch (DataException)
@@ -163,7 +163,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.DistributionModeRepository.Remove(distributionMode);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Distribution mode {0} has been deleted.", distributionMode.Mode);
+                TempData["message"] = $"Distribution mode {distributionMode.Mode} has been deleted.";
             }
             catch (DataException)
             {

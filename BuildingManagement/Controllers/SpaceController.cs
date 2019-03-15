@@ -112,7 +112,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SpaceRepository.Add(space);
                     await _unitOfWork.SaveAsync();
-                    TempData["message"] = string.Format("Space {0} has been created.", space.Number);
+                    TempData["message"] = $"Space {space.Number} has been created.";
                     return Json(space.ID);
                 }
                 catch (DataException)
@@ -204,7 +204,7 @@ namespace BuildingManagement.Controllers
                     section.Surface = section.Surface + spaceToUpdate.Surface;
                     section.People = section.People + spaceToUpdate.People;
                     await _unitOfWork.SaveAsync();
-                    TempData["message"] = string.Format("Space {0} has been edited.", spaceToUpdate.Number);
+                    TempData["message"] = $"Space {spaceToUpdate.Number} has been edited.";
                     return Json(spaceToUpdate.ID);
                 }
                 catch (DataException)
@@ -263,7 +263,7 @@ namespace BuildingManagement.Controllers
                 section.People = section.People - space.People;
                 _unitOfWork.SpaceRepository.Remove(space);
                 await _unitOfWork.SaveAsync();
-                TempData["message"] = string.Format("Space {0} has been deleted.", space.Number);
+                TempData["message"] = $"Space {space.Number} has been deleted.";
             }
             catch (DataException)
             {

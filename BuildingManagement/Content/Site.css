@@ -34,6 +34,7 @@ a.edit-icon {
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
+
 a.details-icon {
     background: url(../Content/icons/icons8-info-32.png) no-repeat top left;
     display: inline-block;
@@ -42,6 +43,7 @@ a.details-icon {
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
+
 a.delete-icon {
     background: url(../Content/icons/icons8-trash-32.png) no-repeat top left;
     display: inline-block;
@@ -50,6 +52,7 @@ a.delete-icon {
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
+
 a.lock-icon {
     background: url(../Content/icons/icons8-close-32.png) no-repeat top left;
     display: inline-block;
@@ -58,6 +61,7 @@ a.lock-icon {
     height: 32px;
     text-indent: -9999px; /* hides the link text */
 }
+
 a.unlock-icon {
     background: url(../Content/icons/icons8-open-32.png) no-repeat top left;
     display: inline-block;
@@ -131,19 +135,6 @@ td.table-head-vertical {
         margin: 0px;
         line-height: 35px;
         cursor: pointer;
-        /*    
-      .collapsed{
-         .arrow:before{
-                   font-family: FontAwesome;
-                   content: "\f053";
-                   display: inline-block;
-                   padding-left:10px;
-                   padding-right: 10px;
-                   vertical-align: middle;
-                   float:right;
-              }
-       }
-  */
     }
 
         .nav-side-menu ul :not(collapsed) .arrow:before,
@@ -258,4 +249,3 @@ td.table-head-vertical {
         display: block;
     }
 }
-

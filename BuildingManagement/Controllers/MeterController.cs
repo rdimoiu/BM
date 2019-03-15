@@ -22,35 +22,39 @@ namespace BuildingManagement.Controllers
         public ActionResult Index(int? page, string currentFilter, string searchString, string sortOrder)
         {
             IEnumerable<Meter> meters;
-            var pageNumber = page ?? 1;
-            const int pageSize = 3;
-            if (searchString != null)
-            {
-                pageNumber = 1;
-                meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
-            }
-            else
-            {
-                if (currentFilter != null)
-                {
-                    searchString = currentFilter;
-                    meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
-                }
-                else
-                {
+            //var pageNumber = page ?? 1;
+            //const int pageSize = 3;
+
+            //meters = _unitOfWork.MeterRepository.GetAllNew(includeProperties: "MeterTypes, DistributionMode, Client, Sections, Levels, Spaces");
+
+            //if (searchString != null)
+            //{
+            //    pageNumber = 1;
+            //    meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
+            //}
+            //else
+            //{
+            //    if (currentFilter != null)
+            //    {
+            //        searchString = currentFilter;
+            //        meters = _unitOfWork.MeterRepository.GetFilteredMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces(searchString);
+            //    }
+            //    else
+            //    {
                     meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces();
-                }
-            }
-            ViewBag.CurrentFilter = searchString;
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.CodeSortParm = string.IsNullOrEmpty(sortOrder) ? "code_desc" : "";
-            ViewBag.DetailsSortParm = sortOrder == "Details" ? "details_desc" : "Details";
-            ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
-            ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
-            ViewBag.ClientSortParm = sortOrder == "Client" ? "client_desc" : "Client";
-            meters = _unitOfWork.MeterRepository.OrderMeters(meters, sortOrder);
-            ViewBag.OnePageOfMeters = meters.ToPagedList(pageNumber, pageSize);
-            return View(ViewBag.OnePageOfMeters);
+            //    }
+            //}
+            //ViewBag.CurrentFilter = searchString;
+            //ViewBag.CurrentSort = sortOrder;
+            //ViewBag.CodeSortParm = string.IsNullOrEmpty(sortOrder) ? "code_desc" : "";
+            //ViewBag.DetailsSortParm = sortOrder == "Details" ? "details_desc" : "Details";
+            //ViewBag.DefectSortParm = sortOrder == "Defect" ? "defect_desc" : "Defect";
+            //ViewBag.DistributionModeSortParm = sortOrder == "DistributionMode" ? "distributionMode_desc" : "DistributionMode";
+            //ViewBag.ClientSortParm = sortOrder == "Client" ? "client_desc" : "Client";
+            //meters = _unitOfWork.MeterRepository.OrderMeters(meters, sortOrder);
+            //ViewBag.OnePageOfMeters = meters.ToPagedList(pageNumber, pageSize);
+            //return View(ViewBag.OnePageOfMeters);
+            return View(meters);
         }
 
         // GET: Meter/Details/5
@@ -151,7 +155,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.MeterRepository.Add(meter);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Meter {0} has been created.", meter.Code);
+                    TempData["message"] = $"Meter {meter.Code} has been created.";
                     return Json(meter.ID);
                 }
                 catch (DataException)
@@ -248,7 +252,7 @@ namespace BuildingManagement.Controllers
                     #endregion
 
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Meter {0} has been edited.", meterToUpdate.Code);
+                    TempData["message"] = $"Meter {meterToUpdate.Code} has been edited.";
                     return Json(meterToUpdate.ID);
                 }
                 catch (DataException)
@@ -290,7 +294,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.MeterRepository.Remove(meter);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Meter {0} has been deleted.", meter.Code);
+                TempData["message"] = $"Meter {meter.Code} has been deleted.";
             }
             catch (DataException)
             {

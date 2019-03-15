@@ -81,7 +81,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.InvoiceTypeRepository.Add(invoiceType);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice type {0} has been created.", invoiceType.Type);
+                    TempData["message"] = $"Invoice type {invoiceType.Type} has been created.";
                     return Json(invoiceType.ID);
                 }
                 catch (DataException)
@@ -123,7 +123,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "An invoice type with this type already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Invoice type {0} has been edited.", invoiceTypeToUpdate.Type);
+                    TempData["message"] = $"Invoice type {invoiceTypeToUpdate.Type} has been edited.";
                     return Json(invoiceTypeToUpdate.ID);
                 }
                 catch (DataException)
@@ -163,7 +163,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.InvoiceTypeRepository.Remove(invoiceType);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Invoice type {0} has been deleted.", invoiceType.Type);
+                TempData["message"] = $"Invoice type {invoiceType.Type} has been deleted.";
             }
             catch (DataException)
             {

@@ -81,7 +81,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SpaceTypeRepository.Add(spaceType);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Space type {0} has been created.", spaceType.Type);
+                    TempData["message"] = $"Space type {spaceType.Type} has been created.";
                     return Json(spaceType.ID);
                 }
                 catch (DataException)
@@ -123,7 +123,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A space type with this type already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Space type {0} has been edited.", spaceTypeToUpdate.Type);
+                    TempData["message"] = $"Space type {spaceTypeToUpdate.Type} has been edited.";
                     return Json(spaceTypeToUpdate.ID);
                 }
                 catch (DataException)
@@ -163,7 +163,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.SpaceTypeRepository.Remove(spaceType);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Space type {0} has been deleted.", spaceType.Type);
+                TempData["message"] = $"Space type {spaceType.Type} has been deleted.";
             }
             catch (DataException)
             {

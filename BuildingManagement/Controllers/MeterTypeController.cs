@@ -81,7 +81,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.MeterTypeRepository.Add(meterType);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Meter type {0} has been created.", meterType.Type);
+                    TempData["message"] = $"Meter type {meterType.Type} has been created.";
                     return Json(meterType.ID);
                 }
                 catch (DataException)
@@ -123,7 +123,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A meter type with this type already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Meter type {0} has been edited.", meterTypeToUpdate.Type);
+                    TempData["message"] = $"Meter type {meterTypeToUpdate.Type} has been edited.";
                     return Json(meterTypeToUpdate.ID);
                 }
                 catch (DataException)
@@ -163,7 +163,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.MeterTypeRepository.Remove(meterType);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Meter type {0} has been deleted.", meterType.Type);
+                TempData["message"] = $"Meter type {meterType.Type} has been deleted.";
             }
             catch (DataException)
             {

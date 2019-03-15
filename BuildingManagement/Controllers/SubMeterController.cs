@@ -154,7 +154,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SubMeterRepository.Add(subMeter);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("SubMeter {0} has been created.", subMeter.Code);
+                    TempData["message"] = $"SubMeter {subMeter.Code} has been created.";
                     return Json(subMeter.ID);
                 }
                 catch (DataException)
@@ -251,7 +251,7 @@ namespace BuildingManagement.Controllers
                     #endregion
 
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("SubMeter {0} has been edited.", subMeterToUpdate.Code);
+                    TempData["message"] = $"SubMeter {subMeterToUpdate.Code} has been edited.";
                     return Json(subMeterToUpdate.ID);
                 }
                 catch (DataException)
@@ -293,7 +293,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.SubMeterRepository.Remove(subMeter);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("SubMeter {0} has been deleted.", subMeter.Code);
+                TempData["message"] = $"SubMeter {subMeter.Code} has been deleted.";
             }
             catch (DataException)
             {

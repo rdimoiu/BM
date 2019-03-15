@@ -89,7 +89,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.ProviderRepository.Add(provider);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Provider {0} has been created.", provider.Name);
+                    TempData["message"] = $"Provider {provider.Name} has been created.";
                     return Json(provider.ID);
                 }
                 catch (DataException)
@@ -131,7 +131,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Provider {0} has been edited.", providerToUpdate.Name);
+                    TempData["message"] = $"Provider {providerToUpdate.Name} has been edited.";
                     return Json(providerToUpdate.ID);
                 }
                 catch (DataException)
@@ -171,7 +171,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.ProviderRepository.Remove(provider);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Provider {0} has been deleted.", provider.Name);
+                TempData["message"] = $"Provider {provider.Name} has been deleted.";
             }
             catch (DataException)
             {

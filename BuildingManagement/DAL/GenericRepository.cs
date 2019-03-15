@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace BuildingManagement.DAL
 {
@@ -53,6 +54,65 @@ namespace BuildingManagement.DAL
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             Context.Set<TEntity>().RemoveRange(entities);
+        }
+
+        //-----------------------------------------------------------------------
+
+        protected virtual IQueryable<TEntity> GetQueryable(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = null,
+            int? skip = null,
+            int? take = null)
+        {
+            includeProperties = includeProperties ?? string.Empty;
+            IQueryable<TEntity> query = Context.Set<TEntity>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            if (skip.HasValue)
+            {
+                query = query.Skip(skip.Value);
+            }
+
+            if (take.HasValue)
+            {
+                query = query.Take(take.Value);
+            }
+
+            return query;
+        }
+
+        public virtual IEnumerable<TEntity> GetAllNew(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = null,
+            int? skip = null,
+            int? take = null)
+        {
+            return GetQueryable(null, orderBy, includeProperties, skip, take).ToList();
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> GetAllNewAsync(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = null,
+            int? skip = null,
+            int? take = null)
+        {
+            return await GetQueryable(null, orderBy, includeProperties, skip, take).ToListAsync();
         }
     }
 }

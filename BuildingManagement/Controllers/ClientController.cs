@@ -86,7 +86,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.ClientRepository.Add(client);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Client {0} has been created.", client.Name);
+                    TempData["message"] = $"Client {client.Name} has been created.";
                     return Json(client.ID);
                 }
                 catch (DataException)
@@ -128,7 +128,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A client with this name already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Client {0} has been edited.", clientToUpdate.Name);
+                    TempData["message"] = $"Client {clientToUpdate.Name} has been edited.";
                     return Json(clientToUpdate.ID);
                 }
                 catch (DataException)
@@ -168,7 +168,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.ClientRepository.Remove(client);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Client {0} has been deleted.", client.Name);
+                TempData["message"] = $"Client {client.Name} has been deleted.";
             }
             catch (DataException)
             {

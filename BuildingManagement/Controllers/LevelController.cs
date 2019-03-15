@@ -96,7 +96,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.LevelRepository.Add(level);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Level {0} has been created.", level.Number);
+                    TempData["message"] = $"Level {level.Number} has been created.";
                     return Json(level.ID);
                 }
                 catch (DataException)
@@ -158,7 +158,7 @@ namespace BuildingManagement.Controllers
                     section.Surface = section.Surface + levelToUpdate.Surface;
                     section.People = section.People + levelToUpdate.People;
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Level {0} has been edited.", levelToUpdate.Number);
+                    TempData["message"] = $"Level {levelToUpdate.Number} has been edited.";
                     return Json(levelToUpdate.ID);
                 }
                 catch (DataException)
@@ -200,7 +200,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.LevelRepository.Remove(level);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Level {0} has been deleted.", level.Number);
+                TempData["message"] = $"Level {level.Number} has been deleted.";
             }
             catch (DataException)
             {

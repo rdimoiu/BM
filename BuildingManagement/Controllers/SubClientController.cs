@@ -96,7 +96,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SubClientRepository.Add(subClient);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Sub client {0} has been created.", subClient.Name);
+                    TempData["message"] = $"Sub client {subClient.Name} has been created.";
                     return Json(subClient.ID);
                 }
                 catch (DataException)
@@ -141,7 +141,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Sub client {0} has been edited.", subClientToUpdate.Name);
+                    TempData["message"] = $"Sub client {subClientToUpdate.Name} has been edited.";
                     return Json(subClientToUpdate.ID);
                 }
                 catch (DataException)
@@ -182,7 +182,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.SubClientRepository.Remove(subClient);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Sub client {0} has been deleted.", subClient.Name);
+                TempData["message"] = $"Sub client {subClient.Name} has been deleted.";
             }
             catch (DataException)
             {

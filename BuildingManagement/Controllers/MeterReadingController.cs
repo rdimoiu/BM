@@ -95,7 +95,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.MeterReadingRepository.Add(meterReading);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("MeterReading {0} has been created.", meterReading.Index);
+                    TempData["message"] = $"MeterReading {meterReading.Index} has been created.";
                     return Json(meterReading.ID);
                 }
                 catch (DataException)
@@ -148,7 +148,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A meter reading with the same or greater index already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("MeterReading {0} has been edited.", meterReadingToUpdate.Index);
+                    TempData["message"] = $"MeterReading {meterReadingToUpdate.Index} has been edited.";
                     return Json(meterReadingToUpdate.ID);
                 }
                 catch (DataException)
@@ -190,7 +190,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.MeterReadingRepository.Remove(meterReading);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("MeterReading {0} has been deleted.", meterReading.Index);
+                TempData["message"] = $"MeterReading {meterReading.Index} has been deleted.";
             }
             catch (DataException)
             {

@@ -94,7 +94,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SubMeterReadingRepository.Add(subMeterReading);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("SubMeterReading {0} has been created.", subMeterReading.Index);
+                    TempData["message"] = $"SubMeterReading {subMeterReading.Index} has been created.";
                     return Json(subMeterReading.ID);
                 }
                 catch (DataException)
@@ -147,7 +147,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A submeter reading with the same or greater index already exists.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("SubMeterReading {0} has been edited.", subMeterReadingToUpdate.Index);
+                    TempData["message"] = $"SubMeterReading {subMeterReadingToUpdate.Index} has been edited.";
                     return Json(subMeterReadingToUpdate.ID);
                 }
                 catch (DataException)
@@ -189,7 +189,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.SubMeterReadingRepository.Remove(subMeterReading);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("SubMeterReading {0} has been deleted.", subMeterReading.Index);
+                TempData["message"] = $"SubMeterReading {subMeterReading.Index} has been deleted.";
             }
             catch (DataException)
             {

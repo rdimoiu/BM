@@ -1,6 +1,4 @@
-﻿@model IPagedList<BuildingManagement.Models.Meter>
-@using X.PagedList.Mvc;
-@using X.PagedList;
+﻿@model IEnumerable<BuildingManagement.Models.Meter>
 
 @{
     ViewBag.Title = "Meters";
@@ -11,29 +9,27 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-@using (Html.BeginForm("Index", "Meter", FormMethod.Get))
-{
-    <p>
-        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
-<table class="table">
+
+<table id="Meters" class="table table-striped table-bordered" style="width:100%">
+    <thead>
     <tr>
-        <th>
-            @Html.ActionLink("Code", "Index", new { sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter })
+        <th style="display: none;">
+            Id
         </th>
         <th>
-            @Html.ActionLink("Details", "Index", new { sortOrder = ViewBag.DetailsSortParm, currentFilter = ViewBag.CurrentFilter })
+            Code
         </th>
         <th>
-            @Html.ActionLink("Defect", "Index", new { sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter })
+            Details
         </th>
         <th>
-            @Html.ActionLink("DistributionMode", "Index", new { sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter })
+            Defect
         </th>
         <th>
-            @Html.ActionLink("Client", "Index", new { sortOrder = ViewBag.ClientSortParm, currentFilter = ViewBag.CurrentFilter })
+            DistributionMode
+        </th>
+        <th>
+            Client
         </th>
         <th>
             Type
@@ -44,66 +40,79 @@
         <th>
         </th>
     </tr>
-
-    @foreach (var item in ViewBag.OnePageOfMeters)
-    {
-        <tr>
-            <td>
-                @item.Code
-            </td>
-            <td>
-                @item.Details
-            </td>
-            <td>
-                <input type="checkbox" checked=@item.Defect disabled />
-            </td>
-            <td>
-                @item.DistributionMode.Mode
-            </td>
-            <td>
-                @item.Client.Name
-            </td>
-            <td>
-                @{
-                    foreach (var meterType in item.MeterTypes)
-                    {
-                        @meterType.Type
-                        <br />
+    </thead>
+    <tbody>
+        @foreach (var item in @Model)
+        {
+            <tr>
+                <td style="display: none;">
+                    @item.ID
+                </td>
+                <td>
+                    @item.Code
+                </td>
+                <td>
+                    @item.Details
+                </td>
+                <td>
+                    <input type="checkbox" checked=@item.Defect disabled/>
+                </td>
+                <td>
+                    @item.DistributionMode.Mode
+                </td>
+                <td>
+                    @item.Client.Name
+                </td>
+                <td>
+                    @{
+                        foreach (var meterType in item.MeterTypes)
+                        {
+                            @meterType.Type
+                            <br/>
+                        }
                     }
-                }
-            </td>
-            <td>
-                @{
-                    foreach (var sct in item.Sections)
-                    {
-                        @sct.Number
-                        <br />
+                </td>
+                <td>
+                    @{
+                        foreach (var sct in item.Sections)
+                        {
+                            @sct.Number
+                            <br/>
+                        }
                     }
-                }
-                @{
-                    foreach (var lvl in item.Levels)
-                    {
-                        @lvl.Number
-                        <br />
+                    @{
+                        foreach (var lvl in item.Levels)
+                        {
+                            @lvl.Number
+                            <br/>
+                        }
                     }
-                }
-                @{
-                    foreach (var spc in item.Spaces)
-                    {
-                        @spc.Number
-                        <br />
+                    @{
+                        foreach (var spc in item.Spaces)
+                        {
+                            @spc.Number
+                            <br/>
+                        }
                     }
-                }
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = item.ID })
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-            </td>
-        </tr>
-                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new {id = item.ID})
+                    @Html.ActionLink("Edit", "Edit", new {id = item.ID})
+                    @Html.ActionLink("Delete", "Delete", new {id = item.ID})
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
-<br />
-@Html.PagedListPager((IPagedList)ViewBag.OnePageOfMeters, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
-<script src="~/Scripts/jquery-3.3.1.js"></script>
+<link href="~/Content/css/jquery.dataTables.min.css" rel="stylesheet"/>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#Meters').DataTable();
+    });
+</script>

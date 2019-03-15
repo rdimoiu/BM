@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace BuildingManagement.DAL
 {
@@ -14,5 +16,19 @@ namespace BuildingManagement.DAL
         void AddRange(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
+
+        //-----------------------------------------------------------------------
+
+        IEnumerable<TEntity> GetAllNew(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = null,
+            int? skip = null,
+            int? take = null);
+
+        Task<IEnumerable<TEntity>> GetAllNewAsync(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = null,
+            int? skip = null,
+            int? take = null);
     }
 }

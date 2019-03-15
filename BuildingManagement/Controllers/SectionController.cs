@@ -94,7 +94,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SectionRepository.Add(section);
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Section {0} has been created.", section.Number);
+                    TempData["message"] = $"Section {section.Number} has been created.";
                     return Json(section.ID);
                 }
                 catch (DataException)
@@ -139,7 +139,7 @@ namespace BuildingManagement.Controllers
                         return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");
                     }
                     _unitOfWork.Save();
-                    TempData["message"] = string.Format("Section {0} has been edited.", sectionToUpdate.Number);
+                    TempData["message"] = $"Section {sectionToUpdate.Number} has been edited.";
                     return Json(sectionToUpdate.ID);
                 }
                 catch (DataException)
@@ -180,7 +180,7 @@ namespace BuildingManagement.Controllers
                 }
                 _unitOfWork.SectionRepository.Remove(section);
                 _unitOfWork.Save();
-                TempData["message"] = string.Format("Section {0} has been deleted.", section.Number);
+                TempData["message"] = $"Section {section.Number} has been deleted.";
             }
             catch (DataException)
             {
