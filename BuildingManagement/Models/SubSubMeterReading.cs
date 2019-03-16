@@ -5,11 +5,6 @@ namespace BuildingManagement.Models
 {
     public class SubSubMeterReading
     {
-        public SubSubMeterReading()
-        {
-            Date = DateTime.Today;
-        }
-
         public int ID { get; set; }
 
         [Required]
@@ -21,12 +16,22 @@ namespace BuildingManagement.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? DiscountMonth { get; set; }
+
         [Range(1, int.MaxValue)]
         public int SubSubMeterID { get; set; }
-        public virtual SubMeter SubSubMeter { get; set; }
+        public virtual SubSubMeter SubSubMeter { get; set; }
 
         [Range(1, int.MaxValue)]
         public int MeterTypeID { get; set; }
         public virtual MeterType MeterType { get; set; }
+
+        public SubSubMeterReading()
+        {
+            Date = DateTime.Today;
+            DiscountMonth = new DateTime();
+        }
     }
 }

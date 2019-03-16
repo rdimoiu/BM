@@ -76,6 +76,7 @@ namespace BuildingManagement.Controllers
             {
                 meterReading.Meter = meter;
                 PopulateMetersDropDownList(meter.ID);
+                PopulateMeterTypesDropDownList(meter.ID, null);
             }
             return View(meterReading);
         }
@@ -224,7 +225,7 @@ namespace BuildingManagement.Controllers
             ViewBag.MeterID = new SelectList(metersQuery, "ID", "Code", selectedMeter);
         }
 
-        private void PopulateMeterTypesDropDownList(int meterId, int meterTypeId)
+        private void PopulateMeterTypesDropDownList(int meterId, int? meterTypeId)
         {
             ViewBag.MeterTypeID = GetMeterTypesByMeter(meterId, meterTypeId);
         }

@@ -44,6 +44,7 @@ namespace BuildingManagement.Controllers
             ViewBag.CurrentSort = sortOrder;
             ViewBag.IndexSortParm = string.IsNullOrEmpty(sortOrder) ? "index_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.DiscountMonthSortParm = sortOrder == "DiscountMonth" ? "discountMonth_desc" : "DiscountMonth";
             ViewBag.SubMeterSortParm = sortOrder == "SubMeter" ? "subMeter_desc" : "SubMeter";
             ViewBag.MeterTypeSortParm = sortOrder == "MeterType" ? "meterType_desc" : "MeterType";
             subMeterReadings = _unitOfWork.SubMeterReadingRepository.OrderSubMeterReadings(subMeterReadings, sortOrder).ToList();
@@ -63,10 +64,20 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: SubMeterReading/Create
-        public ActionResult Create()
+        public ActionResult Create(string subMeterCode)
         {
             var subMeterReading = new SubMeterReading();
-            PopulateSubMetersDropDownList();
+            var subMeter = _unitOfWork.SubMeterRepository.FirstOrDefault(sm => sm.Code == subMeterCode);
+            if (subMeter == null)
+            {
+                PopulateSubMetersDropDownList();
+            }
+            else
+            {
+                subMeterReading.SubMeter = subMeter;
+                PopulateSubMetersDropDownList(subMeter.ID);
+                PopulateMeterTypesDropDownList(subMeter.ID, null);
+            }
             return View(subMeterReading);
         }
 
@@ -128,7 +139,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(subMeterReadingToUpdate, "", new[] { "Index", "Date", "SubMeterID", "MeterTypeID" }))
+            if (TryUpdateModel(subMeterReadingToUpdate, "", new[] { "Index", "Date", "SubMeterID", "MeterTypeID", "DiscountMonth" }))
             {
                 try
                 {
@@ -214,7 +225,7 @@ namespace BuildingManagement.Controllers
             ViewBag.SubMeterID = new SelectList(subMeters, "ID", "Code", selectedSubMeter);
         }
 
-        private void PopulateMeterTypesDropDownList(int subMeterId, int meterTypeId)
+        private void PopulateMeterTypesDropDownList(int subMeterId, int? meterTypeId)
         {
             ViewBag.MeterTypeID = GetMeterTypesBySubMeter(subMeterId, meterTypeId);
         }

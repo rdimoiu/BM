@@ -19,10 +19,11 @@
             MeterSLSSelected: $("#spacesTree").jstree("get_selected")
         };
         var url = "/SubMeter/Create";
-        var indexUrl = "/SubMeter/Index";
+        var indexUrl = "/SubMeterReading/Create?subMeterCode=" + Code.value;
         if (operation === "Edit") {
             data["ID"] = document.getElementById("ID").value;
             url = "../Edit";
+            indexUrl = "/SubMeter/Index";
         }
         Submit(operation, url, indexUrl, data);
         return true;

@@ -154,7 +154,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SubSubMeterRepository.Add(subSubMeter);
                     _unitOfWork.Save();
-                    TempData["message"] = $"SubSubMeter {subSubMeter.Code} has been created.";
+                    TempData["message"] = $"SubSubMeter {subSubMeter.Code} has been created. Add initial index.";
                     return Json(subSubMeter.ID);
                 }
                 catch (DataException)

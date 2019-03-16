@@ -73,3 +73,13 @@
 <script src="~/Scripts/ValidateMeterReading.js"></script>
 <script src="~/Scripts/ValidateFields.js"></script>
 <script src="~/Scripts/SubmitPage.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var minDate = (new Date('0001-01-01')).toUTCString();
+        var discountMonth = new Date(document.getElementById("DiscountMonth").value).toUTCString();
+        if (discountMonth === minDate) {
+            document.getElementById("DiscountMonth").value = "";
+        }
+    });
+</script>

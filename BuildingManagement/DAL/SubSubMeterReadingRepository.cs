@@ -37,6 +37,7 @@ namespace BuildingManagement.DAL
                 .Where(ssmr =>
                     ssmr.Index.ToString().ToLower().Contains(searchString) ||
                     ssmr.Date.ToString().ToLower().Contains(searchString) ||
+                    ssmr.DiscountMonth.ToString().ToLower().Contains(searchString) ||
                     ssmr.SubSubMeter.Code.ToLower().Contains(searchString) ||
                     ssmr.MeterType.Type.ToLower().Contains(searchString));
         }
@@ -53,6 +54,12 @@ namespace BuildingManagement.DAL
                     break;
                 case "date_desc":
                     subSubMeterReadings = subSubMeterReadings.OrderByDescending(ssmr => ssmr.Date);
+                    break;
+                case "DiscountMonth":
+                    subSubMeterReadings = subSubMeterReadings.OrderBy(ssmr => ssmr.DiscountMonth);
+                    break;
+                case "discountMonth_desc":
+                    subSubMeterReadings = subSubMeterReadings.OrderByDescending(ssmr => ssmr.DiscountMonth);
                     break;
                 case "Meter":
                     subSubMeterReadings = subSubMeterReadings.OrderBy(ssmr => ssmr.SubSubMeter.Code);
