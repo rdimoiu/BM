@@ -155,7 +155,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.MeterRepository.Add(meter);
                     _unitOfWork.Save();
-                    TempData["message"] = $"Meter {meter.Code} has been created.";
+                    TempData["message"] = $"Meter {meter.Code} has been created. Add initial index.";
                     return Json(meter.ID);
                 }
                 catch (DataException)

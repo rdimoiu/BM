@@ -19,10 +19,11 @@
             MeterSLSSelected: $("#spacesTree").jstree("get_selected")
         };
         var url = "/Meter/Create";
-        var indexUrl = "/Meter/Index";
+        var indexUrl = "/MeterReading/Create?meterCode=" + Code.value;
         if (operation === "Edit") {
             data["ID"] = document.getElementById("ID").value;
             url = "../Edit";
+            indexUrl = "/Meter/Index";
         }
         Submit(operation, url, indexUrl, data);
         return true;

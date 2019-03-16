@@ -30,7 +30,10 @@
             @Html.ActionLink("Meter", "Index", new { sortOrder = ViewBag.MeterSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("MeterType", "Index", new { sortOrder = ViewBag.MeterTypeSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink("MeterType", "Index", new {sortOrder = ViewBag.MeterTypeSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("DiscountMonth", "Index", new { sortOrder = ViewBag.DiscountMonthSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -50,6 +53,9 @@
             </td>
             <td>
                 @item.MeterType.Type
+            </td>
+            <td>
+                @item.DiscountMonth.ToString("dd/MM/yyyy")
             </td>
             <td>
                 @Html.ActionLink("Details", "Details", new { id = item.ID })

@@ -36,6 +36,7 @@ namespace BuildingManagement.DAL
                 .Where(mr =>
                     mr.Index.ToString().ToLower().Contains(searchString) ||
                     mr.Date.ToString().ToLower().Contains(searchString) ||
+                    mr.DiscountMonth.ToString().ToLower().Contains(searchString) ||
                     mr.Meter.Code.ToLower().Contains(searchString) ||
                     mr.MeterType.Type.ToLower().Contains(searchString));
         }
@@ -52,6 +53,12 @@ namespace BuildingManagement.DAL
                     break;
                 case "date_desc":
                     meterReadings = meterReadings.OrderByDescending(mr => mr.Date);
+                    break;
+                case "DiscountMonth":
+                    meterReadings = meterReadings.OrderBy(mr => mr.DiscountMonth);
+                    break;
+                case "discountMonth_desc":
+                    meterReadings = meterReadings.OrderByDescending(mr => mr.DiscountMonth);
                     break;
                 case "Meter":
                     meterReadings = meterReadings.OrderBy(mr => mr.Meter.Code);

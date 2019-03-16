@@ -44,6 +44,7 @@ namespace BuildingManagement.Controllers
             ViewBag.CurrentSort = sortOrder;
             ViewBag.IndexSortParm = string.IsNullOrEmpty(sortOrder) ? "index_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.DiscountMonthSortParm = sortOrder == "DiscountMonth" ? "discountMonth_desc" : "DiscountMonth";
             ViewBag.MeterSortParm = sortOrder == "Meter" ? "meter_desc" : "Meter";
             ViewBag.MeterTypeSortParm = sortOrder == "MeterType" ? "meterType_desc" : "MeterType";
             meterReadings = _unitOfWork.MeterReadingRepository.OrderMeterReadings(meterReadings, sortOrder).ToList();
@@ -63,10 +64,19 @@ namespace BuildingManagement.Controllers
         }
 
         // GET: MeterReading/Create
-        public ActionResult Create()
+        public ActionResult Create(string meterCode)
         {
             var meterReading = new MeterReading();
-            PopulateMetersDropDownList();
+            var meter = _unitOfWork.MeterRepository.FirstOrDefault(m => m.Code == meterCode);
+            if (meter == null)
+            {
+                PopulateMetersDropDownList();
+            }
+            else
+            {
+                meterReading.Meter = meter;
+                PopulateMetersDropDownList(meter.ID);
+            }
             return View(meterReading);
         }
 
@@ -128,7 +138,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(meterReadingToUpdate, "", new[] { "Index", "Date", "MeterID", "MeterTypeID" }))
+            if (TryUpdateModel(meterReadingToUpdate, "", new[] { "Index", "Date", "MeterID", "MeterTypeID", "DiscountMonth" }))
             {
                 try
                 {

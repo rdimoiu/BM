@@ -8,6 +8,7 @@ namespace BuildingManagement.Models
         public MeterReading()
         {
             Date = DateTime.Today;
+            DiscountMonth = DateTime.Today;
         }
 
         public int ID { get; set; }
@@ -20,6 +21,10 @@ namespace BuildingManagement.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime DiscountMonth { get; set; }
 
         [Range(1, int.MaxValue)]
         public int MeterID { get; set; }

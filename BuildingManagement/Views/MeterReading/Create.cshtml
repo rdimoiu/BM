@@ -38,10 +38,18 @@
     </div>
 
     <div class="form-group">
-        @Html.Label("Meter Type", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.Label("Meter Type", htmlAttributes: new {@class = "control-label col-md-2"})
         <div class="col-md-10">
-            @Html.DropDownList("MeterTypeID", ViewBag.MeterTypeID != null ? (IEnumerable<SelectListItem>)ViewBag.MeterTypeID : new List<SelectListItem>(), "Select...", htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.MeterTypeID, "", new { @class = "text-danger" })
+            @Html.DropDownList("MeterTypeID", ViewBag.MeterTypeID != null ? (IEnumerable<SelectListItem>) ViewBag.MeterTypeID : new List<SelectListItem>(), "Select...", htmlAttributes: new {@class = "form-control"})
+            @Html.ValidationMessageFor(model => model.MeterTypeID, "", new {@class = "text-danger"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DiscountMonth, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+            @Html.ValidationMessageFor(model => model.DiscountMonth, "", new { @class = "text-danger" })
         </div>
     </div>
 

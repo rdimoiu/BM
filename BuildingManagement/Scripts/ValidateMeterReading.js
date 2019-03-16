@@ -11,6 +11,7 @@
         var data = {
             Index: document.getElementById("Index").value,
             Date: document.getElementById("Date").value,
+            DiscountMonth: document.getElementById("DiscountMonth").value,
             MeterID: document.getElementById("MeterID").value,
             MeterTypeID: document.getElementById("MeterTypeID").value
         };
