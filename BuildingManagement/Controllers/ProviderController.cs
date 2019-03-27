@@ -126,8 +126,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateProvider = _unitOfWork.ProviderRepository.FirstOrDefault(p => p.FiscalCode == providerToUpdate.FiscalCode);
-                    if (duplicateProvider != null && duplicateProvider.ID != providerToUpdate.ID)
+                    var duplicateProvider = _unitOfWork.ProviderRepository.FirstOrDefault(p => p.ID != providerToUpdate.ID && p.FiscalCode == providerToUpdate.FiscalCode);
+                    if (duplicateProvider != null)
                     {
                         return new HttpStatusCodeResult(409, "A provider with this fiscal code already exists.");
                     }

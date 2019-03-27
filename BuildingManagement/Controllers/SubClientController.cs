@@ -134,8 +134,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
-                    if (duplicateSubClient != null && duplicateSubClient.ID != subClientToUpdate.ID)
+                    var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.ID != subClientToUpdate.ID && sc.CNP == subClientToUpdate.CNP || sc.FiscalCode == subClientToUpdate.FiscalCode);
+                    if (duplicateSubClient != null)
                     {
                         PopulateClientsDropDownList(subClientToUpdate.ClientID);
                         return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");

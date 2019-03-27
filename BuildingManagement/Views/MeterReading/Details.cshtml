@@ -35,12 +35,32 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.Initial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Initial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Estimated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Estimated)
+        </dd>
+
+        <dt>
             Meter Code
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.Meter.Code)
         </dd>
+
+        <dt>
+            Meter Type
+        </dt>
 
         <dd>
             @Html.DisplayFor(model => model.MeterType.Type)

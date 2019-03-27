@@ -227,8 +227,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateService = _unitOfWork.ServiceRepository.FirstOrDefault(s => s.Name == service.Name && s.InvoiceID == service.InvoiceID);
-                    if (duplicateService != null && duplicateService.ID != service.ID)
+                    var duplicateService = _unitOfWork.ServiceRepository.FirstOrDefault(s => s.ID != service.ID && s.Name == service.Name && s.InvoiceID == service.InvoiceID);
+                    if (duplicateService != null)
                     {
                         PopulateInvoicesDropDownList(service.InvoiceID);
                         PopulateDistributionModesDropDownList(service.DistributionModeID);

@@ -12,6 +12,8 @@
             Index: document.getElementById("Index").value,
             Date: document.getElementById("Date").value,
             DiscountMonth: document.getElementById("DiscountMonth").value,
+            Initial: document.getElementById("Initial").checked,
+            Estimated: document.getElementById("Estimated").checked,
             SubMeterID: document.getElementById("SubMeterID").value,
             MeterTypeID: document.getElementById("MeterTypeID").value
         };

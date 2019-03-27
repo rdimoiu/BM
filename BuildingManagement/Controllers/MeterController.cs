@@ -195,8 +195,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeter = _unitOfWork.MeterRepository.FirstOrDefault(m => m.Code == meterToUpdate.Code);
-                    if (duplicateMeter != null && duplicateMeter.ID != meterToUpdate.ID)
+                    var duplicateMeter = _unitOfWork.MeterRepository.FirstOrDefault(m => m.ID != meterToUpdate.ID && m.Code == meterToUpdate.Code);
+                    if (duplicateMeter != null)
                     {
                         PopulateDistributionModesDropDownList(meter.DistributionModeID);
                         PopulateClientsDropDownList(meter.ClientID);

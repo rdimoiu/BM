@@ -28,6 +28,10 @@ namespace BuildingManagement.Models
         public int MeterTypeID { get; set; }
         public virtual MeterType MeterType { get; set; }
 
+        public bool Initial { get; set; }
+        
+        public bool Estimated { get; set; }
+
         public MeterReading()
         {
             Date = DateTime.Today;

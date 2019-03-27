@@ -33,7 +33,13 @@
             @Html.ActionLink("MeterType", "Index", new {sortOrder = ViewBag.MeterTypeSortParm, currentFilter = ViewBag.CurrentFilter})
         </th>
         <th>
-            @Html.ActionLink("DiscountMonth", "Index", new { sortOrder = ViewBag.DiscountMonthSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink("DiscountMonth", "Index", new {sortOrder = ViewBag.DiscountMonthSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("Initial", "Index", new {sortOrder = ViewBag.InitialSortParm, currentFilter = ViewBag.CurrentFilter})
+        </th>
+        <th>
+            @Html.ActionLink("Estimated", "Index", new { sortOrder = ViewBag.EstimatedSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -60,8 +66,14 @@
             }
             else
             {
-                <td>@item.DiscountMonth.ToString("dd/MM/yyyy")</td>
+                <td>@item.DiscountMonth.ToString("MM/yyyy")</td>
             }
+            <td>
+                <input type="checkbox" checked=@item.Initial disabled/>
+            </td>
+            <td>
+                <input type="checkbox" checked=@item.Estimated disabled />
+            </td>
             <td>
                 @Html.ActionLink("Details", "Details", new { id = item.ID })
                 @Html.ActionLink("Edit", "Edit", new { id = item.ID })

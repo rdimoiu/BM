@@ -179,8 +179,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSpace = _unitOfWork.SpaceRepository.FirstOrDefault(s => s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
-                    if (duplicateSpace != null && duplicateSpace.ID != spaceToUpdate.ID)
+                    var duplicateSpace = _unitOfWork.SpaceRepository.FirstOrDefault(s => s.ID != spaceToUpdate.ID && s.Number == spaceToUpdate.Number && s.LevelID == spaceToUpdate.LevelID && s.SpaceTypeID == spaceToUpdate.SpaceTypeID);
+                    if (duplicateSpace != null)
                     {
                         PopulateClientsDropDownList(spaceToUpdate.ClientID);
                         PopulateSectionsDropDownList(spaceToUpdate.SectionID);

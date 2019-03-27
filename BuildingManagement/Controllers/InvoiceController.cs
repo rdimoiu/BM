@@ -166,8 +166,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateInvoice = _unitOfWork.InvoiceRepository.FirstOrDefault(i => i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
-                    if (duplicateInvoice != null && duplicateInvoice.ID != invoiceToUpdate.ID)
+                    var duplicateInvoice = _unitOfWork.InvoiceRepository.FirstOrDefault(i => i.ID != invoiceToUpdate.ID && i.Number == invoiceToUpdate.Number && i.Date == invoiceToUpdate.Date && i.ProviderID == invoiceToUpdate.ProviderID);
+                    if (duplicateInvoice != null)
                     {
                         PopulateInvoiceTypesDropDownList(invoiceToUpdate.InvoiceTypeID);
                         PopulateClientsDropDownList(invoiceToUpdate.ClientID);

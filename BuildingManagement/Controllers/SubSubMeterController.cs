@@ -194,8 +194,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSubSubMeter = _unitOfWork.SubSubMeterRepository.FirstOrDefault(ssm => ssm.Code == subSubMeterToUpdate.Code);
-                    if (duplicateSubSubMeter != null && duplicateSubSubMeter.ID != subSubMeterToUpdate.ID)
+                    var duplicateSubSubMeter = _unitOfWork.SubSubMeterRepository.FirstOrDefault(ssm => ssm.ID != subSubMeterToUpdate.ID && ssm.Code == subSubMeterToUpdate.Code);
+                    if (duplicateSubSubMeter != null)
                     {
                         PopulateSubMetersDropDownList(subSubMeterToUpdate.SubMeterID);
                         PopulateDistributionModesDropDownList(subSubMeterToUpdate.DistributionModeID);

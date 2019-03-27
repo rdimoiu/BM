@@ -132,8 +132,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateSection = _unitOfWork.SectionRepository.FirstOrDefault(s => s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
-                    if (duplicateSection != null && duplicateSection.ID != sectionToUpdate.ID)
+                    var duplicateSection = _unitOfWork.SectionRepository.FirstOrDefault(s => s.ID != sectionToUpdate.ID && s.Number == sectionToUpdate.Number && s.ClientID == sectionToUpdate.ClientID);
+                    if (duplicateSection != null)
                     {
                         PopulateClientsDropDownList(sectionToUpdate.ClientID);
                         return new HttpStatusCodeResult(409, "A section with this number already exists for this client.");

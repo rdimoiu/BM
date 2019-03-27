@@ -118,8 +118,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.FirstOrDefault(dm => dm.Mode == distributionModeToUpdate.Mode);
-                    if (duplicateDistributionMode != null && duplicateDistributionMode.ID != distributionModeToUpdate.ID)
+                    var duplicateDistributionMode = _unitOfWork.DistributionModeRepository.FirstOrDefault(dm => dm.ID != distributionModeToUpdate.ID && dm.Mode == distributionModeToUpdate.Mode);
+                    if (duplicateDistributionMode != null)
                     {
                         return new HttpStatusCodeResult(409, "A distribution mode with this mode already exists.");
                     }

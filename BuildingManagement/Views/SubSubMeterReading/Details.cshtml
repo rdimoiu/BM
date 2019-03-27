@@ -34,6 +34,22 @@
             @Html.DisplayFor(model => model.DiscountMonth)
         </dd>
 
+		<dt>
+            @Html.DisplayNameFor(model => model.Initial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Initial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Estimated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Estimated)
+        </dd>
+		
         <dt>
             SubSubMeter Code
         </dt>
@@ -41,6 +57,10 @@
         <dd>
             @Html.DisplayFor(model => model.SubSubMeter.Code)
         </dd>
+
+        <dt>
+            Meter Type
+        </dt>
 
         <dd>
             @Html.DisplayFor(model => model.MeterType.Type)

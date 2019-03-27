@@ -118,8 +118,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.FirstOrDefault(mt => mt.Type == meterTypeToUpdate.Type);
-                    if (duplicateMeterType != null && duplicateMeterType.ID != meterTypeToUpdate.ID)
+                    var duplicateMeterType = _unitOfWork.MeterTypeRepository.FirstOrDefault(mt => mt.ID != meterTypeToUpdate.ID && mt.Type == meterTypeToUpdate.Type);
+                    if (duplicateMeterType != null)
                     {
                         return new HttpStatusCodeResult(409, "A meter type with this type already exists.");
                     }

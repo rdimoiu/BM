@@ -123,8 +123,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateClient = _unitOfWork.ClientRepository.FirstOrDefault(c => c.Name == clientToUpdate.Name);
-                    if (duplicateClient != null && duplicateClient.ID != clientToUpdate.ID)
+                    var duplicateClient = _unitOfWork.ClientRepository.FirstOrDefault(c => c.ID != clientToUpdate.ID && c.Name == clientToUpdate.Name);
+                    if (duplicateClient != null)
                     {
                         return new HttpStatusCodeResult(409, "A client with this name already exists.");
                     }

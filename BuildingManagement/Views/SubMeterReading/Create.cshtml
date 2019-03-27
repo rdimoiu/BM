@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-group">
-        @Html.Label("Meter Type", htmlAttributes: new {@class = "control-label col-md-2"})
+        @Html.LabelFor(model => model.MeterType, htmlAttributes: new {@class = "control-label col-md-2"})
         <div class="col-md-10">
             @Html.DropDownList("MeterTypeID", ViewBag.MeterTypeID != null ? (IEnumerable<SelectListItem>) ViewBag.MeterTypeID : new List<SelectListItem>(), "Select...", htmlAttributes: new {@class = "form-control"})
             @Html.ValidationMessageFor(model => model.MeterTypeID, "", new {@class = "text-danger"})
@@ -46,10 +46,30 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.DiscountMonth, htmlAttributes: new { @id = "DiscountMonthLabel", @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.DiscountMonth, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+            @Html.EditorFor(model => model.DiscountMonth, new { htmlAttributes = new { @id = "DiscountMonth", @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.DiscountMonth, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Initial, htmlAttributes: new {@class = "control-label col-md-2"})
+        <div class="col-md-10">
+            <div class="checkbox" onclick="OnChangeEvent()">
+                @Html.EditorFor(model => model.Initial)
+                @Html.ValidationMessageFor(model => model.Initial, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Estimated, htmlAttributes: new {@id = "EstimatedLabel", @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Estimated, new { htmlAttributes = new { @id = "Estimated" } })
+                @Html.ValidationMessageFor(model => model.Estimated, "", new { @class = "text-danger" })
+            </div>
         </div>
     </div>
 
@@ -82,4 +102,26 @@
             document.getElementById("DiscountMonth").value = "";
         }
     });
+
+    function OnChangeEvent() {
+        var initial = document.getElementById("Initial");
+        var estimated = document.getElementById("Estimated");
+        var estimatedLabel = document.getElementById("EstimatedLabel");
+        var discountMonth = document.getElementById("DiscountMonth");
+        var discountMonthLabel = document.getElementById("DiscountMonthLabel");
+        if (initial.checked) {
+            estimated.style.display = "none";
+            estimatedLabel.style.display = "none";
+            estimated.checked = false;
+            discountMonthLabel.style.display = "none";
+            discountMonth.style.display = "none";
+            discountMonth.value = (new Date('0001-01-01')).toUTCString();
+
+        } else {
+            estimated.style.display = "initial";
+            estimatedLabel.style.display = "initial";
+            discountMonthLabel.style.display = "initial";
+            discountMonth.style.display = "initial";
+        }
+    };
 </script>

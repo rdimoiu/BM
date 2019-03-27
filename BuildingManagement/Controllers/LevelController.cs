@@ -143,8 +143,8 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    var duplicateLevel = _unitOfWork.LevelRepository.FirstOrDefault(l => l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
-                    if (duplicateLevel != null && duplicateLevel.ID != levelToUpdate.ID)
+                    var duplicateLevel = _unitOfWork.LevelRepository.FirstOrDefault(l => l.ID != levelToUpdate.ID && l.Number == levelToUpdate.Number && l.SectionID == levelToUpdate.SectionID);
+                    if (duplicateLevel != null)
                     {
                         PopulateSectionsDropDownList(levelToUpdate.SectionID);
                         PopulateClientsDropDownList(levelToUpdate.ClientID);
