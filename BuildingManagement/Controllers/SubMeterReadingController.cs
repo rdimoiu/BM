@@ -78,50 +78,50 @@ namespace BuildingManagement.Controllers
             if (ModelState.IsValid)
             {
                 //uniqueness condition check
-                if (subMeterReading.Initial)
+                var initialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && smr.Initial);
+                if (initialSubMeterReading != null)
                 {
-                    var duplicateInitialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && (smr.Initial || smr.Date <= subMeterReading.Date || smr.Index <= subMeterReading.Index));
-                    if (duplicateInitialSubMeterReading != null)
+                    if (subMeterReading.Initial)
                     {
                         PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
                         return new HttpStatusCodeResult(409, "An initial submeter reading already exists.");
                     }
-                }
-                else
-                {
-                    var initialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
-                    if (initialSubMeterReading == null)
+                    if (initialSubMeterReading.Date >= subMeterReading.Date || initialSubMeterReading.Index >= subMeterReading.Index)
                     {
                         PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "Add initial submeter reading first.");
+                        return new HttpStatusCodeResult(409, "An initial submeter reading on the same or later date or with the same or greater index already exists.");
                     }
-                    if (initialSubMeterReading.Date >= subMeterReading.Date)
+                    var soonerDateSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.Date <= subMeterReading.Date && smr.Index >= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
+                    if (soonerDateSubMeterReading != null)
                     {
                         PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "An initial submeter reading on the same or later date already exist.");
+                        return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date and with the same or higher index already exists.");
                     }
-                    if (initialSubMeterReading.Index >= subMeterReading.Index)
-                    {
-                        PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                        PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "An initial submeter reading with the same or higher index already exist.");
-                    }
-                    var lowerIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.Date <= subMeterReading.Date && smr.Index >= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
+                    var lowerIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.Date >= subMeterReading.Date && smr.Index <= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
                     if (lowerIndexSubMeterReading != null)
                     {
                         PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date and the same or higher index already exists.");
+                        return new HttpStatusCodeResult(409, "A submeter reading on the same or later date and with the same or lower index already exists.");
                     }
-                    var higherIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.Date >= subMeterReading.Date && smr.Index <= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
-                    if (higherIndexSubMeterReading != null)
+                }
+                else
+                {
+                    if (!subMeterReading.Initial)
                     {
                         PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                         PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, "A submeter reading with the same or later date and the same or lower index already exists.");
+                        return new HttpStatusCodeResult(409, "Add an initial submeter reading first.");
+                    }
+                    var soonerDateOrLowerIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && (smr.Date <= subMeterReading.Date || smr.Index <= subMeterReading.Index));
+                    if (soonerDateOrLowerIndexSubMeterReading != null)
+                    {
+                        PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
+                        PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
+                        return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date or with the same or lower index already exists.");
                     }
                 }
                 try
@@ -166,64 +166,50 @@ namespace BuildingManagement.Controllers
                 try
                 {
                     //uniqueness condition check
-                    if (subMeterReading.Initial)
+                    var initialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && smr.Initial);
+                    if (initialSubMeterReading != null)
                     {
-                        var duplicateInitialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && (smr.Initial || smr.Date <= subMeterReading.Date || smr.Index <= subMeterReading.Index));
-                        if (duplicateInitialSubMeterReading != null)
+                        if (subMeterReading.Initial)
                         {
                             PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                             PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
                             return new HttpStatusCodeResult(409, "An initial submeter reading already exists.");
                         }
-                    }
-                    else
-                    {
-                        var initialSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
-                        if (initialSubMeterReading == null)
+                        if (initialSubMeterReading.Date >= subMeterReading.Date || initialSubMeterReading.Index >= subMeterReading.Index)
                         {
                             PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                             PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "Add initial submeter reading first.");
-                        }
-                        if (initialSubMeterReading.Date >= subMeterReading.Date)
-                        {
-                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "An initial submeter reading on the same or later date already exist.");
-                        }
-                        if (initialSubMeterReading.Index >= subMeterReading.Index)
-                        {
-                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "An initial submeter reading with the same or higher index already exist.");
-                        }
-                        var sameDateSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.Date == subMeterReading.Date && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
-                        if (sameDateSubMeterReading != null)
-                        {
-                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "A submeter reading on the same date already exists.");
-                        }
-                        var sameIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.Index == subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
-                        if (sameIndexSubMeterReading != null)
-                        {
-                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
-                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "A submeter reading with the same index already exists.");
+                            return new HttpStatusCodeResult(409, "An initial submeter reading on the same or later date or with the same or greater index already exists.");
                         }
                         var soonerDateSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.Date <= subMeterReading.Date && smr.Index >= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
                         if (soonerDateSubMeterReading != null)
                         {
                             PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                             PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date and the same or higher index already exists.");
+                            return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date and with the same or higher index already exists.");
                         }
                         var lowerIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.Date >= subMeterReading.Date && smr.Index <= subMeterReading.Index && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID);
                         if (lowerIndexSubMeterReading != null)
                         {
                             PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
                             PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, "A submeter reading with the same or later date and the same or lower index already exists.");
+                            return new HttpStatusCodeResult(409, "A submeter reading on the same or later date and with the same or lower index already exists.");
+                        }
+                    }
+                    else
+                    {
+                        if (!subMeterReading.Initial)
+                        {
+                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
+                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
+                            return new HttpStatusCodeResult(409, "Add an initial submeter reading first.");
+                        }
+                        var soonerDateOrLowerIndexSubMeterReading = _unitOfWork.SubMeterReadingRepository.FirstOrDefault(smr => smr.ID != subMeterReading.ID && smr.SubMeterID == subMeterReading.SubMeterID && smr.MeterTypeID == subMeterReading.MeterTypeID && (smr.Date <= subMeterReading.Date || smr.Index <= subMeterReading.Index));
+                        if (soonerDateOrLowerIndexSubMeterReading != null)
+                        {
+                            PopulateSubMetersDropDownList(subMeterReading.SubMeterID);
+                            PopulateMeterTypesDropDownList(subMeterReading.SubMeterID, subMeterReading.MeterTypeID);
+                            return new HttpStatusCodeResult(409, "A submeter reading on the same or sooner date or with the same or lower index already exists.");
                         }
                     }
                     _unitOfWork.Save();
