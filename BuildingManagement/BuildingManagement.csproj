@@ -500,6 +500,7 @@
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="Scripts\MonthPicker.js" />
+    <Content Include="Scripts\ReadingUitls.js" />
     <Content Include="Scripts\SubMeterReadingUtils.js" />
     <Content Include="Scripts\SubSubMeterReadingUtils.js" />
     <Content Include="Scripts\ValidateClient.js" />
