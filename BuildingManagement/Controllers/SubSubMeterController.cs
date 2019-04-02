@@ -100,9 +100,10 @@ namespace BuildingManagement.Controllers
                 {
                     subSubMeter.DistributionMode = distributionMode;
                 }
-                subSubMeter.MeterTypes = new List<MeterType>();
+                var types = string.Empty;
                 if (subSubMeter.MeterTypesSelected != null)
                 {
+                    subSubMeter.MeterTypes = new List<MeterType>();
                     foreach (var subMeterTypeSelected in subSubMeter.MeterTypesSelected)
                     {
                         if (subMeterTypeSelected != "root")
@@ -111,9 +112,11 @@ namespace BuildingManagement.Controllers
                             if (meterType != null)
                             {
                                 subSubMeter.MeterTypes.Add(meterType);
+                                types += meterType.Type + ", ";
                             }
                         }
                     }
+                    types = types.Remove(types.Length - 2, 2);
                 }
                 if (subSubMeter.MeterSLSSelected != null)
                 {
@@ -154,7 +157,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.SubSubMeterRepository.Add(subSubMeter);
                     _unitOfWork.Save();
-                    TempData["message"] = $"SubSubMeter {subSubMeter.Code} has been created. Add initial index.";
+                    TempData["message"] = $"SubSubMeter {subSubMeter.Code} has been created. Add initial index for {types}.";
                     return Json(subSubMeter.ID);
                 }
                 catch (DataException)

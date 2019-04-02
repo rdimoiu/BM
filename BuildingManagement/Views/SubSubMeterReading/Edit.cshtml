@@ -57,7 +57,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Initial, htmlAttributes: new {@class = "control-label col-md-2"})
         <div class="col-md-10">
-            <div class="checkbox" onclick="OnChangeEvent()">
+            <div class="checkbox" onclick="InitialOnChangeEvent()">
                 @Html.EditorFor(model => model.Initial)
                 @Html.ValidationMessageFor(model => model.Initial, "", new {@class = "text-danger"})
             </div>
@@ -98,6 +98,6 @@
 <script>
     $(document).ready(function() {
         GetMeterTypes(@Model.SubSubMeterID, @Model.MeterTypeID);
-        OnChangeEvent();
+        InitialOnChangeEvent();
     });
 </script>

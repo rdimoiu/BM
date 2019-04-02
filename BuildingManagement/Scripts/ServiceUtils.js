@@ -20,3 +20,16 @@
             }
         });
 }
+
+function CountedOnChangeEvent() {
+    var counted = document.getElementById("Counted");
+    var distributionModeGroup = document.getElementById("DistributionModeGroup");
+    var meterTypeGroup = document.getElementById("MeterTypeGroup");
+    if (counted.checked) {
+        distributionModeGroup.style.display = "none";
+        meterTypeGroup.style.display = "initial";
+    } else {
+        distributionModeGroup.style.display = "initial";
+        meterTypeGroup.style.display = "none";
+    }
+};

@@ -101,6 +101,7 @@ namespace BuildingManagement.Controllers
                 {
                     meter.Client = client;
                 }
+                var types = string.Empty;
                 if (meter.MeterTypesSelected != null)
                 {
                     meter.MeterTypes = new List<MeterType>();
@@ -112,9 +113,11 @@ namespace BuildingManagement.Controllers
                             if (meterType != null)
                             {
                                 meter.MeterTypes.Add(meterType);
+                                types += meterType.Type + ", ";
                             }
                         }
                     }
+                    types = types.Remove(types.Length - 2, 2);
                 }
                 if (meter.MeterSLSSelected != null)
                 {
@@ -155,7 +158,7 @@ namespace BuildingManagement.Controllers
                 {
                     _unitOfWork.MeterRepository.Add(meter);
                     _unitOfWork.Save();
-                    TempData["message"] = $"Meter {meter.Code} has been created. Add initial index.";
+                    TempData["message"] = $"Meter {meter.Code} has been created. Add initial index for {types}.";
                     return Json(meter.ID);
                 }
                 catch (DataException)

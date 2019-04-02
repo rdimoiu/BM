@@ -235,6 +235,30 @@ namespace BuildingManagement.Controllers
                         PopulateMeterTypesDropDownList(service.MeterTypeID);
                         return new HttpStatusCodeResult(409, "A service with this name, for this invoice, already exists.");
                     }
+                    if (service.Counted)
+                    {
+                        if (service.MeterTypeID != null)
+                        {
+                            var meterType = _unitOfWork.MeterTypeRepository.Get((int)service.MeterTypeID);
+                            if (meterType != null)
+                            {
+                                service.MeterType = meterType;
+                                service.DistributionMode = null;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (service.DistributionModeID != null)
+                        {
+                            var distributionMode = _unitOfWork.DistributionModeRepository.Get((int)service.DistributionModeID);
+                            if (distributionMode != null)
+                            {
+                                service.DistributionMode = distributionMode;
+                                service.MeterType = null;
+                            }
+                        }
+                    }
                     if (service.ServiceSLSSelected != null)
                     {
                         #region Update Sections, Levels and Spaces

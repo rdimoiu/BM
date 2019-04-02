@@ -1,4 +1,4 @@
-﻿function OnChangeEvent() {
+﻿function InitialOnChangeEvent() {
     var initial = document.getElementById("Initial");
     var estimated = document.getElementById("Estimated");
     var estimatedLabel = document.getElementById("EstimatedLabel");
