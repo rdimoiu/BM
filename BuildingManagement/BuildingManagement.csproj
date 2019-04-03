@@ -34,7 +34,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -249,6 +249,7 @@
     <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\InvoiceDistributionController.cs" />
     <Compile Include="Controllers\InvoiceTypeController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LevelController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MeterController.cs" />
@@ -305,6 +306,16 @@
     <Compile Include="Models\SubSubMeter.cs" />
     <Compile Include="Models\SubSubMeterReading.cs" />
     <Compile Include="Models\Tree1D.cs" />
+    <Compile Include="Resources\ClientTexts.ro.Designer.cs">
+      <DependentUpon>ClientTexts.ro.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Resources\ClientTexts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClientTexts.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils\TreeHelper.cs" />
     <Compile Include="Cryptography\SimpleAes.cs" />
     <Compile Include="DAL\ClientRepository.cs" />
@@ -676,6 +687,7 @@
     <Content Include="Views\SubSubMeterReading\Index.cshtml" />
     <Content Include="Views\CostsTable\Index.cshtml" />
     <Content Include="Views\Service\Distribute.cshtml" />
+    <Content Include="Views\Language\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -683,6 +695,16 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ClientTexts.ro.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ClientTexts.ro.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ClientTexts.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ClientTexts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

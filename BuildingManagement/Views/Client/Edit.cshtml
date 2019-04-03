@@ -1,21 +1,21 @@
 ﻿@model BuildingManagement.Models.Client
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = @BuildingManagement.Resources.ClientTexts.Edit;
 }
 
-<h2>Edit</h2>
+<h2>@BuildingManagement.Resources.ClientTexts.Edit</h2>
 
 @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
-    <h4>Client</h4>
+    <h4>@BuildingManagement.Resources.ClientTexts.Client</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.ID)
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Name</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
@@ -23,7 +23,7 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Phone</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
@@ -31,7 +31,7 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Address</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Contact, htmlAttributes: new { @class = "control-label col-md-2" })
+        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Contact</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Contact, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Contact, "", new { @class = "text-danger" })
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Email</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
@@ -56,13 +56,13 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" onclick="ValidateAll('Edit')" />
+            <input type="submit" value=@BuildingManagement.Resources.ClientTexts.Save class="btn btn-default" onclick="ValidateAll('Edit')" />
         </div>
     </div>
 </div>
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.BackToList, "Index")
 </div>
 
 @section Scripts {

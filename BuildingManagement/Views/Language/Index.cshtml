@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<ul>
+    <li>@Html.ActionLink("English", "Change", "Language", new {LanguageAbbreviation = "en"}, null)</li>
+    <li>@Html.ActionLink("Romana", "Change", "Language", new {LanguageAbbreviation = "ro"}, null)</li>
+</ul>
+<div>
+    @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.BackToList, "Index", "Home")
+</div>
