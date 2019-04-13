@@ -1,25 +1,25 @@
 ﻿@model BuildingManagement.Models.Client
 
 @{
-    ViewBag.Title = @BuildingManagement.Resources.ClientTexts.Delete;
+    ViewBag.Title = BuildingManagement.Resources.Texts.Delete;
 }
 
-<h2>@BuildingManagement.Resources.ClientTexts.Delete</h2>
+<h2>@BuildingManagement.Resources.Texts.Delete</h2>
 
-<h3>@BuildingManagement.Resources.ClientTexts.DeleteConfirmation</h3>
+<h3>@BuildingManagement.Resources.Texts.DeleteConfirmation</h3>
 <div>
     <h4>Client</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>@BuildingManagement.Resources.ClientTexts.Name</dt>
+        <dt>@BuildingManagement.Resources.Texts.Name</dt>
         <dd>@Html.DisplayFor(model => model.Name)</dd>
-        <dt>@BuildingManagement.Resources.ClientTexts.Phone</dt>
+        <dt>@BuildingManagement.Resources.Texts.Phone</dt>
         <dd>@Html.DisplayFor(model => model.Phone)</dd>
-        <dt>@BuildingManagement.Resources.ClientTexts.Address</dt>
+        <dt>@BuildingManagement.Resources.Texts.Address</dt>
         <dd>@Html.DisplayFor(model => model.Address)</dd>
-        <dt>@BuildingManagement.Resources.ClientTexts.Contact</dt>
+        <dt>@BuildingManagement.Resources.Texts.Contact</dt>
         <dd>@Html.DisplayFor(model => model.Contact)</dd>
-        <dt>@BuildingManagement.Resources.ClientTexts.Email</dt>
+        <dt>@BuildingManagement.Resources.Texts.Email</dt>
         <dd>@Html.DisplayFor(model => model.Email)</dd>
     </dl>
 
@@ -28,8 +28,8 @@
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value=@BuildingManagement.Resources.ClientTexts.Delete class="btn btn-default" /> 
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.BackToList, "Index")
+            <input type="submit" value=@BuildingManagement.Resources.Texts.Delete class="btn btn-default" /> 
+            @Html.ActionLink(BuildingManagement.Resources.Texts.BackToList, "Index")
         </div>
     }
 </div>

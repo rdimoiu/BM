@@ -306,15 +306,15 @@
     <Compile Include="Models\SubSubMeter.cs" />
     <Compile Include="Models\SubSubMeterReading.cs" />
     <Compile Include="Models\Tree1D.cs" />
-    <Compile Include="Resources\ClientTexts.ro.Designer.cs">
-      <DependentUpon>ClientTexts.ro.resx</DependentUpon>
+    <Compile Include="Resources\Texts.ro.Designer.cs">
+      <DependentUpon>Texts.ro.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Resources\ClientTexts.Designer.cs">
+    <Compile Include="Resources\Texts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ClientTexts.resx</DependentUpon>
+      <DependentUpon>Texts.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils\TreeHelper.cs" />
     <Compile Include="Cryptography\SimpleAes.cs" />
@@ -697,13 +697,13 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ClientTexts.ro.resx">
+    <EmbeddedResource Include="Resources\Texts.ro.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ClientTexts.ro.Designer.cs</LastGenOutput>
+      <LastGenOutput>Texts.ro.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ClientTexts.resx">
+    <EmbeddedResource Include="Resources\Texts.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ClientTexts.Designer.cs</LastGenOutput>
+      <LastGenOutput>Texts.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

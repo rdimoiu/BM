@@ -1,21 +1,21 @@
 ﻿@model BuildingManagement.Models.Client
 
 @{
-    ViewBag.Title = @BuildingManagement.Resources.ClientTexts.Edit;
+    ViewBag.Title = BuildingManagement.Resources.Texts.Edit;
 }
 
-<h2>@BuildingManagement.Resources.ClientTexts.Edit</h2>
+<h2>@BuildingManagement.Resources.Texts.Edit</h2>
 
 @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
-    <h4>@BuildingManagement.Resources.ClientTexts.Client</h4>
+    <h4>@BuildingManagement.Resources.Texts.Client</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.ID)
 
     <div class="form-group">
-        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Name</label>
+        <label class="control-label col-md-2">@BuildingManagement.Resources.Texts.Name</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
@@ -23,7 +23,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Phone</label>
+        <label class="control-label col-md-2">@BuildingManagement.Resources.Texts.Phone</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
@@ -31,7 +31,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Address</label>
+        <label class="control-label col-md-2">@BuildingManagement.Resources.Texts.Address</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Contact</label>
+        <label class="control-label col-md-2">@BuildingManagement.Resources.Texts.Contact</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Contact, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Contact, "", new { @class = "text-danger" })
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2">@BuildingManagement.Resources.ClientTexts.Email</label>
+        <label class="control-label col-md-2">@BuildingManagement.Resources.Texts.Email</label>
         <div class="col-md-10">
             @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
             @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
@@ -56,13 +56,13 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value=@BuildingManagement.Resources.ClientTexts.Save class="btn btn-default" onclick="ValidateAll('Edit')" />
+            <input type="submit" value=@BuildingManagement.Resources.Texts.Save class="btn btn-default" onclick="ValidateAll('Edit')" />
         </div>
     </div>
 </div>
 
 <div>
-    @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.BackToList, "Index")
+    @Html.ActionLink(BuildingManagement.Resources.Texts.BackToList, "Index")
 </div>
 
 @section Scripts {

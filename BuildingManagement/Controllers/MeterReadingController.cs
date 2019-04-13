@@ -87,25 +87,25 @@ namespace BuildingManagement.Controllers
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                         return new HttpStatusCodeResult(409, $"An initial meter reading already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
                     }
-                    if (initialMeterReading.Date >= meterReading.Date || initialMeterReading.Index >= meterReading.Index)
+                    if (initialMeterReading.Date >= meterReading.Date || initialMeterReading.Index > meterReading.Index)
                     {
                         PopulateMetersDropDownList(meterReading.MeterID);
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, $"An initial meter reading on the same or later date or with the same or greater index already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
+                        return new HttpStatusCodeResult(409, $"An initial meter reading on the same or later date or with a greater index already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
                     }
-                    var soonerDateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date <= meterReading.Date && mr.Index >= meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                    var soonerDateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date <= meterReading.Date && mr.Index > meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
                     if (soonerDateMeterReading != null)
                     {
                         PopulateMetersDropDownList(meterReading.MeterID);
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date and with the same or higher index already exists. ({soonerDateMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateMeterReading.Index})");
+                        return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date and with a greater index already exists. ({soonerDateMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateMeterReading.Index})");
                     }
-                    var lowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date >= meterReading.Date && mr.Index <= meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                    var lowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.Date >= meterReading.Date && mr.Index < meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
                     if (lowerIndexMeterReading != null)
                     {
                         PopulateMetersDropDownList(meterReading.MeterID);
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, $"A meter reading on the same or later date and with the same or lower index already exists. ({lowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexMeterReading.Index})");
+                        return new HttpStatusCodeResult(409, $"A meter reading on the same or later date and with a smaller index already exists. ({lowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexMeterReading.Index})");
                     }
                 }
                 else
@@ -116,12 +116,12 @@ namespace BuildingManagement.Controllers
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                         return new HttpStatusCodeResult(409, "Add an initial meter reading first.");
                     }
-                    var soonerDateOrLowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && (mr.Date <= meterReading.Date || mr.Index <= meterReading.Index));
+                    var soonerDateOrLowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && (mr.Date <= meterReading.Date || mr.Index < meterReading.Index));
                     if (soonerDateOrLowerIndexMeterReading != null)
                     {
                         PopulateMetersDropDownList(meterReading.MeterID);
                         PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                        return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date or with the same or lower index already exists. ({soonerDateOrLowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateOrLowerIndexMeterReading.Index})");
+                        return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date or with a smaller index already exists. ({soonerDateOrLowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateOrLowerIndexMeterReading.Index})");
                     }
                 }
                 try
@@ -175,25 +175,25 @@ namespace BuildingManagement.Controllers
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                             return new HttpStatusCodeResult(409, $"An initial meter reading already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
                         }
-                        if (initialMeterReading.Date >= meterReading.Date || initialMeterReading.Index >= meterReading.Index)
+                        if (initialMeterReading.Date >= meterReading.Date || initialMeterReading.Index > meterReading.Index)
                         {
                             PopulateMetersDropDownList(meterReading.MeterID);
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, $"An initial meter reading on the same or later date or with the same or greater index already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
+                            return new HttpStatusCodeResult(409, $"An initial meter reading on the same or later date or with a greater index already exists. ({initialMeterReading.Date.ToString("dd/MM/yyyy")} | {initialMeterReading.Index})");
                         }
-                        var soonerDateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.Date <= meterReading.Date && mr.Index >= meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                        var soonerDateMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.Date <= meterReading.Date && mr.Index > meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
                         if (soonerDateMeterReading != null)
                         {
                             PopulateMetersDropDownList(meterReading.MeterID);
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date and with the same or higher index already exists. ({soonerDateMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateMeterReading.Index})");
+                            return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date and with a greater index already exists. ({soonerDateMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateMeterReading.Index})");
                         }
-                        var lowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.Date >= meterReading.Date && mr.Index <= meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
+                        var lowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.Date >= meterReading.Date && mr.Index < meterReading.Index && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID);
                         if (lowerIndexMeterReading != null)
                         {
                             PopulateMetersDropDownList(meterReading.MeterID);
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, $"A meter reading on the same or later date and with the same or lower index already exists. ({lowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexMeterReading.Index})");
+                            return new HttpStatusCodeResult(409, $"A meter reading on the same or later date and with a smaller index already exists. ({lowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexMeterReading.Index})");
                         }
                     }
                     else
@@ -204,12 +204,12 @@ namespace BuildingManagement.Controllers
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
                             return new HttpStatusCodeResult(409, "Add an initial meter reading first.");
                         }
-                        var soonerDateOrLowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && (mr.Date <= meterReading.Date || mr.Index <= meterReading.Index));
+                        var soonerDateOrLowerIndexMeterReading = _unitOfWork.MeterReadingRepository.FirstOrDefault(mr => mr.ID != meterReading.ID && mr.MeterID == meterReading.MeterID && mr.MeterTypeID == meterReading.MeterTypeID && (mr.Date <= meterReading.Date || mr.Index < meterReading.Index));
                         if (soonerDateOrLowerIndexMeterReading != null)
                         {
                             PopulateMetersDropDownList(meterReading.MeterID);
                             PopulateMeterTypesDropDownList(meterReading.MeterID, meterReading.MeterTypeID);
-                            return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date or with the same or lower index already exists. {soonerDateOrLowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateOrLowerIndexMeterReading.Index}");
+                            return new HttpStatusCodeResult(409, $"A meter reading on the same or sooner date or with a smaller index already exists. {soonerDateOrLowerIndexMeterReading.Date.ToString("dd/MM/yyyy")} | {soonerDateOrLowerIndexMeterReading.Index}");
                         }
                     }
                     _unitOfWork.Save();

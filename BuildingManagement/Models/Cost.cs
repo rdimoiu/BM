@@ -10,6 +10,8 @@ namespace BuildingManagement.Models
 
         public decimal Quota { get; set; }
 
+        public decimal Consumption { get; set; }
+
         [Required]
         public int ServiceID { get; set; }
         public virtual Service Service { get; set; }

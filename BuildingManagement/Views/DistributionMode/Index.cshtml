@@ -3,25 +3,25 @@
 @using X.PagedList;
 
 @{
-    ViewBag.Title = "DistributionModes";
+    ViewBag.Title = BuildingManagement.Resources.Texts.DistributionModes;
 }
 
-<h2>DistributionModes</h2>
+<h2>@BuildingManagement.Resources.Texts.DistributionModes</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink(BuildingManagement.Resources.Texts.CreateNew, "Create")
 </p>
 @using (Html.BeginForm("Index", "DistributionMode", FormMethod.Get))
 {
     <p>
-        Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
+        @BuildingManagement.Resources.Texts.Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value=@BuildingManagement.Resources.Texts.Search />
     </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Mode", "Index", new { sortOrder = ViewBag.ModeSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Mode, "Index", new { sortOrder = ViewBag.ModeSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -34,9 +34,9 @@
                 @item.Mode
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { id = item.ID })
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Details, "Details", new { id = item.ID })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Edit, "Edit", new { id = item.ID })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Delete, "Delete", new { id = item.ID })
             </td>
         </tr>
     }

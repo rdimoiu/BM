@@ -118,54 +118,75 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Address" xml:space="preserve">
-    <value>Adresa</value>
+    <value>Address</value>
   </data>
   <data name="BackToList" xml:space="preserve">
-    <value>Inapoi la lista</value>
+    <value>Back to list</value>
   </data>
   <data name="Client" xml:space="preserve">
     <value>Client</value>
   </data>
   <data name="Clients" xml:space="preserve">
-    <value>Clienti</value>
+    <value>Clients</value>
   </data>
   <data name="Contact" xml:space="preserve">
     <value>Contact</value>
   </data>
+  <data name="CostsTable" xml:space="preserve">
+    <value>CostsTable</value>
+  </data>
   <data name="Create" xml:space="preserve">
-    <value>Creaza</value>
+    <value>Create</value>
   </data>
   <data name="CreateNew" xml:space="preserve">
-    <value>Creaza nou</value>
+    <value>Create new</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Sterge</value>
+    <value>Delete</value>
   </data>
   <data name="DeleteConfirmation" xml:space="preserve">
-    <value>Sigur doriti sa stergeti asta?</value>
+    <value>Are you sure you want to delete this?</value>
   </data>
   <data name="Details" xml:space="preserve">
-    <value>Detalii</value>
+    <value>Details</value>
+  </data>
+  <data name="DiscountMonth" xml:space="preserve">
+    <value>DiscountMonth</value>
+  </data>
+  <data name="Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="DistributionMode" xml:space="preserve">
+    <value>DistributionMode</value>
+  </data>
+  <data name="DistributionModes" xml:space="preserve">
+    <value>DistributionModes</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>Editeaza</value>
+    <value>Edit</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
   <data name="Find" xml:space="preserve">
-    <value>Gaseste</value>
+    <value>Find</value>
+  </data>
+  <data name="Mode" xml:space="preserve">
+    <value>Mode</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>Nume</value>
+    <value>Name</value>
   </data>
   <data name="Phone" xml:space="preserve">
-    <value>Telefon</value>
+    <value>Phone</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>Salveaza</value>
+    <value>Save</value>
   </data>
   <data name="Search" xml:space="preserve">
-    <value>Cauta</value>
+    <value>Search</value>
+  </data>
+  <data name="Section" xml:space="preserve">
+    <value>Section</value>
   </data>
 </root>

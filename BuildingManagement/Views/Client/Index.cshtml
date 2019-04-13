@@ -3,37 +3,37 @@
 @using X.PagedList;
 
 @{
-    ViewBag.Title = @BuildingManagement.Resources.ClientTexts.Clients;
+    ViewBag.Title = BuildingManagement.Resources.Texts.Clients;
 }
 
-<h2>@BuildingManagement.Resources.ClientTexts.Clients</h2>
+<h2>@BuildingManagement.Resources.Texts.Clients</h2>
 
 <p>
-    @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.CreateNew, "Create")
+    @Html.ActionLink(BuildingManagement.Resources.Texts.CreateNew, "Create")
 </p>
 @using (Html.BeginForm("Index", "Client", FormMethod.Get))
 {
     <p>
-        @BuildingManagement.Resources.ClientTexts.Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value=@BuildingManagement.Resources.ClientTexts.Search />
+        @BuildingManagement.Resources.Texts.Find @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value=@BuildingManagement.Resources.Texts.Search />
     </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Name, "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Name, "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Phone, "Index", new { sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Phone, "Index", new { sortOrder = ViewBag.PhoneSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Address, "Index", new { sortOrder = ViewBag.AddressSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Address, "Index", new { sortOrder = ViewBag.AddressSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Contact, "Index", new { sortOrder = ViewBag.ContactSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Contact, "Index", new { sortOrder = ViewBag.ContactSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Email, "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
+            @Html.ActionLink(BuildingManagement.Resources.Texts.Email, "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
         </th>
@@ -59,9 +59,9 @@
                 @item.Email
             </td>
             <td>
-                @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Details, "Details", new { id = item.ID }, new { @class = "details-icon" })
-                @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Edit, "Edit", new { id = item.ID }, new { @class = "edit-icon" })
-                @Html.ActionLink(@BuildingManagement.Resources.ClientTexts.Delete, "Delete", new { id = item.ID }, new { @class = "delete-icon" })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Details, "Details", new { id = item.ID }, new { @class = "details-icon" })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Edit, "Edit", new { id = item.ID }, new { @class = "edit-icon" })
+                @Html.ActionLink(BuildingManagement.Resources.Texts.Delete, "Delete", new { id = item.ID }, new { @class = "delete-icon" })
             </td>
         </tr>
     }

@@ -1,23 +1,17 @@
 ﻿@model BuildingManagement.Models.DistributionMode
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = BuildingManagement.Resources.Texts.Details;
 }
 
-<h2>Details</h2>
+<h2>@BuildingManagement.Resources.Texts.Details</h2>
 
 <div>
-    <h4>DistributionMode</h4>
+    <h4>@BuildingManagement.Resources.Texts.DistributionMode</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Mode)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Mode)
-        </dd>
-
+        <dt>@BuildingManagement.Resources.Texts.Mode</dt>
+        <dd>@Html.DisplayFor(model => model.Mode)</dd>
     </dl>
 </div>
 <p>
