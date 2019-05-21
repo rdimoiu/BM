@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
@@ -9,5 +10,8 @@ namespace BuildingManagement.DAL
         IEnumerable<SubSubMeterReading> GetAllSubSubMeterReadingsIncludingSubSubMeterAndMeterType();
         IEnumerable<SubSubMeterReading> GetFilteredSubSubMeterReadingsIncludingSubSubMeterAndMeterType(string searchString);
         IEnumerable<SubSubMeterReading> OrderSubSubMeterReadings(IEnumerable<SubSubMeterReading> subSubMeterReadings, string sortOrder);
+        IEnumerable<SubSubMeterReading> GetLastSubSubMeterReading(int subSubMeterID, int meterTypeID, DateTime discountMonth);
+        IEnumerable<SubSubMeterReading> GetPreviousSubSubMeterReading(int subSubMeterID, int meterTypeID, DateTime discountMonth);
+        IEnumerable<SubSubMeterReading> GetInitialSubSubMeterReading(int subSubMeterID, int meterTypeID);
     }
 }

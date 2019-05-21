@@ -353,9 +353,12 @@ namespace BuildingManagement.Controllers
                 {
                     return HttpNotFound();
                 }
-                invoice.Quantity = invoice.Quantity - service.Quantity;
-                invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA - service.ValueWithoutTVA;
-                invoice.TotalTVA = invoice.TotalTVA - service.TVA;
+                if (!service.Rest)
+                {
+                    invoice.Quantity = invoice.Quantity - service.Quantity;
+                    invoice.TotalValueWithoutTVA = invoice.TotalValueWithoutTVA - service.ValueWithoutTVA;
+                    invoice.TotalTVA = invoice.TotalTVA - service.TVA;
+                }
                 _unitOfWork.ServiceRepository.Remove(service);
                 _unitOfWork.Save();
                 TempData["message"] = $"Service {service.Name} has been deleted.";
@@ -374,8 +377,9 @@ namespace BuildingManagement.Controllers
         // GET: Service/Distribute/5
         public ActionResult Distribute(int id)
         {
+            var errorMessages = "no error";
             var serviceDistributeData = new ServiceDistributeData();
-            var service = _unitOfWork.ServiceRepository.Get(id);
+            var service = _unitOfWork.ServiceRepository.GetServiceIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(id);
             if (service == null)
             {
                 return HttpNotFound();
@@ -383,15 +387,337 @@ namespace BuildingManagement.Controllers
             serviceDistributeData.Service = service;
             serviceDistributeData.Costs = new List<Cost>();
             var totalCost = 0.0m;
-            var totalSpaces = GetSpaces(service);
+            var totalServiceSpaces = GetServiceSpaces(service);
             var valueWithTVA = service.ValueWithoutTVA + service.TVA;
-            //DistributionMode = cote parti
-            if (service.DistributionModeID == 1)
+
+            if (service.Counted)
             {
-                var totalSurface = totalSpaces.Sum(s => s.Surface);
+                var totalConsumption = 0.0m;
+                #region subMeter consumption
+                var meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces().ToList();
+                foreach (var meter in meters)
+                {
+                    if (meter.MeterTypes.Contains(service.MeterType))
+                    {
+                        var meterConsumption = 0.0m;
+                        var lastMeterReading = _unitOfWork.MeterReadingRepository.GetLastMeterReading(meter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (lastMeterReading.Count != 1)
+                        {
+                            TempData["message"] += $"Meter {meter.Code}|{service.MeterType.Type} has no reading with discount month {service.Invoice.DiscountMonth}.\n";
+                            continue;
+                        }
+                        var previousMeterReading = _unitOfWork.MeterReadingRepository.GetPreviousMeterReading(meter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (previousMeterReading.Count != 1)
+                        {
+                            var initialMeterReading = _unitOfWork.MeterReadingRepository.GetInitialMeterReading(meter.ID, service.MeterType.ID).ToList();
+                            if (initialMeterReading.Count != 1)
+                            {
+                                TempData["message"] += $"Meter {meter.Code}|{service.MeterType.Type} has no previous or initial reading.\n";
+                                continue;
+                            }
+                            meterConsumption = lastMeterReading[0].Index - initialMeterReading[0].Index;
+                            totalConsumption += meterConsumption;
+                        }
+                        else
+                        {
+                            meterConsumption = lastMeterReading[0].Index - previousMeterReading[0].Index;
+                            totalConsumption += meterConsumption;
+                        }
+                        var totalMeterSpaces = GetMeterSpaces(meter, service.Inhabited);
+                        //DistributionMode = cote parti
+                        if (meter.DistributionModeID == 1)
+                        {
+                            var totalSurface = totalMeterSpaces.Sum(s => s.Surface);
+                            foreach (var space in totalServiceSpaces)
+                            {
+                                if (totalMeterSpaces.Contains(space))
+                                {
+                                    var cost = new Cost();
+                                    var quota = space.Surface / totalSurface;
+                                    cost.Quota = quota;
+                                    cost.Value = quota * meterConsumption * service.Price;
+                                    cost.ServiceID = service.ID;
+                                    cost.SpaceID = space.ID;
+                                    totalCost += cost.Value;
+                                    serviceDistributeData.Costs.Add(cost);
+                                    _unitOfWork.CostRepository.Add(cost);
+                                }
+                            }
+                        }
+                        //DistributionMode = numar persoane
+                        else if (meter.DistributionModeID == 2)
+                        {
+                            var totalPeople = totalServiceSpaces.Sum(s => s.People);
+                            if (totalPeople > 0)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        cost.Quota = quota;
+                                        cost.Value = quota * meterConsumption * valueWithTVA;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                        //DistributionMode = consum
+                        else if (meter.DistributionModeID == 3)
+                        {
+                            if (totalMeterSpaces.Count == 1)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = 1;
+                                        cost.Quota = quota;
+                                        cost.Value = quota * meterConsumption * service.Price;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+                #region submeter consumption
+                var subMeters = _unitOfWork.SubMeterRepository.GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces("").ToList();
+                foreach (var subMeter in subMeters)
+                {
+                    if (subMeter.MeterTypes.Contains(service.MeterType))
+                    {
+                        var subMeterConsumption = 0.0m;
+                        var lastSubMeterReading = _unitOfWork.SubMeterReadingRepository.GetLastSubMeterReading(subMeter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (lastSubMeterReading.Count != 1)
+                        {
+                            TempData["message"] += $"SubMeter {subMeter.Code}|{service.MeterType.Type} has no reading with discount month {service.Invoice.DiscountMonth}.\n";
+                            continue;
+                        }
+                        var previousSubMeterReading = _unitOfWork.SubMeterReadingRepository.GetPreviousSubMeterReading(subMeter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (previousSubMeterReading.Count != 1)
+                        {
+                            var initialSubMeterReading = _unitOfWork.SubMeterReadingRepository.GetInitialSubMeterReading(subMeter.ID, service.MeterType.ID).ToList();
+                            if (initialSubMeterReading.Count != 1)
+                            {
+                                TempData["message"] += $"SubMeter {subMeter.Code}|{service.MeterType.Type} has no previous or initial reading.\n";
+                                continue;
+                            }
+                            subMeterConsumption = lastSubMeterReading[0].Index - initialSubMeterReading[0].Index;
+                            totalConsumption += subMeterConsumption;
+                        }
+                        else
+                        {
+                            subMeterConsumption = lastSubMeterReading[0].Index - previousSubMeterReading[0].Index;
+                            totalConsumption += subMeterConsumption;
+                        }
+                        var totalSubMeterSpaces = GetSubMeterSpaces(subMeter, service.Inhabited);
+                        //DistributionMode = cote parti
+                        if (subMeter.DistributionModeID == 1)
+                        {
+                            var totalSurface = totalSubMeterSpaces.Sum(s => s.Surface);
+                            foreach (var space in totalServiceSpaces)
+                            {
+                                if (totalSubMeterSpaces.Contains(space))
+                                {
+                                    var cost = new Cost();
+                                    var quota = space.Surface / totalSurface;
+                                    cost.Quota = quota;
+                                    cost.Value = quota * subMeterConsumption * service.Price;
+                                    cost.ServiceID = service.ID;
+                                    cost.SpaceID = space.ID;
+                                    totalCost += cost.Value;
+                                    serviceDistributeData.Costs.Add(cost);
+                                    _unitOfWork.CostRepository.Add(cost);
+                                }
+                            }
+                        }
+                        //DistributionMode = numar persoane
+                        else if (subMeter.DistributionModeID == 2)
+                        {
+                            var totalPeople = totalServiceSpaces.Sum(s => s.People);
+                            if (totalPeople > 0)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalSubMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        cost.Quota = quota;
+                                        cost.Value = quota * subMeterConsumption * valueWithTVA;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                        //DistributionMode = consum
+                        else if (subMeter.DistributionModeID == 3)
+                        {
+                            if (totalSubMeterSpaces.Count == 1)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalSubMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = 1;
+                                        cost.Quota = quota;
+                                        cost.Value = quota * subMeterConsumption * service.Price;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+                #region subsubmeter consumption
+                var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAllSubSubMetersIncludingMeterTypesAndDistributionModeAndSubMeterAndSectionsAndLevelsAndSpaces().ToList();
+                foreach (var subSubMeter in subSubMeters)
+                {
+                    if (subSubMeter.MeterTypes.Contains(service.MeterType))
+                    {
+                        var subSubMeterConsumption = 0.0m;
+                        var lastSubSubMeterReading = _unitOfWork.SubSubMeterReadingRepository.GetLastSubSubMeterReading(subSubMeter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (lastSubSubMeterReading.Count != 1)
+                        {
+                            TempData["message"] += $"SubSubMeter {subSubMeter.Code}|{service.MeterType.Type} has no reading with discount month {service.Invoice.DiscountMonth}.\n";
+                            continue;
+                        }
+                        var previousSubSubMeterReading = _unitOfWork.SubSubMeterReadingRepository.GetPreviousSubSubMeterReading(subSubMeter.ID, service.MeterType.ID, service.Invoice.DiscountMonth).ToList();
+                        if (previousSubSubMeterReading.Count != 1)
+                        {
+                            var initialSubMeterReading = _unitOfWork.SubSubMeterReadingRepository.GetInitialSubSubMeterReading(subSubMeter.ID, service.MeterType.ID).ToList();
+                            if (initialSubMeterReading.Count != 1)
+                            {
+                                TempData["message"] += $"SubSubMeter {subSubMeter.Code}|{service.MeterType.Type} has no previous or initial reading.\n";
+                                continue;
+                            }
+                            subSubMeterConsumption = lastSubSubMeterReading[0].Index - initialSubMeterReading[0].Index;
+                            totalConsumption += subSubMeterConsumption;
+                        }
+                        else
+                        {
+                            subSubMeterConsumption = lastSubSubMeterReading[0].Index - previousSubSubMeterReading[0].Index;
+                            totalConsumption += subSubMeterConsumption;
+                        }
+                        var totalSubSubMeterSpaces = GetSubSubMeterSpaces(subSubMeter, service.Inhabited);
+                        //DistributionMode = cote parti
+                        if (subSubMeter.DistributionModeID == 1)
+                        {
+                            var totalSurface = totalSubSubMeterSpaces.Sum(s => s.Surface);
+                            foreach (var space in totalServiceSpaces)
+                            {
+                                if (totalSubSubMeterSpaces.Contains(space))
+                                {
+                                    var cost = new Cost();
+                                    var quota = space.Surface / totalSurface;
+                                    cost.Quota = quota;
+                                    cost.Value = quota * subSubMeterConsumption * service.Price;
+                                    cost.ServiceID = service.ID;
+                                    cost.SpaceID = space.ID;
+                                    totalCost += cost.Value;
+                                    serviceDistributeData.Costs.Add(cost);
+                                    _unitOfWork.CostRepository.Add(cost);
+                                }
+                            }
+                        }
+                        //DistributionMode = numar persoane
+                        else if (subSubMeter.DistributionModeID == 2)
+                        {
+                            var totalPeople = totalServiceSpaces.Sum(s => s.People);
+                            if (totalPeople > 0)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalSubSubMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        cost.Quota = quota;
+                                        cost.Value = quota * subSubMeterConsumption * valueWithTVA;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                        //DistributionMode = consum
+                        else if (subSubMeter.DistributionModeID == 3)
+                        {
+                            if (totalSubSubMeterSpaces.Count == 1)
+                            {
+                                foreach (var space in totalServiceSpaces)
+                                {
+                                    if (totalSubSubMeterSpaces.Contains(space))
+                                    {
+                                        var cost = new Cost();
+                                        var quota = 1;
+                                        cost.Quota = quota;
+                                        cost.Value = quota * subSubMeterConsumption * service.Price;
+                                        cost.ServiceID = service.ID;
+                                        cost.SpaceID = space.ID;
+                                        totalCost += cost.Value;
+                                        serviceDistributeData.Costs.Add(cost);
+                                        _unitOfWork.CostRepository.Add(cost);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+                if (service.Quantity != totalConsumption)
+                {
+                    var restService = new Service();
+                    restService.Rest = true;
+                    restService.Name = service.Name + " #Rest#";
+                    restService.Quantity = service.Quantity - totalConsumption;
+                    restService.Unit = service.Unit;
+                    restService.Price = service.Price;
+                    restService.QuotaTVA = service.QuotaTVA;
+                    restService.Counted = false;
+                    restService.Inhabited = service.Inhabited;
+                    restService.InvoiceID = service.InvoiceID;
+                    restService.MeterTypeID = service.MeterTypeID;
+                    restService.Spaces = service.Spaces;
+                    restService.Levels = service.Levels;
+                    restService.Sections = service.Sections;
+                    _unitOfWork.ServiceRepository.Add(restService);
+
+                    TempData["message"] += $"Select distribution mode for the {restService.Name}.";
+                }
+            }
+            //DistributionMode = cote parti
+            else if (service.DistributionModeID == 1)
+            {
+                var totalSurface = totalServiceSpaces.Sum(s => s.Surface);
                 if (totalSurface > 0)
                 {
-                    foreach (var space in totalSpaces)
+                    foreach (var space in totalServiceSpaces)
                     {
                         var cost = new Cost();
                         var quota = space.Surface / totalSurface;
@@ -408,10 +734,10 @@ namespace BuildingManagement.Controllers
             //DistributionMode = numar persoane
             else if (service.DistributionModeID == 2)
             {
-                var totalPeople = totalSpaces.Sum(s => s.People);
+                var totalPeople = totalServiceSpaces.Sum(s => s.People);
                 if (totalPeople > 0)
                 {
-                    foreach (var space in totalSpaces)
+                    foreach (var space in totalServiceSpaces)
                     {
                         var cost = new Cost();
                         var quota = ((decimal)space.People) / ((decimal)totalPeople);
@@ -429,12 +755,12 @@ namespace BuildingManagement.Controllers
             try
             {
                 _unitOfWork.Save();
-                TempData["message"] = $"Service {service.Name} has been distributed.";
+                TempData["message"] += $"Service {service.Name} has been distributed.";
             }
             catch (DataException)
             {
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be distributed.";
-                return RedirectToAction("Distribute", new { id, saveChangesError = true });
+                return RedirectToAction("Index", new { id, saveChangesError = true });
             }
             if (Request.UrlReferrer != null)
             {
@@ -443,7 +769,7 @@ namespace BuildingManagement.Controllers
             return View(serviceDistributeData);
         }
 
-        private List<Space> GetSpaces(Service service)
+        private List<Space> GetServiceSpaces(Service service)
         {
             var totalSpaces = new List<Space>();
             foreach (var section in service.Sections)
@@ -485,6 +811,132 @@ namespace BuildingManagement.Controllers
             return totalSpaces;
         }
 
+        private List<Space> GetMeterSpaces(Meter meter, bool inhabited)
+        {
+            var totalSpaces = new List<Space>();
+            foreach (var section in meter.Sections)
+            {
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
+                foreach (var level in levels)
+                {
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                    foreach (var space in spaces)
+                    {
+                        if (inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
+                        totalSpaces.Add(space);
+                    }
+                }
+            }
+            foreach (var level in meter.Levels)
+            {
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                foreach (var space in spaces)
+                {
+                    if (inhabited && !space.Inhabited)
+                    {
+                        continue;
+                    }
+                    totalSpaces.Add(space);
+                }
+            }
+            foreach (var space in meter.Spaces)
+            {
+                if (inhabited && !space.Inhabited)
+                {
+                    continue;
+                }
+                totalSpaces.Add(space);
+            }
+            return totalSpaces;
+        }
+
+        private List<Space> GetSubMeterSpaces(SubMeter subMeter, bool inhabited)
+        {
+            var totalSpaces = new List<Space>();
+            foreach (var section in subMeter.Sections)
+            {
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
+                foreach (var level in levels)
+                {
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                    foreach (var space in spaces)
+                    {
+                        if (inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
+                        totalSpaces.Add(space);
+                    }
+                }
+            }
+            foreach (var level in subMeter.Levels)
+            {
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                foreach (var space in spaces)
+                {
+                    if (inhabited && !space.Inhabited)
+                    {
+                        continue;
+                    }
+                    totalSpaces.Add(space);
+                }
+            }
+            foreach (var space in subMeter.Spaces)
+            {
+                if (inhabited && !space.Inhabited)
+                {
+                    continue;
+                }
+                totalSpaces.Add(space);
+            }
+            return totalSpaces;
+        }
+
+        private List<Space> GetSubSubMeterSpaces(SubSubMeter subSubMeter, bool inhabited)
+        {
+            var totalSpaces = new List<Space>();
+            foreach (var section in subSubMeter.Sections)
+            {
+                var levels = _unitOfWork.LevelRepository.GetLevelsBySection(section.ID).ToList();
+                foreach (var level in levels)
+                {
+                    var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                    foreach (var space in spaces)
+                    {
+                        if (inhabited && !space.Inhabited)
+                        {
+                            continue;
+                        }
+                        totalSpaces.Add(space);
+                    }
+                }
+            }
+            foreach (var level in subSubMeter.Levels)
+            {
+                var spaces = _unitOfWork.SpaceRepository.GetSpacesByLevel(level.ID).ToList();
+                foreach (var space in spaces)
+                {
+                    if (inhabited && !space.Inhabited)
+                    {
+                        continue;
+                    }
+                    totalSpaces.Add(space);
+                }
+            }
+            foreach (var space in subSubMeter.Spaces)
+            {
+                if (inhabited && !space.Inhabited)
+                {
+                    continue;
+                }
+                totalSpaces.Add(space);
+            }
+            return totalSpaces;
+        }
+
         // GET: Service/Undistribute/5
         public ActionResult Undistribute(int id)
         {
@@ -507,7 +959,7 @@ namespace BuildingManagement.Controllers
             catch (DataException)
             {
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be undistributed.";
-                return RedirectToAction("Undistribute", new { id, saveChangesError = true });
+                return RedirectToAction("Index", new { id, saveChangesError = true });
             }
             if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
             {
@@ -546,17 +998,10 @@ namespace BuildingManagement.Controllers
         [HttpGet]
         public string GetSpacesTreeData(int? serviceId, int? invoiceId)
         {
-            var root = new TreeNode
-            {
-                id = "root",
-                children = { },
-                text = "-",
-                state = new TreeNodeState { opened = true }
-            };
-
             var selectedSpacesIDs = new HashSet<int>();
             var selectedLevelsIDs = new HashSet<int>();
             var selectedSectionsIDs = new HashSet<int>();
+            var isRestService = false;
             if (serviceId != null && serviceId != 0)
             {
                 var service = _unitOfWork.ServiceRepository.GetServiceIncludingSectionsAndLevelsAndSpaces((int)serviceId);
@@ -565,8 +1010,17 @@ namespace BuildingManagement.Controllers
                     selectedSpacesIDs = new HashSet<int>(service.Spaces.Select(s => s.ID));
                     selectedLevelsIDs = new HashSet<int>(service.Levels.Select(l => l.ID));
                     selectedSectionsIDs = new HashSet<int>(service.Sections.Select(s => s.ID));
+                    isRestService = service.Rest;
                 }
             }
+
+            var root = new TreeNode
+            {
+                id = "root",
+                children = { },
+                text = "-",
+                state = new TreeNodeState { opened = true, disabled = isRestService }
+            };
 
             if (invoiceId != null && invoiceId != 0)
             {
@@ -574,7 +1028,7 @@ namespace BuildingManagement.Controllers
                 if (invoice != null)
                 {
                     var treeHelper = new Utils.TreeHelper(_unitOfWork);
-                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, invoice.ClientID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
+                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, invoice.ClientID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs, isRestService);
                 }
             }
 

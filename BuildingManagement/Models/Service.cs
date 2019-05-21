@@ -35,6 +35,8 @@ namespace BuildingManagement.Models
 
         public bool Distributed { get; set; }
 
+        public bool Rest { get; set; }
+
         public int InvoiceID { get; set; }
         public virtual Invoice Invoice { get; set; }
 

@@ -22,6 +22,7 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.ID)
+    @Html.HiddenFor(model => model.Rest)
     @Html.Hidden("PreviousPage", @Model.PreviousPage)
     <div class="form-group">
         @Html.LabelFor(model => model.Invoice, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -164,5 +165,6 @@
     $(document).ready(function() {
         GetSpacesForService(@Model.ID, @Model.InvoiceID, "Edit");
         CountedOnChangeEvent();
+        DisableFieldsForRestService();
     });
 </script>

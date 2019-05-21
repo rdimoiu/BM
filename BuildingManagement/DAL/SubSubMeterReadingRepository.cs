@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using BuildingManagement.Models;
@@ -78,6 +79,24 @@ namespace BuildingManagement.DAL
                     break;
             }
             return subSubMeterReadings;
+        }
+
+        public IEnumerable<SubSubMeterReading> GetLastSubSubMeterReading(int subSubMeterID, int meterTypeID, DateTime discountMonth)
+        {
+            var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            return MainContext.SubSubMeterReadings.OrderByDescending(ssmr => ssmr.DiscountMonth).Where(ssmr => ssmr.SubSubMeterID == subSubMeterID && ssmr.MeterTypeID == meterTypeID && ssmr.DiscountMonth >= firstDayOfMonth && ssmr.DiscountMonth <= lastDayOfMonth);
+        }
+
+        public IEnumerable<SubSubMeterReading> GetPreviousSubSubMeterReading(int subSubMeterID, int meterTypeID, DateTime discountMonth)
+        {
+            var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
+            return MainContext.SubSubMeterReadings.OrderByDescending(ssmr => ssmr.DiscountMonth).Where(ssmr => ssmr.SubSubMeterID == subSubMeterID && ssmr.MeterTypeID == meterTypeID && ssmr.DiscountMonth < firstDayOfMonth).Take(1);
+        }
+
+        public IEnumerable<SubSubMeterReading> GetInitialSubSubMeterReading(int subSubMeterID, int meterTypeID)
+        {
+            return MainContext.SubSubMeterReadings.Where(ssmr => ssmr.SubSubMeterID == subSubMeterID && ssmr.MeterTypeID == meterTypeID && ssmr.Initial);
         }
     }
 }

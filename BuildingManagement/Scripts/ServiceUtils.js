@@ -33,3 +33,20 @@ function CountedOnChangeEvent() {
         meterTypeGroup.style.display = "none";
     }
 };
+
+function DisableFieldsForRestService() {
+    var rest = document.getElementById("Rest").value;
+    if (rest == "True") {
+        document.getElementById("InvoiceID").disabled = true;
+        document.getElementById("Name").disabled = true;
+        document.getElementById("Quantity").disabled = true;
+        document.getElementById("Unit").disabled = true;
+        document.getElementById("Price").disabled = true;
+        document.getElementById("QuotaTVA").disabled = true;
+        document.getElementById("Fixed").disabled = true;
+        document.getElementById("Inhabited").disabled = true;
+        document.getElementById("Counted").disabled = true;
+        document.getElementById("SpacesGroup").disabled = true;
+    }
+}
+

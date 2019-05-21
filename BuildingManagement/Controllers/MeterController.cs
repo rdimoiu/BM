@@ -398,7 +398,7 @@ namespace BuildingManagement.Controllers
                 if (client != null)
                 {
                     var treeHelper = new Utils.TreeHelper(_unitOfWork);
-                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, client.ID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs);
+                    root = treeHelper.GetSectionsLevelsSpacesByClient(root, client.ID, selectedSectionsIDs, selectedLevelsIDs, selectedSpacesIDs, false);
                 }
             }
 

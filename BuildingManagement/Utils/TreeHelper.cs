@@ -135,7 +135,7 @@ namespace BuildingManagement.Utils
             return tree3D;
         }
 
-        public TreeNode GetSectionsLevelsSpacesByClient(TreeNode root, int clientID, HashSet<int> selectedSectionsIDs, HashSet<int> selectedLevelsIDs, HashSet<int> selectedSpacesIDs)
+        public TreeNode GetSectionsLevelsSpacesByClient(TreeNode root, int clientID, HashSet<int> selectedSectionsIDs, HashSet<int> selectedLevelsIDs, HashSet<int> selectedSpacesIDs, bool disabled)
         {
             var sections = _unitOfWork.SectionRepository.GetSectionsByClient(clientID).ToList();
             if (sections.Any())
@@ -147,6 +147,7 @@ namespace BuildingManagement.Utils
                     sectionNode.text = section.Number;
                     sectionNode.state = new TreeNodeState();
                     sectionNode.state.opened = true;
+                    sectionNode.state.disabled = disabled;
                     if (selectedSectionsIDs.Count > 0 && selectedSectionsIDs.Contains(section.ID))
                     {
                         sectionNode.state.selected = true;
@@ -162,6 +163,7 @@ namespace BuildingManagement.Utils
                             levelNode.text = level.Number;
                             levelNode.state = new TreeNodeState();
                             levelNode.state.opened = true;
+                            levelNode.state.disabled = disabled;
                             if (selectedLevelsIDs.Count > 0 && selectedLevelsIDs.Contains(level.ID))
                             {
                                 levelNode.state.selected = true;
@@ -175,9 +177,10 @@ namespace BuildingManagement.Utils
                                     var spaceNode = new TreeNode();
                                     spaceNode.id = section.ID + "." + level.ID + "." + space.ID;
                                     spaceNode.text = space.Number;
+                                    spaceNode.state = new TreeNodeState();
+                                    spaceNode.state.disabled = disabled;
                                     if (selectedSpacesIDs.Count > 0 && selectedSpacesIDs.Contains(space.ID))
                                     {
-                                        spaceNode.state = new TreeNodeState();
                                         spaceNode.state.selected = true;
                                     }
                                     levelNode.children.Add(spaceNode);

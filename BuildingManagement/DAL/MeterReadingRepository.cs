@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BuildingManagement.Models;
 using System.Data.Entity;
@@ -77,6 +78,24 @@ namespace BuildingManagement.DAL
                     break;
             }
             return meterReadings;
+        }
+
+        public IEnumerable<MeterReading> GetLastMeterReading(int meterID, int meterTypeID, DateTime discountMonth)
+        {
+            var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth >= firstDayOfMonth && mr.DiscountMonth <= lastDayOfMonth);
+        }
+
+        public IEnumerable<MeterReading> GetPreviousMeterReading(int meterID, int meterTypeID, DateTime discountMonth)
+        {
+            var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
+            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth < firstDayOfMonth).Take(1);
+        }
+
+        public IEnumerable<MeterReading> GetInitialMeterReading(int meterID, int meterTypeID)
+        {
+            return MainContext.MeterReadings.Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.Initial);
         }
     }
 }

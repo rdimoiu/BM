@@ -173,9 +173,12 @@ function CheckTotalTVAValidation() {
 }
 
 function DiscountMonthValidation() {
-    var controlId = document.getElementById("DiscountMonth");
-    if (controlId.value === "") {
+    var discountMonthId = document.getElementById("DiscountMonth");
+    var dateId = document.getElementById("Date");
+    if (discountMonthId.value === "") {
         return "The DiscountMonth field is required." + "\n";
+    } else if (discountMonthId.value > dateId.value) {
+        return "The DiscountMonth field is invalid. (DiscountMonth must be equal or smaller than Date)" + "\n";
     } else {
         return "";
     }
