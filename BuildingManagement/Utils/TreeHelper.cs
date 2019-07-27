@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BuildingManagement.DAL;
+﻿using BuildingManagement.DAL;
 using BuildingManagement.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BuildingManagement.Utils
 {

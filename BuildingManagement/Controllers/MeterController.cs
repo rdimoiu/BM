@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -41,7 +41,7 @@ namespace BuildingManagement.Controllers
             //    }
             //    else
             //    {
-                    meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces().ToList();
+            meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces().ToList();
             //    }
             //}
             //ViewBag.CurrentFilter = searchString;
@@ -301,7 +301,7 @@ namespace BuildingManagement.Controllers
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new {id, saveChangesError = true});
+                return RedirectToAction("Delete", new { id, saveChangesError = true });
             }
             return RedirectToAction("Index");
         }
@@ -333,9 +333,9 @@ namespace BuildingManagement.Controllers
             var root = new TreeNode
             {
                 id = "root",
-                children = {},
+                children = { },
                 text = "-",
-                state = new TreeNodeState {opened = true}
+                state = new TreeNodeState { opened = true }
             };
 
             var selectedMeterTypes = new HashSet<int>();
@@ -358,7 +358,7 @@ namespace BuildingManagement.Controllers
                     meterTypeNode.text = meterType.Type;
                     if (selectedMeterTypes.Count > 0 && selectedMeterTypes.Contains(meterType.ID))
                     {
-                        meterTypeNode.state = new TreeNodeState {selected = true};
+                        meterTypeNode.state = new TreeNodeState { selected = true };
                     }
                     root.children.Add(meterTypeNode);
                 }
@@ -373,9 +373,9 @@ namespace BuildingManagement.Controllers
             var root = new TreeNode
             {
                 id = "root",
-                children = {},
+                children = { },
                 text = "-",
-                state = new TreeNodeState {opened = true}
+                state = new TreeNodeState { opened = true }
             };
 
             var selectedSpacesIDs = new HashSet<int>();

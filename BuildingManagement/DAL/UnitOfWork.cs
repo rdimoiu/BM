@@ -1,6 +1,6 @@
+using BuildingManagement.Models;
 using System;
 using System.Threading.Tasks;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {
@@ -25,15 +25,15 @@ namespace BuildingManagement.DAL
         private ILevelRepository _levelRepository;
         private ISpaceRepository _spaceRepository;
 
-        private IInvoiceTypeRepository _invoiceTypeRepository; 
+        private IInvoiceTypeRepository _invoiceTypeRepository;
         private IProviderRepository _providerRepository;
         private IServiceRepository _serviceRepository;
         private IInvoiceRepository _invoiceRepository;
 
-        private ICostRepository _costRepository; 
+        private ICostRepository _costRepository;
 
-        private IUserRepository _userRepository; 
-        private GenericRepository<UserRole> _userRoleRepository; 
+        private IUserRepository _userRepository;
+        private GenericRepository<UserRole> _userRoleRepository;
 
         public IMeterTypeRepository MeterTypeRepository
         {

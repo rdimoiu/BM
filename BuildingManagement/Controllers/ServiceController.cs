@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using BuildingManagement.ViewModels;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -75,7 +75,7 @@ namespace BuildingManagement.Controllers
             var service = new Service();
             if (invoiceId != null)
             {
-                service.InvoiceID = (int) invoiceId;
+                service.InvoiceID = (int)invoiceId;
             }
             if (Request.UrlReferrer != null)
             {
@@ -222,7 +222,7 @@ namespace BuildingManagement.Controllers
             oldInvoice.Quantity = oldInvoice.Quantity - serviceToUpdate.Quantity;
             oldInvoice.TotalValueWithoutTVA = oldInvoice.TotalValueWithoutTVA - serviceToUpdate.ValueWithoutTVA;
             oldInvoice.TotalTVA = oldInvoice.TotalTVA - serviceToUpdate.TVA;
-            if (TryUpdateModel(serviceToUpdate, "", new[]{"Name", "Quantity", "Unit", "Price", "QuotaTVA", "Fixed", "Inhabited", "InvoiceID", "DistributionModeID", "MeterTypeID", "Counted"}))
+            if (TryUpdateModel(serviceToUpdate, "", new[] { "Name", "Quantity", "Unit", "Price", "QuotaTVA", "Fixed", "Inhabited", "InvoiceID", "DistributionModeID", "MeterTypeID", "Counted" }))
             {
                 try
                 {
@@ -365,7 +365,7 @@ namespace BuildingManagement.Controllers
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new {id, saveChangesError = true});
+                return RedirectToAction("Delete", new { id, saveChangesError = true });
             }
             if (PreviousPage.Equals("/Service/Index"))
             {
@@ -393,7 +393,7 @@ namespace BuildingManagement.Controllers
             if (service.Counted)
             {
                 var totalConsumption = 0.0m;
-                #region subMeter consumption
+                #region meter consumption
                 var meters = _unitOfWork.MeterRepository.GetAllMetersIncludingMeterTypesAndDistributionModeAndClientAndSectionsAndLevelsAndSpaces().ToList();
                 foreach (var meter in meters)
                 {
@@ -457,7 +457,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new Cost();
                                         var quota = ((decimal)space.People) / ((decimal)totalPeople);
                                         cost.Quota = quota;
-                                        cost.Value = quota * meterConsumption * valueWithTVA;
+                                        cost.Value = quota * meterConsumption * service.Price;
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         totalCost += cost.Value;
@@ -556,7 +556,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new Cost();
                                         var quota = ((decimal)space.People) / ((decimal)totalPeople);
                                         cost.Quota = quota;
-                                        cost.Value = quota * subMeterConsumption * valueWithTVA;
+                                        cost.Value = quota * subMeterConsumption * service.Price;
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         totalCost += cost.Value;
@@ -655,7 +655,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new Cost();
                                         var quota = ((decimal)space.People) / ((decimal)totalPeople);
                                         cost.Quota = quota;
-                                        cost.Value = quota * subSubMeterConsumption * valueWithTVA;
+                                        cost.Value = quota * subSubMeterConsumption * service.Price;
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         totalCost += cost.Value;
@@ -757,7 +757,7 @@ namespace BuildingManagement.Controllers
                 _unitOfWork.Save();
                 TempData["message"] += $"Service {service.Name} has been distributed.";
             }
-            catch (DataException)
+            catch (DataException ex)
             {
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be distributed.";
                 return RedirectToAction("Index", new { id, saveChangesError = true });

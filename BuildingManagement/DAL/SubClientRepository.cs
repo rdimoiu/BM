@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BuildingManagement.Models;
+﻿using BuildingManagement.Models;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 
 namespace BuildingManagement.DAL
 {
@@ -31,7 +31,7 @@ namespace BuildingManagement.DAL
         {
             return MainContext.SubClients
                 .Include(sc => sc.Client)
-                .Where(sc => 
+                .Where(sc =>
                     sc.Name.ToLower().Contains(searchString) ||
                     sc.Phone.ToLower().Contains(searchString) ||
                     sc.Country.ToLower().Contains(searchString) ||

@@ -2,6 +2,9 @@
     var validationSummary = "";
     validationSummary += IndexValidation();
     validationSummary += DateValidation();
+    if (!document.getElementById("Initial").checked) {
+        validationSummary += DiscountMonthValidation();
+    }
     validationSummary += SubSubMeterValidation();
     validationSummary += MeterTypeValidation();
     if (validationSummary !== "") {

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -85,11 +85,11 @@ namespace BuildingManagement.Controllers
             }
             if (clientId != null)
             {
-                invoice.ClientID = (int) clientId;
+                invoice.ClientID = (int)clientId;
             }
             if (providerId != null)
             {
-                invoice.ProviderID = (int) providerId;
+                invoice.ProviderID = (int)providerId;
             }
             if (Request.UrlReferrer != null)
             {
@@ -161,7 +161,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(invoiceToUpdate, "", new[]{"Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID"}))
+            if (TryUpdateModel(invoiceToUpdate, "", new[] { "Number", "CheckTotalValueWithoutTVA", "CheckTotalTVA", "Date", "DueDate", "CheckQuantity", "DiscountMonth", "InvoiceTypeID", "ProviderID", "ClientID" }))
             {
                 try
                 {
@@ -226,7 +226,7 @@ namespace BuildingManagement.Controllers
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new {id, saveChangesError = true});
+                return RedirectToAction("Delete", new { id, saveChangesError = true });
             }
             if (PreviousPage.Equals("/Invoice/Index"))
             {

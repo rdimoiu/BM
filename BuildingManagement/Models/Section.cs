@@ -18,7 +18,7 @@ namespace BuildingManagement.Models
         public int People { get; set; }
 
         public int ClientID { get; set; }
-        
+
         public virtual Client Client { get; set; }
 
         public virtual ICollection<Meter> Meters { get; set; }

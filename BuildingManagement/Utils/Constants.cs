@@ -1,8 +1,8 @@
+using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Microsoft.Owin.Security;
 
 namespace BuildingManagement.Utils
 {

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BuildingManagement.Models;
-using System.Data.Entity;
+﻿using BuildingManagement.Models;
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 
 namespace BuildingManagement.DAL
 {
@@ -67,7 +67,7 @@ namespace BuildingManagement.DAL
                     m.Code.ToLower().Contains(searchString) ||
                     m.Details.ToLower().Contains(searchString) ||
                     m.Defect.ToString().ToLower().Contains(searchString) ||
-                    m.DistributionMode.Mode.ToLower().Contains(searchString)||
+                    m.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     m.Client.Name.ToLower().Contains(searchString));
         }
 

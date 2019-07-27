@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -85,13 +85,13 @@ namespace BuildingManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                    //uniqueness condition check
-                    var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
-                    if (duplicateSubClient != null)
-                    {
-                        PopulateClientsDropDownList(subClient.ClientID);
-                        return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");
-                    }
+                //uniqueness condition check
+                var duplicateSubClient = _unitOfWork.SubClientRepository.FirstOrDefault(sc => sc.CNP == subClient.CNP || sc.FiscalCode == subClient.FiscalCode);
+                if (duplicateSubClient != null)
+                {
+                    PopulateClientsDropDownList(subClient.ClientID);
+                    return new HttpStatusCodeResult(409, "A sub client with this CNP or FiscalCode already exists.");
+                }
                 try
                 {
                     _unitOfWork.SubClientRepository.Add(subClient);

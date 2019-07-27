@@ -1,3 +1,4 @@
+using BuildingManagement.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +7,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using BuildingManagement.Utils;
 
 namespace BuildingManagement.Models
 {

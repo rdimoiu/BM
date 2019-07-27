@@ -16,17 +16,17 @@ namespace BuildingManagement.Models
         public decimal Surface { get; set; }
 
         public int People { get; set; }
-        
+
         public bool Inhabited { get; set; }
 
         public int LevelID { get; set; }
 
         public Level Level { get; set; }
-        
+
         public int SpaceTypeID { get; set; }
 
         public virtual SpaceType SpaceType { get; set; }
-        
+
         public int SubClientID { get; set; }
 
         public virtual SubClient SubClient { get; set; }

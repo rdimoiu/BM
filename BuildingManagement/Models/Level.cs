@@ -20,7 +20,7 @@ namespace BuildingManagement.Models
         public int SectionID { get; set; }
 
         public Section Section { get; set; }
-        
+
         public virtual ICollection<Meter> Meters { get; set; }
 
         public virtual ICollection<SubMeter> SubMeters { get; set; }

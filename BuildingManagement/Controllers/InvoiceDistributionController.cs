@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using BuildingManagement.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
 
 namespace BuildingManagement.Controllers
 {
@@ -32,8 +32,8 @@ namespace BuildingManagement.Controllers
 
             if (discountMonth != null)
             {
-                invoiceDistributionIndexData.DiscountMonth = (DateTime) discountMonth;
-                invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime) discountMonth).Month).ToList();
+                invoiceDistributionIndexData.DiscountMonth = (DateTime)discountMonth;
+                invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.DiscountMonth.Month == ((DateTime)discountMonth).Month).ToList();
             }
             if (clientId != null)
             {
@@ -42,10 +42,10 @@ namespace BuildingManagement.Controllers
 
             if (discountMonth != null)
             {
-                invoiceDistributionIndexData.DiscountMonth = (DateTime) discountMonth;
+                invoiceDistributionIndexData.DiscountMonth = (DateTime)discountMonth;
                 if (clientId != null)
                 {
-                    invoiceDistributionIndexData.ClientID = (int) clientId;
+                    invoiceDistributionIndexData.ClientID = (int)clientId;
                     if (providerId != null)
                     {
                         invoiceDistributionIndexData.ProviderID = (int)providerId;
@@ -88,7 +88,7 @@ namespace BuildingManagement.Controllers
                 {
                     if (providerId != null)
                     {
-                        invoiceDistributionIndexData.ProviderID = (int) providerId;
+                        invoiceDistributionIndexData.ProviderID = (int)providerId;
                         invoiceDistributionIndexData.Invoices = _unitOfWork.InvoiceRepository.GetAllInvoicesIncludingClientAndProviderAndInvoiceTypeAndServices().Where(i => i.ProviderID == providerId).ToList();
                     }
                     else

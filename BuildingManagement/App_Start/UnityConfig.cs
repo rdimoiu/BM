@@ -1,6 +1,3 @@
-using System.Data.Entity;
-using System.Web;
-using System.Web.Mvc;
 using BuildingManagement.Controllers;
 using BuildingManagement.DAL;
 using BuildingManagement.Models;
@@ -8,6 +5,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using System.Data.Entity;
+using System.Web;
+using System.Web.Mvc;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
@@ -19,7 +19,7 @@ namespace BuildingManagement
     {
         public static void RegisterComponents()
         {
-			var container = new UnityContainer();
+            var container = new UnityContainer();
 
             // register all your components with the container here
             // it is NOT necessary to register your controllers

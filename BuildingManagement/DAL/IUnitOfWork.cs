@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BuildingManagement.Models;
+using System;
 using System.Threading.Tasks;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {

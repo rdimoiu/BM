@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers
@@ -113,7 +113,7 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
-            if (TryUpdateModel(invoiceTypeToUpdate, "", new[] {"Type"}))
+            if (TryUpdateModel(invoiceTypeToUpdate, "", new[] { "Type" }))
             {
                 try
                 {
@@ -168,7 +168,7 @@ namespace BuildingManagement.Controllers
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new {id, saveChangesError = true});
+                return RedirectToAction("Delete", new { id, saveChangesError = true });
             }
             return RedirectToAction("Index");
         }

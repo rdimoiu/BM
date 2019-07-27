@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BuildingManagement.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.ViewModels
 {
@@ -25,7 +25,7 @@ namespace BuildingManagement.ViewModels
 
         [NotMapped]
         public virtual IEnumerable<Invoice> Invoices { get; set; }
-        
+
         [NotMapped]
         public virtual IEnumerable<Service> Services { get; set; }
     }

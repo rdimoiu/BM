@@ -244,7 +244,7 @@ function IndexValidation() {
 function MeterValidation() {
     var controlId = document.getElementById("MeterID");
     if (controlId.value === "" || controlId.value === "0") {
-        return "The Meter field is required." + "\n";
+        return "The Meter Code field is required." + "\n";
     } else {
         return "";
     }
@@ -377,7 +377,7 @@ function SubClientValidation() {
 function SubMeterValidation() {
     var controlId = document.getElementById("SubMeterID");
     if (controlId.value === "" || controlId.value === "0") {
-        return "The SubMeter field is required." + "\n";
+        return "The SubMeter Code field is required." + "\n";
     } else {
         return "";
     }
@@ -386,7 +386,7 @@ function SubMeterValidation() {
 function SubSubMeterValidation() {
     var controlId = document.getElementById("SubSubMeterID");
     if (controlId.value === "" || controlId.value === "0") {
-        return "The SubSubMeter field is required." + "\n";
+        return "The SubSubMeter Code field is required." + "\n";
     } else {
         return "";
     }

@@ -1,9 +1,9 @@
+using BuildingManagement.DAL;
+using BuildingManagement.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
 using X.PagedList;
 
 namespace BuildingManagement.Controllers

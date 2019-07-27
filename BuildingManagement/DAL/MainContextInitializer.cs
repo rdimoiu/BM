@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Antlr.Runtime;
 using BuildingManagement.Models;
 using BuildingManagement.Utils;
+using System;
+using System.Collections.Generic;
 
 namespace BuildingManagement.DAL
 {
@@ -500,16 +500,16 @@ namespace BuildingManagement.DAL
             invoiceTypes.ForEach(it => context.InvoiceTypes.Add(it));
             context.SaveChanges();
 
-            var meterType1 = new MeterType {ID = 1, Type = "apa"};
-            var meterType2 = new MeterType {ID = 2, Type = "curent"};
-            var meterType3 = new MeterType {ID = 3, Type = "gaz"};
-            var meterTypes = new List<MeterType> {meterType1, meterType2, meterType3};
+            var meterType1 = new MeterType { ID = 1, Type = "apa" };
+            var meterType2 = new MeterType { ID = 2, Type = "curent" };
+            var meterType3 = new MeterType { ID = 3, Type = "gaz" };
+            var meterTypes = new List<MeterType> { meterType1, meterType2, meterType3 };
             meterTypes.ForEach(s => context.MeterTypes.Add(s));
             context.SaveChanges();
 
-            var distributionMode1 = new DistributionMode {ID = 1, Mode = "cote parti"};
-            var distributionMode2 = new DistributionMode {ID = 2, Mode = "numar persoane"};
-            var distributionModes = new List<DistributionMode> {distributionMode1, distributionMode2};
+            var distributionMode1 = new DistributionMode { ID = 1, Mode = "cote parti" };
+            var distributionMode2 = new DistributionMode { ID = 2, Mode = "numar persoane" };
+            var distributionModes = new List<DistributionMode> { distributionMode1, distributionMode2 };
             distributionModes.ForEach(s => context.DistributionModes.Add(s));
             context.SaveChanges();
 
@@ -521,8 +521,8 @@ namespace BuildingManagement.DAL
                 Details = "detail 1",
                 DistributionModeID = 1,
                 ClientID = 1,
-                MeterTypes = new List<MeterType> {meterType1, meterType2},
-                Spaces = new List<Space> {space1, space2, space3, space4 }
+                MeterTypes = new List<MeterType> { meterType1, meterType2 },
+                Spaces = new List<Space> { space1, space2, space3, space4 }
             };
             var meter2 = new Meter
             {
@@ -530,34 +530,24 @@ namespace BuildingManagement.DAL
                 Code = "23456",
                 DistributionModeID = 2,
                 ClientID = 1,
-                MeterTypes = new List<MeterType> {meterType2, meterType3},
-                Spaces = new List<Space> {space5, space6, space7, space8, space9}
+                MeterTypes = new List<MeterType> { meterType2, meterType3 },
+                Spaces = new List<Space> { space5, space6, space7, space8, space9 }
             };
-            var meter3 = new Meter
-            {
-                ID = 3,
-                Code = "34567",
-                Details = "detail 3",
-                DistributionModeID = 2,
-                ClientID = 1,
-                MeterTypes = new List<MeterType> {meterType1, meterType3},
-                Spaces = new List<Space> {space10, space11,space12, space13}
-            };
-            var meters = new List<Meter> {meter1, meter2, meter3};
+            var meters = new List<Meter> { meter1, meter2 };
             meters.ForEach(s => context.Meters.Add(s));
             context.SaveChanges();
 
             var subMeter1 = new SubMeter
             {
                 ID = 1,
-                Code = "12345.1",
-                Details = "detail 1.1",
+                Code = "23456.1",
+                Details = "details",
                 DistributionModeID = 1,
-                MeterTypes = new List<MeterType> {meterType1},
-                Spaces = new List<Space> {space1, space2},
-                Meter = meter1
+                MeterTypes = new List<MeterType> { meterType3 },
+                Spaces = new List<Space> { space5, space8 },
+                Meter = meter2
             };
-            var subMeters = new List<SubMeter> {subMeter1};
+            var subMeters = new List<SubMeter> { subMeter1 };
             subMeters.ForEach(sm => context.SubMeters.Add(sm));
             context.SaveChanges();
 
@@ -614,7 +604,7 @@ namespace BuildingManagement.DAL
             var sysadminRole = new UserRole
             {
                 UserId = userSysadmin.Id,
-                UserRoleType = (int) Constants.RoleTypes.Sysadmin
+                UserRoleType = (int)Constants.RoleTypes.Sysadmin
             };
             context.UserRoles.Add(sysadminRole);
 

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BuildingManagement.Models;
+using System;
 using System.Collections.Generic;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {

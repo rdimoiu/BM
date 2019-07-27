@@ -1,11 +1,11 @@
-﻿using System.Linq;
-using BuildingManagement.Models;
+﻿using BuildingManagement.Models;
+using System.Linq;
 
 namespace BuildingManagement.DAL
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(MainContext context) 
+        public UserRepository(MainContext context)
             : base(context)
         {
         }

@@ -4,7 +4,7 @@ namespace BuildingManagement.Models
 {
     public class Tree1D
     {
-        public List<int> MeterTypeIDs{ get; set; }
+        public List<int> MeterTypeIDs { get; set; }
 
         public Tree1D()
         {

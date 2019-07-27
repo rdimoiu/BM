@@ -1,12 +1,12 @@
-﻿using System;
+﻿using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using BuildingManagement.ViewModels;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
-using BuildingManagement.ViewModels;
 
 namespace BuildingManagement.Controllers
 {
@@ -18,7 +18,7 @@ namespace BuildingManagement.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        
+
         // GET: Costs
         public ActionResult Index(DateTime? discountMonth, int? sectionId)
         {
@@ -93,7 +93,7 @@ namespace BuildingManagement.Controllers
                     col.Add("SubClient", space.SubClient.Name);
                     col.Add("Surface", space.Surface.ToString());
                     col.Add("People", space.People.ToString());
-                    
+
                     foreach (var service in costsIndexData.Services)
                     {
                         if (!costsIndexData.Cols.ContainsKey(service.Name))

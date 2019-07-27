@@ -29,7 +29,7 @@ namespace BuildingManagement.Models
         public virtual MeterType MeterType { get; set; }
 
         public bool Initial { get; set; }
-        
+
         public bool Estimated { get; set; }
 
         public MeterReading()

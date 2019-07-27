@@ -1,3 +1,7 @@
+using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using BuildingManagement.Utils;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -5,10 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using BuildingManagement.Models;
-using BuildingManagement.Utils;
-using Microsoft.Ajax.Utilities;
 
 namespace BuildingManagement.Controllers
 {
@@ -133,7 +133,7 @@ namespace BuildingManagement.Controllers
         {
             try
             {
-                var user=_unitOfWork.UserRepository.Get(id);
+                var user = _unitOfWork.UserRepository.Get(id);
                 user.AccountConfirmed = false;
                 _unitOfWork.Save();
             }

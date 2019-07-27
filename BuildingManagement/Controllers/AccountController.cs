@@ -1,13 +1,13 @@
+using BuildingManagement.DAL;
+using BuildingManagement.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using BuildingManagement.DAL;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.Controllers
 {
@@ -70,7 +70,7 @@ namespace BuildingManagement.Controllers
                 AuthenticateUser(model);
                 return RedirectToAction("Index", "Client");
             }
-                
+
             // invalid username or password
             ModelState.AddModelError("", "invalid username or password");
             return View();
@@ -89,7 +89,7 @@ namespace BuildingManagement.Controllers
             if (user != null && !user.AccountConfirmed)
             {
                 ViewBag.UserName = user.FirstName + " " + user.LastName;
-                return View("LoginConfirmAccount", new LoginViewModel {Email = username});
+                return View("LoginConfirmAccount", new LoginViewModel { Email = username });
             }
             return null;
         }

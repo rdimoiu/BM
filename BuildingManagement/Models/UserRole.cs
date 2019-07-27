@@ -17,7 +17,7 @@ namespace BuildingManagement.Models
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
 
-        [Required]  
+        [Required]
         public int UserRoleType { get; set; }
     }
 }

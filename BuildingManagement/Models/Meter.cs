@@ -22,9 +22,9 @@ namespace BuildingManagement.Models
         public virtual ICollection<MeterType> MeterTypes { get; set; }
 
         public virtual ICollection<Space> Spaces { get; set; }
-        
+
         public virtual ICollection<Level> Levels { get; set; }
-        
+
         public virtual ICollection<Section> Sections { get; set; }
 
         [NotMapped]

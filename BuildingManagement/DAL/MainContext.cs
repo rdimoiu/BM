@@ -1,6 +1,6 @@
+using BuildingManagement.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {
@@ -149,7 +149,7 @@ namespace BuildingManagement.DAL
                     .ToTable("ServiceSpace"));
 
             //composed primary key for Cost 
-            modelBuilder.Entity<Cost>().HasKey(c => new {c.ServiceID, c.SpaceID});
+            modelBuilder.Entity<Cost>().HasKey(c => new { c.ServiceID, c.SpaceID });
 
             //unique constraint Number for Space
             //modelBuilder.Entity<Space>()
