@@ -6,7 +6,8 @@
     validationSummary += QuantityValidation();
     validationSummary += PriceValidation();
     validationSummary += QuotaTVAValidation();
-    validationSummary += DistributionModeOrMeterTypeValidation();
+    validationSummary += DistributionModeValidation(document.getElementById("Counted").checked);
+    validationSummary += MeterTypeValidation(document.getElementById("Counted").checked);
     validationSummary += SpacesValidation();
     if (validationSummary !== "") {
         alert(validationSummary);

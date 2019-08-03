@@ -1,4 +1,5 @@
 ﻿@model IPagedList<BuildingManagement.Models.Service>
+@using BuildingManagement.Models
 @using X.PagedList.Mvc;
 @using X.PagedList;
 
@@ -93,13 +94,13 @@
             <td>
                 @item.QuotaTVA.ToString("0.##")
             </td>
-            @if (item.DistributionMode == null)
+            @if (item.DistributionModeID == null)
             {
                 <td>-</td>
             }
             else
             {
-                <td>@item.DistributionMode.Mode</td>
+                <td>@Enum.GetName(typeof(DistributionMode), item.DistributionModeID)</td>
             }
             @if (item.MeterType == null)
             {

@@ -9,7 +9,6 @@ namespace BuildingManagement.DAL
         private readonly MainContext _context = new MainContext();
 
         private IMeterTypeRepository _meterTypeRepository;
-        private IDistributionModeRepository _distributionModeRepository;
         private IMeterRepository _meterRepository;
         private IMeterReadingRepository _meterReadingRepository;
         private ISubMeterRepository _subMeterRepository;
@@ -45,18 +44,6 @@ namespace BuildingManagement.DAL
                     _meterTypeRepository = new MeterTypeRepository(_context);
                 }
                 return _meterTypeRepository;
-            }
-        }
-
-        public IDistributionModeRepository DistributionModeRepository
-        {
-            get
-            {
-                if (_distributionModeRepository == null)
-                {
-                    _distributionModeRepository = new DistributionModeRepository(_context);
-                }
-                return _distributionModeRepository;
             }
         }
 

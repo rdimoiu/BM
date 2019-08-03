@@ -507,13 +507,6 @@ namespace BuildingManagement.DAL
             meterTypes.ForEach(s => context.MeterTypes.Add(s));
             context.SaveChanges();
 
-            var distributionMode1 = new DistributionMode { ID = 1, Mode = "cote parti" };
-            var distributionMode2 = new DistributionMode { ID = 2, Mode = "numar persoane" };
-            var distributionModes = new List<DistributionMode> { distributionMode1, distributionMode2 };
-            distributionModes.ForEach(s => context.DistributionModes.Add(s));
-            context.SaveChanges();
-
-
             var meter1 = new Meter
             {
                 ID = 1,

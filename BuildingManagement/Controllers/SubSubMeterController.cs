@@ -1,4 +1,5 @@
-﻿using BuildingManagement.DAL;
+﻿using System;
+using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using System.Collections.Generic;
 using System.Data;
@@ -94,11 +95,6 @@ namespace BuildingManagement.Controllers
                 if (subMeter != null)
                 {
                     subSubMeter.SubMeter = subMeter;
-                }
-                var distributionMode = _unitOfWork.DistributionModeRepository.Get(subSubMeter.DistributionModeID);
-                if (distributionMode != null)
-                {
-                    subSubMeter.DistributionMode = distributionMode;
                 }
                 var types = string.Empty;
                 if (subSubMeter.MeterTypesSelected != null)
@@ -316,8 +312,8 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
-            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
+            var distributionModesQuery = from DistributionMode d in Enum.GetValues(typeof(DistributionMode)) select new { ID = (int)d, Name = d.ToString() };
+            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Name", selectedDistributionMode);
         }
 
         private void PopulateSubMetersDropDownList(object selectedSubMeter = null)

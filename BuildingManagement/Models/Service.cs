@@ -41,7 +41,6 @@ namespace BuildingManagement.Models
         public virtual Invoice Invoice { get; set; }
 
         public int? DistributionModeID { get; set; }
-        public DistributionMode DistributionMode { get; set; }
 
         public int? MeterTypeID { get; set; }
         public MeterType MeterType { get; set; }

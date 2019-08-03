@@ -18,7 +18,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.SubSubMeters
                 .Include(ssm => ssm.MeterTypes)
-                .Include(ssm => ssm.DistributionMode)
                 .Include(ssm => ssm.SubMeter)
                 .Include(ssm => ssm.Sections)
                 .Include(ssm => ssm.Levels)
@@ -46,7 +45,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.SubSubMeters
                 .Include(ssm => ssm.MeterTypes)
-                .Include(ssm => ssm.DistributionMode)
                 .Include(ssm => ssm.SubMeter)
                 .Include(ssm => ssm.Sections)
                 .Include(ssm => ssm.Levels)
@@ -57,7 +55,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.SubSubMeters
                 .Include(ssm => ssm.MeterTypes)
-                .Include(ssm => ssm.DistributionMode)
                 .Include(ssm => ssm.SubMeter)
                 .Include(ssm => ssm.Sections)
                 .Include(ssm => ssm.Levels)
@@ -66,7 +63,6 @@ namespace BuildingManagement.DAL
                     ssm.Code.ToLower().Contains(searchString) ||
                     ssm.Details.ToLower().Contains(searchString) ||
                     ssm.Defect.ToString().ToLower().Contains(searchString) ||
-                    ssm.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     ssm.SubMeter.Code.ToLower().Contains(searchString));
         }
 
@@ -88,12 +84,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "defect_desc":
                     subSubMeters = subSubMeters.OrderByDescending(ssm => ssm.Defect);
-                    break;
-                case "DistributionMode":
-                    subSubMeters = subSubMeters.OrderBy(ssm => ssm.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    subSubMeters = subSubMeters.OrderByDescending(ssm => ssm.DistributionMode.Mode);
                     break;
                 case "SubMeter":
                     subSubMeters = subSubMeters.OrderBy(ssm => ssm.SubMeter.Code);

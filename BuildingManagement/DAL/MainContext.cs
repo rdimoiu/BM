@@ -18,7 +18,6 @@ namespace BuildingManagement.DAL
         public virtual DbSet<Invoice> Invoices { get; set; }
         public virtual DbSet<InvoiceType> InvoiceTypes { get; set; }
 
-        public virtual DbSet<DistributionMode> DistributionModes { get; set; }
         public virtual DbSet<Meter> Meters { get; set; }
         public virtual DbSet<MeterReading> MeterReadings { get; set; }
         public virtual DbSet<MeterType> MeterTypes { get; set; }

@@ -1,5 +1,4 @@
 ﻿using BuildingManagement.Models;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -19,7 +18,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Meters
                 .Include(m => m.MeterTypes)
-                .Include(m => m.DistributionMode)
                 .Include(m => m.Client)
                 .Include(m => m.Sections)
                 .Include(m => m.Levels)
@@ -47,7 +45,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Meters
                 .Include(m => m.MeterTypes)
-                .Include(m => m.DistributionMode)
                 .Include(m => m.Client)
                 .Include(m => m.Sections)
                 .Include(m => m.Levels)
@@ -58,7 +55,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Meters
                 .Include(m => m.MeterTypes)
-                .Include(m => m.DistributionMode)
                 .Include(m => m.Client)
                 .Include(m => m.Sections)
                 .Include(m => m.Levels)
@@ -67,7 +63,6 @@ namespace BuildingManagement.DAL
                     m.Code.ToLower().Contains(searchString) ||
                     m.Details.ToLower().Contains(searchString) ||
                     m.Defect.ToString().ToLower().Contains(searchString) ||
-                    m.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     m.Client.Name.ToLower().Contains(searchString));
         }
 
@@ -89,12 +84,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "defect_desc":
                     meters = meters.OrderByDescending(m => m.Defect);
-                    break;
-                case "DistributionMode":
-                    meters = meters.OrderBy(m => m.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    meters = meters.OrderByDescending(m => m.DistributionMode.Mode);
                     break;
                 case "Client":
                     meters = meters.OrderBy(m => m.Client.Name);

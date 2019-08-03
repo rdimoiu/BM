@@ -50,18 +50,18 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.DistributionMode, htmlAttributes: new {@class = "control-label col-md-2"})
+        @Html.LabelFor(model => model.DistributionModeID, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new {@class = "form-control"})
-            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new {@class = "text-danger"})
+            @Html.DropDownList("DistributionModeID", null, "Select...", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DistributionModeID, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.SubMeter, htmlAttributes: new { @class = "control-label col-md-2"})
+        @Html.LabelFor(model => model.SubMeter, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("SubMeterID", null, "Select...", htmlAttributes: new { @class = "form-control", onchange = "GetMeterTypesAndSpacesForSubSubMeter(document.getElementById('ID').value, this.value, 'Edit')" })
-            @Html.ValidationMessageFor(model => model.SubMeterID, "", new { @class = "text-danger"})
+            @Html.ValidationMessageFor(model => model.SubMeterID, "", new { @class = "text-danger" })
         </div>
     </div>
 

@@ -1,4 +1,5 @@
-﻿using BuildingManagement.DAL;
+﻿using System;
+using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using BuildingManagement.ViewModels;
 using System.Collections.Generic;
@@ -118,7 +119,7 @@ namespace BuildingManagement.Controllers
                         if (meterType != null)
                         {
                             service.MeterType = meterType;
-                            service.DistributionMode = null;
+                            service.DistributionModeID = null;
                         }
                     }
                 }
@@ -126,12 +127,7 @@ namespace BuildingManagement.Controllers
                 {
                     if (service.DistributionModeID != null)
                     {
-                        var distributionMode = _unitOfWork.DistributionModeRepository.Get((int)service.DistributionModeID);
-                        if (distributionMode != null)
-                        {
-                            service.DistributionMode = distributionMode;
-                            service.MeterType = null;
-                        }
+                        service.MeterType = null;
                     }
                 }
                 if (service.ServiceSLSSelected != null)
@@ -243,7 +239,7 @@ namespace BuildingManagement.Controllers
                             if (meterType != null)
                             {
                                 service.MeterType = meterType;
-                                service.DistributionMode = null;
+                                service.DistributionModeID = null;
                             }
                         }
                     }
@@ -251,12 +247,7 @@ namespace BuildingManagement.Controllers
                     {
                         if (service.DistributionModeID != null)
                         {
-                            var distributionMode = _unitOfWork.DistributionModeRepository.Get((int)service.DistributionModeID);
-                            if (distributionMode != null)
-                            {
-                                service.DistributionMode = distributionMode;
-                                service.MeterType = null;
-                            }
+                            service.MeterType = null;
                         }
                     }
                     if (service.ServiceSLSSelected != null)
@@ -985,8 +976,8 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
-            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
+            var distributionModesQuery = from DistributionMode d in Enum.GetValues(typeof(DistributionMode)) select new { ID = (int)d, Name = d.ToString() };
+            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Name", selectedDistributionMode);
         }
 
         private void PopulateMeterTypesDropDownList(object selectedMeterType = null)

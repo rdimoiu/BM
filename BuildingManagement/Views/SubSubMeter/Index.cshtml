@@ -1,4 +1,5 @@
 ﻿@model IPagedList<BuildingManagement.Models.SubSubMeter>
+@using BuildingManagement.Models
 @using X.PagedList.Mvc;
 @using X.PagedList;
 
@@ -30,7 +31,7 @@
             @Html.ActionLink("Defect", "Index", new { sortOrder = ViewBag.DefectSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.ActionLink("DistributionMode", "Index", new { sortOrder = ViewBag.DistributionModeSortParm, currentFilter = ViewBag.CurrentFilter })
+            DibutionMode
         </th>
         <th>
             @Html.ActionLink("SubMeter", "Index", new { sortOrder = ViewBag.SubMeterSortParm, currentFilter = ViewBag.CurrentFilter })
@@ -58,7 +59,7 @@
                 <input type="checkbox" checked=@item.Defect disabled />
             </td>
             <td>
-                @item.DistributionMode.Mode
+                @Enum.GetName(typeof(DistributionMode), item.DistributionModeID)
             </td>
             <td>
                 @item.SubMeter.Code

@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BuildingManagement.Models
+﻿namespace BuildingManagement.Models
 {
-    public class DistributionMode
+    public enum DistributionMode
     {
-        public int ID { get; set; }
-
-        [Required]
-        [StringLength(15)]
-        public string Mode { get; set; }
+        CoteParti = 1,
+        NumarPersoane = 2,
+        Consum = 3
     }
 }

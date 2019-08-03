@@ -6,7 +6,7 @@
         validationSummary += DiscountMonthValidation();
     }
     validationSummary += SubMeterValidation();
-    validationSummary += MeterTypeValidation();
+    validationSummary += MeterTypeValidation(true);
     if (validationSummary !== "") {
         alert(validationSummary);
         return false;

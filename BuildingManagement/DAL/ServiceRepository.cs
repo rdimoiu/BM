@@ -18,7 +18,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
-                .Include(s => s.DistributionMode)
                 .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)
@@ -47,7 +46,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
-                .Include(s => s.DistributionMode)
                 .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)
@@ -58,7 +56,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.Services
                 .Include(s => s.Invoice)
-                .Include(s => s.DistributionMode)
                 .Include(s => s.MeterType)
                 .Include(s => s.Sections)
                 .Include(s => s.Levels)

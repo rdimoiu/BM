@@ -1,4 +1,5 @@
-﻿using BuildingManagement.DAL;
+﻿using System;
+using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using System.Collections.Generic;
 using System.Data;
@@ -90,11 +91,6 @@ namespace BuildingManagement.Controllers
                     PopulateDistributionModesDropDownList(meter.DistributionModeID);
                     PopulateClientsDropDownList(meter.ClientID);
                     return new HttpStatusCodeResult(409, "A meter with this code already exists.");
-                }
-                var distributionMode = _unitOfWork.DistributionModeRepository.Get(meter.DistributionModeID);
-                if (distributionMode != null)
-                {
-                    meter.DistributionMode = distributionMode;
                 }
                 var client = _unitOfWork.ClientRepository.Get(meter.ClientID);
                 if (client != null)
@@ -317,8 +313,8 @@ namespace BuildingManagement.Controllers
 
         private void PopulateDistributionModesDropDownList(object selectedDistributionMode = null)
         {
-            var distributionModesQuery = _unitOfWork.DistributionModeRepository.GetAll().ToList();
-            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Mode", selectedDistributionMode);
+            var distributionModesQuery = from DistributionMode d in Enum.GetValues(typeof(DistributionMode)) select new { ID = (int)d, Name = d.ToString() };
+            ViewBag.DistributionModeID = new SelectList(distributionModesQuery, "ID", "Name", selectedDistributionMode);
         }
 
         private void PopulateClientsDropDownList(object selectedClient = null)

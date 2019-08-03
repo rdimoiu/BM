@@ -18,7 +18,6 @@ namespace BuildingManagement.DAL
         {
             return MainContext.SubMeters
                 .Include(sm => sm.MeterTypes)
-                .Include(sm => sm.DistributionMode)
                 .Include(sm => sm.Meter)
                 .Include(sm => sm.Sections)
                 .Include(sm => sm.Levels)
@@ -46,7 +45,6 @@ namespace BuildingManagement.DAL
         {
             var subMeters = MainContext.SubMeters
                 .Include(sm => sm.MeterTypes)
-                .Include(sm => sm.DistributionMode)
                 .Include(sm => sm.Meter)
                 .Include(sm => sm.Sections)
                 .Include(sm => sm.Levels)
@@ -68,12 +66,6 @@ namespace BuildingManagement.DAL
                 case "defect_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Defect);
                     break;
-                case "DistributionMode":
-                    subMeters = subMeters.OrderBy(sm => sm.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.DistributionMode.Mode);
-                    break;
                 case "Meter":
                     subMeters = subMeters.OrderBy(sm => sm.Meter.Code);
                     break;
@@ -91,7 +83,6 @@ namespace BuildingManagement.DAL
         {
             var subMeters = MainContext.SubMeters
                 .Include(sm => sm.MeterTypes)
-                .Include(sm => sm.DistributionMode)
                 .Include(sm => sm.Meter)
                 .Include(sm => sm.Sections)
                 .Include(sm => sm.Levels)
@@ -100,7 +91,6 @@ namespace BuildingManagement.DAL
                     sm.Code.ToLower().Contains(searchString) ||
                     sm.Details.ToLower().Contains(searchString) ||
                     sm.Defect.ToString().ToLower().Contains(searchString) ||
-                    sm.DistributionMode.Mode.ToLower().Contains(searchString) ||
                     sm.Meter.Code.ToLower().Contains(searchString));
             switch (sortOrder)
             {
@@ -118,12 +108,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "defect_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Defect);
-                    break;
-                case "DistributionMode":
-                    subMeters = subMeters.OrderBy(sm => sm.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.DistributionMode.Mode);
                     break;
                 case "Meter":
                     subMeters = subMeters.OrderBy(sm => sm.Meter.Code);
@@ -157,12 +141,6 @@ namespace BuildingManagement.DAL
                     break;
                 case "defect_desc":
                     subMeters = subMeters.OrderByDescending(sm => sm.Defect);
-                    break;
-                case "DistributionMode":
-                    subMeters = subMeters.OrderBy(sm => sm.DistributionMode.Mode);
-                    break;
-                case "distributionMode_desc":
-                    subMeters = subMeters.OrderByDescending(sm => sm.DistributionMode.Mode);
                     break;
                 case "Meter":
                     subMeters = subMeters.OrderBy(sm => sm.Meter.Code);

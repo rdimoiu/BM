@@ -19,7 +19,6 @@ namespace BuildingManagement.Models
         public SubMeter SubMeter { get; set; }
 
         public int DistributionModeID { get; set; }
-        public virtual DistributionMode DistributionMode { get; set; }
 
         public virtual ICollection<MeterType> MeterTypes { get; set; }
 

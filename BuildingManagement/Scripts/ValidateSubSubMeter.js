@@ -1,7 +1,7 @@
 ﻿function ValidateAll(operation) {
     var validationSummary = "";
     validationSummary += CodeValidation();
-    validationSummary += DistributionModeValidation();
+    validationSummary += DistributionModeValidation(false);
     validationSummary += SubMeterValidation();
     validationSummary += MeterTypesValidation();
     validationSummary += SpacesValidation();

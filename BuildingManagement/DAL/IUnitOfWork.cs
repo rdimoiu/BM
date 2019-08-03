@@ -7,7 +7,6 @@ namespace BuildingManagement.DAL
     public interface IUnitOfWork : IDisposable
     {
         IMeterTypeRepository MeterTypeRepository { get; }
-        IDistributionModeRepository DistributionModeRepository { get; }
         IMeterRepository MeterRepository { get; }
         IMeterReadingRepository MeterReadingRepository { get; }
         ISubMeterRepository SubMeterRepository { get; }

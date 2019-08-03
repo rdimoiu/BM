@@ -211,22 +211,16 @@ function CodeValidation() {
     }
 }
 
-function DistributionModeValidation() {
-    var controlId = document.getElementById("DistributionModeID");
-    if (controlId.value === "" || controlId.value === "0") {
-        return "The DistributionMode field is required." + "\n";
-    } else {
+function DistributionModeValidation(counted) {
+    if (counted) {
         return "";
-    }
-}
-
-function DistributionModeOrMeterTypeValidation() {
-    var distributionModeId = document.getElementById("DistributionModeID");
-    var meterTypeId = document.getElementById("MeterTypeID");
-    if ((distributionModeId.value === "" || distributionModeId.value === "0") && (meterTypeId.value === "" || meterTypeId.value === "0")) {
-        return "The DistributionMode or MeterType field is required." + "\n";
     } else {
-        return "";
+        var controlId = document.getElementById("DistributionModeID");
+        if (controlId.value === "" || controlId.value === "0") {
+            return "The DistributionMode field is required." + "\n";
+        } else {
+            return "";
+        }
     }
 }
 
@@ -250,10 +244,14 @@ function MeterValidation() {
     }
 }
 
-function MeterTypeValidation() {
-    var controlId = document.getElementById("MeterTypeID");
-    if (controlId.value === "" || controlId.value === "0") {
-        return "The MeterType field is required." + "\n";
+function MeterTypeValidation(counted) {
+    if (counted) {
+        var controlId = document.getElementById("MeterTypeID");
+        if (controlId.value === "" || controlId.value === "0") {
+            return "The MeterType field is required." + "\n";
+        } else {
+            return "";
+        }
     } else {
         return "";
     }
