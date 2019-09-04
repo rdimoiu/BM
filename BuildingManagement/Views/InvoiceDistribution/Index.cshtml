@@ -1,4 +1,5 @@
-﻿@model BuildingManagement.ViewModels.InvoiceDistributionIndexData
+﻿@using BuildingManagement.Models
+@model BuildingManagement.ViewModels.InvoiceDistributionIndexData
 
 @{
     ViewBag.Title = "Index";
@@ -184,6 +185,15 @@
                                     QuotaTVA
                                 </th>
                                 <th>
+                                    DistributionMode
+                                </th>
+                                <th>
+                                    MeterType
+                                </th>
+                                <th>
+                                    Counted
+                                </th>
+                                <th>
                                 </th>
                             </tr>
                             @foreach (var service in invoice.Services)
@@ -210,13 +220,36 @@
                                     <td>
                                         @service.QuotaTVA.ToString("0.##")
                                     </td>
+                                    @if (service.DistributionModeID == null)
+                                    {
+                                        <td>-</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Enum.GetName(typeof(DistributionMode), service.DistributionModeID)</td>
+                                    }
+                                    @if (service.MeterType == null)
+                                    {
+                                        <td>-</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@service.MeterType.Type</td>
+                                    }
+                                    <td>
+                                        <input type="checkbox" checked=@service.Counted disabled />
+                                    </td>
                                     <td>
                                         @Html.ActionLink("Details", "Details", "Service", new { id = service.ID }, new { @class = "details-icon" })
                                         @if (!service.Distributed)
                                         {
+                                            
                                             @Html.ActionLink("Edit", "Edit", "Service", new { id = service.ID }, new { @class = "edit-icon" })
                                             @Html.ActionLink("Delete", "Delete", "Service", new { id = service.ID }, new { @class = "delete-icon" })
-                                            @Html.ActionLink("Distribute", "Distribute", "Service", new { id = service.ID }, new { @class = "distribute-icon" })
+                                            if (service.Counted || service.DistributionModeID != null)
+                                            {
+                                                @Html.ActionLink("Distribute", "Distribute", "Service", new {id = service.ID}, new {@class = "distribute-icon"})
+                                            }
                                         }
                                         else
                                         {

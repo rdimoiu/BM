@@ -98,6 +98,9 @@
                 Space
             </td>
             <td>
+                Meter
+            </td>
+            <td>
                 Quota
             </td>
             <td>
@@ -106,20 +109,38 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in @Model.Costs)
-        {
-            <tr>
-                <td>
-                    @item.Space.Number
-                </td>
-                <td>
-                    @item.Quota.ToString("0.##")
-                </td>
-                <td>
-                    @item.Value.ToString("0.##")
-                </td>
-            </tr>
-        }
+            @foreach (var item in @Model.UncountedCosts)
+            {
+                <tr>
+                    <td>
+                        @item.Space.Number
+                    </td>
+                    <td />
+                    <td>
+                        @item.Quota.ToString("0.##")
+                    </td>
+                    <td>
+                        @item.Value.ToString("0.##")
+                    </td>
+                </tr>
+            }
+            @foreach (var item in @Model.CountedCosts)
+            {
+                <tr>
+                    <td>
+                        @item.Space.Number
+                    </td>
+                    <td>
+                        @item.AbstractMeter.Code
+                    </td>
+                    <td>
+                        @item.Quota.ToString("0.##")
+                    </td>
+                    <td>
+                        @item.Value.ToString("0.##")
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

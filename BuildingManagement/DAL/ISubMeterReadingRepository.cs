@@ -1,6 +1,6 @@
-﻿using BuildingManagement.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {
@@ -10,8 +10,8 @@ namespace BuildingManagement.DAL
         IEnumerable<SubMeterReading> GetAllSubMeterReadingsIncludingSubMeterAndMeterType();
         IEnumerable<SubMeterReading> GetFilteredSubMeterReadingsIncludingSubMeterAndMeterType(string searchString);
         IEnumerable<SubMeterReading> OrderSubMeterReadings(IEnumerable<SubMeterReading> subMeterReadings, string sortOrder);
-        IEnumerable<SubMeterReading> GetLastSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth);
-        IEnumerable<SubMeterReading> GetPreviousSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth);
-        IEnumerable<SubMeterReading> GetInitialSubMeterReading(int subMeterID, int meterTypeID);
+        SubMeterReading GetSubMeterReadingByDiscountMonth(int subMeterID, int meterTypeID, DateTime discountMonth);
+        SubMeterReading GetPreviousSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth);
+        SubMeterReading GetInitialSubMeterReading(int subMeterID, int meterTypeID);
     }
 }

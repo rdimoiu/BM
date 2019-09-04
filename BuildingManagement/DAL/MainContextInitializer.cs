@@ -509,7 +509,6 @@ namespace BuildingManagement.DAL
 
             var meter1 = new Meter
             {
-                ID = 1,
                 Code = "12345",
                 Details = "detail 1",
                 DistributionModeID = 1,
@@ -519,7 +518,6 @@ namespace BuildingManagement.DAL
             };
             var meter2 = new Meter
             {
-                ID = 2,
                 Code = "23456",
                 DistributionModeID = 2,
                 ClientID = 1,
@@ -532,7 +530,6 @@ namespace BuildingManagement.DAL
 
             var subMeter1 = new SubMeter
             {
-                ID = 1,
                 Code = "23456.1",
                 Details = "details",
                 DistributionModeID = 1,
@@ -544,44 +541,58 @@ namespace BuildingManagement.DAL
             subMeters.ForEach(sm => context.SubMeters.Add(sm));
             context.SaveChanges();
 
-            //var meterReading1 = new MeterReading
+            var subSubMeter1 = new SubSubMeter
+            {
+                Code = "23456.1.1",
+                Details = "bla bla",
+                DistributionModeID = 3,
+                MeterTypes = new List<MeterType> { meterType3 },
+                Spaces = new List<Space> { space8 },
+                SubMeter = subMeter1
+            };
+            var subSubMeters = new List<SubSubMeter> { subSubMeter1 };
+            subSubMeters.ForEach(ssm => context.SubSubMeters.Add(ssm));
+            context.SaveChanges();
+
+            //var meterReading1 = new Reading
             //{
             //    //ID = 1,
             //    Initial = true,
             //    Index = 10m,
             //    Date = new DateTime(2019, 01, 01),
-            //    Meter = meter1,
+            //    DiscountMonth = DateTime.Now,
+            //    AbstractMeter = meter1,
             //    MeterType = meterType1
             //};
-            //var meterReading2 = new MeterReading
+            //var meterReading2 = new Reading
             //{
             //    //ID = 2,
             //    Index = 20m,
             //    Date = new DateTime(2019, 01, 31),
             //    DiscountMonth = new DateTime(2019, 01, 01),
-            //    Meter = meter1,
+            //    AbstractMeter = meter1,
             //    MeterType = meterType1
             //};
-            //var meterReading3 = new MeterReading
+            //var meterReading3 = new Reading
             //{
             //    //ID = 3,
             //    Index = 30m,
             //    Date = new DateTime(2019, 02, 28),
             //    DiscountMonth = new DateTime(2019, 02, 01),
-            //    Meter = meter1,
+            //    AbstractMeter = meter1,
             //    MeterType = meterType1
             //};
-            //var meterReading4 = new MeterReading
+            //var meterReading4 = new Reading
             //{
             //    //ID = 4,
             //    Index = 50m,
             //    Date = new DateTime(2019, 03, 31),
             //    DiscountMonth = new DateTime(2019, 03, 01),
-            //    Meter = meter1,
+            //    AbstractMeter = meter1,
             //    MeterType = meterType1
             //};
-            //var meterReadings = new List<MeterReading> {meterReading1, meterReading2, meterReading3, meterReading4 };
-            //meterReadings.ForEach(s => context.MeterReadings.Add(s));
+            //var meterReadings = new List<Reading> { meterReading1, meterReading2, meterReading3, meterReading4 };
+            //meterReadings.ForEach(s => context.Readings.Add(s));
             //context.SaveChanges();
 
             var userSysadmin = new User

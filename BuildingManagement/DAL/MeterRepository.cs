@@ -97,5 +97,10 @@ namespace BuildingManagement.DAL
             }
             return meters;
         }
+
+        public IEnumerable<Meter> GetAllNoDefect()
+        {
+            return MainContext.Meters.Where(m => !m.Defect);
+        }
     }
 }

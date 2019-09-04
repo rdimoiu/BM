@@ -8,28 +8,31 @@ namespace BuildingManagement.DAL
     {
         private readonly MainContext _context = new MainContext();
 
-        private IMeterTypeRepository _meterTypeRepository;
         private IMeterRepository _meterRepository;
-        private IMeterReadingRepository _meterReadingRepository;
         private ISubMeterRepository _subMeterRepository;
-        private ISubMeterReadingRepository _subMeterReadingRepository;
         private ISubSubMeterRepository _subSubMeterRepository;
+        private IMeterTypeRepository _meterTypeRepository;
+
+        private IMeterReadingRepository _meterReadingRepository;
+        private ISubMeterReadingRepository _subMeterReadingRepository;
         private ISubSubMeterReadingRepository _subSubMeterReadingRepository;
 
         private IClientRepository _clientRepository;
         private ISubClientRepository _subClientRepository;
 
-        private ISpaceTypeRepository _spaceTypeRepository;
         private ISectionRepository _sectionRepository;
         private ILevelRepository _levelRepository;
         private ISpaceRepository _spaceRepository;
+        private ISpaceTypeRepository _spaceTypeRepository;
 
-        private IInvoiceTypeRepository _invoiceTypeRepository;
         private IProviderRepository _providerRepository;
+
         private IServiceRepository _serviceRepository;
         private IInvoiceRepository _invoiceRepository;
+        private IInvoiceTypeRepository _invoiceTypeRepository;
 
-        private ICostRepository _costRepository;
+        private IUncountedCostRepository _uncountedCostRepository;
+        private ICountedCostRepository _countedCostRepository;
 
         private IUserRepository _userRepository;
         private GenericRepository<UserRole> _userRoleRepository;
@@ -239,15 +242,27 @@ namespace BuildingManagement.DAL
             }
         }
 
-        public ICostRepository CostRepository
+        public IUncountedCostRepository UncountedCostRepository
         {
             get
             {
-                if (_costRepository == null)
+                if (_uncountedCostRepository == null)
                 {
-                    _costRepository = new CostRepository(_context);
+                    _uncountedCostRepository = new UncountedCostRepository(_context);
                 }
-                return _costRepository;
+                return _uncountedCostRepository;
+            }
+        }
+
+        public ICountedCostRepository CountedCostRepository
+        {
+            get
+            {
+                if (_countedCostRepository == null)
+                {
+                    _countedCostRepository = new CountedCostRepository(_context);
+                }
+                return _countedCostRepository;
             }
         }
 

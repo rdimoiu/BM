@@ -11,5 +11,6 @@ namespace BuildingManagement.DAL
         IEnumerable<Service> GetAllServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces();
         IEnumerable<Service> GetFilteredServicesIncludingInvoiceAndDistributionModeAndMeterTypeAndSectionsAndLevelsAndSpaces(string searchString);
         IEnumerable<Service> OrderServices(IEnumerable<Service> services, string sortOrder);
+        Service GetRestServiceByParent(int parentID);
     }
 }

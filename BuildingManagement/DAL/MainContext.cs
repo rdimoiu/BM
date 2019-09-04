@@ -1,6 +1,7 @@
 using BuildingManagement.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Security.Policy;
 
 namespace BuildingManagement.DAL
 {
@@ -19,11 +20,12 @@ namespace BuildingManagement.DAL
         public virtual DbSet<InvoiceType> InvoiceTypes { get; set; }
 
         public virtual DbSet<Meter> Meters { get; set; }
-        public virtual DbSet<MeterReading> MeterReadings { get; set; }
-        public virtual DbSet<MeterType> MeterTypes { get; set; }
         public virtual DbSet<SubMeter> SubMeters { get; set; }
-        public virtual DbSet<SubMeterReading> SubMeterReadings { get; set; }
         public virtual DbSet<SubSubMeter> SubSubMeters { get; set; }
+        public virtual DbSet<MeterType> MeterTypes { get; set; }
+
+        public virtual DbSet<MeterReading> MeterReadings { get; set; }
+        public virtual DbSet<SubMeterReading> SubMeterReadings { get; set; }
         public virtual DbSet<SubSubMeterReading> SubSubMeterReadings { get; set; }
 
         public virtual DbSet<Section> Sections { get; set; }
@@ -31,7 +33,8 @@ namespace BuildingManagement.DAL
         public virtual DbSet<Space> Spaces { get; set; }
         public virtual DbSet<SpaceType> SpaceTypes { get; set; }
 
-        public virtual DbSet<Cost> Costs { get; set; }
+        public virtual DbSet<UncountedCost> UncountedCosts { get; set; }
+        public virtual DbSet<CountedCost> CountedCosts { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
@@ -42,89 +45,36 @@ namespace BuildingManagement.DAL
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
-            //many to many Meter-MeterType
-            modelBuilder.Entity<Meter>()
-                .HasMany(m => m.MeterTypes).WithMany(mt => mt.Meters)
+            modelBuilder.Entity<AbstractMeter>().ToTable("Meter");
+            modelBuilder.Entity<AbstractMeterReading>().ToTable("MeterReading");
+
+            //many to many AbstractMeter-MeterType
+            modelBuilder.Entity<AbstractMeter>()
+                .HasMany(am => am.MeterTypes).WithMany(mt => mt.AbstractMeters)
                 .Map(t => t.MapLeftKey("MeterID")
                     .MapRightKey("MeterTypeID")
                     .ToTable("MeterMeterType"));
 
-            //many to many Meter-Space
-            modelBuilder.Entity<Meter>()
-                .HasMany(m => m.Spaces).WithMany(s => s.Meters)
+            //many to many AbstractMeter-Space
+            modelBuilder.Entity<AbstractMeter>()
+                .HasMany(am => am.Spaces).WithMany(s => s.AbstractMeters)
                 .Map(t => t.MapLeftKey("MeterID")
                     .MapRightKey("SpaceID")
                     .ToTable("MeterSpace"));
 
-            //many to many Meter-Level
-            modelBuilder.Entity<Meter>()
-                .HasMany(m => m.Levels).WithMany(s => s.Meters)
+            //many to many AbstractMeter-Level
+            modelBuilder.Entity<AbstractMeter>()
+                .HasMany(am => am.Levels).WithMany(l => l.AbstractMeters)
                 .Map(t => t.MapLeftKey("MeterID")
                     .MapRightKey("LevelID")
                     .ToTable("MeterLevel"));
 
-            //many to many Meter-Section
-            modelBuilder.Entity<Meter>()
-                .HasMany(m => m.Sections).WithMany(s => s.Meters)
+            //many to many AbstractMeter-Section
+            modelBuilder.Entity<AbstractMeter>()
+                .HasMany(am => am.Sections).WithMany(s => s.AbstractMeters)
                 .Map(t => t.MapLeftKey("MeterID")
                     .MapRightKey("SectionID")
                     .ToTable("MeterSection"));
-
-            //many to many SubMeter-MeterType
-            modelBuilder.Entity<SubMeter>()
-                .HasMany(sm => sm.MeterTypes).WithMany(mt => mt.SubMeters)
-                .Map(t => t.MapLeftKey("SubMeterID")
-                    .MapRightKey("MeterTypeID")
-                    .ToTable("SubMeterMeterType"));
-
-            //many to many SubMeter-Space
-            modelBuilder.Entity<SubMeter>()
-                .HasMany(sm => sm.Spaces).WithMany(s => s.SubMeters)
-                .Map(t => t.MapLeftKey("SubMeterID")
-                    .MapRightKey("SpaceID")
-                    .ToTable("SubMeterSpace"));
-
-            //many to many SubMeter-Level
-            modelBuilder.Entity<SubMeter>()
-                .HasMany(sm => sm.Levels).WithMany(s => s.SubMeters)
-                .Map(t => t.MapLeftKey("SubMeterID")
-                    .MapRightKey("LevelID")
-                    .ToTable("SubMeterLevel"));
-
-            //many to many SubMeter-Section
-            modelBuilder.Entity<SubMeter>()
-                .HasMany(sm => sm.Sections).WithMany(s => s.SubMeters)
-                .Map(t => t.MapLeftKey("SubMeterID")
-                    .MapRightKey("SectionID")
-                    .ToTable("SubMeterSection"));
-
-            //many to many SubSubMeter-MeterType
-            modelBuilder.Entity<SubSubMeter>()
-                .HasMany(ssm => ssm.MeterTypes).WithMany(mt => mt.SubSubMeters)
-                .Map(t => t.MapLeftKey("SubSubMeterID")
-                    .MapRightKey("MeterTypeID")
-                    .ToTable("SubSubMeterMeterType"));
-
-            //many to many SubSubMeter-Space
-            modelBuilder.Entity<SubSubMeter>()
-                .HasMany(ssm => ssm.Spaces).WithMany(s => s.SubSubMeters)
-                .Map(t => t.MapLeftKey("SubSubMeterID")
-                    .MapRightKey("SpaceID")
-                    .ToTable("SubSubMeterSpace"));
-
-            //many to many SubSubMeter-Level
-            modelBuilder.Entity<SubSubMeter>()
-                .HasMany(ssm => ssm.Levels).WithMany(s => s.SubSubMeters)
-                .Map(t => t.MapLeftKey("SubSubMeterID")
-                    .MapRightKey("LevelID")
-                    .ToTable("SubSubMeterLevel"));
-
-            //many to many SubSubMeter-Section
-            modelBuilder.Entity<SubSubMeter>()
-                .HasMany(ssm => ssm.Sections).WithMany(s => s.SubSubMeters)
-                .Map(t => t.MapLeftKey("SubSubMeterID")
-                    .MapRightKey("SectionID")
-                    .ToTable("SubSubMeterSection"));
 
             //many to many Service-Section
             modelBuilder.Entity<Service>()
@@ -147,8 +97,16 @@ namespace BuildingManagement.DAL
                     .MapRightKey("SpaceID")
                     .ToTable("ServiceSpace"));
 
-            //composed primary key for Cost 
-            modelBuilder.Entity<Cost>().HasKey(c => new { c.ServiceID, c.SpaceID });
+            //many to many Service-Space
+            modelBuilder.Entity<Service>()
+                .HasMany(s => s.Spaces).WithMany(s => s.Services)
+                .Map(t => t.MapLeftKey("ServiceID")
+                    .MapRightKey("SpaceID")
+                    .ToTable("ServiceSpace"));
+
+            //composed primary key for UncountedCost 
+            modelBuilder.Entity<UncountedCost>().HasKey(uc => new { uc.ServiceID, uc.SpaceID });
+            modelBuilder.Entity<CountedCost>().HasKey(cc => new { cc.ServiceID, cc.SpaceID, cc.AbstractMeterID });
 
             //unique constraint Number for Space
             //modelBuilder.Entity<Space>()
@@ -163,7 +121,7 @@ namespace BuildingManagement.DAL
             //            }));
 
             //dont map Spaces
-            //modelBuilder.Entity<Meter>().Ignore(m => m.Spaces);
+            //modelBuilder.Entity<AbstractMeter>().Ignore(m => m.Spaces);
         }
     }
 }

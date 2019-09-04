@@ -39,10 +39,10 @@ namespace BuildingManagement.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime PaidDate { get; set; }
 
-        [Range(0, 9999999999999999.99)]
+        [Range(0.00, 9999999999999999.99)]
         public decimal Quantity { get; set; }
 
-        [Range(0, 9999999999999999.99)]
+        [Range(0.00, 9999999999999999.99)]
         public decimal CheckQuantity { get; set; }
 
         [DataType(DataType.Date)]

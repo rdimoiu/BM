@@ -6,15 +6,17 @@
         validationSummary += DiscountMonthValidation();
     }
     validationSummary += MeterValidation();
-    validationSummary += MeterTypeValidation(true);
+    validationSummary += MeterTypeValidation();
     if (validationSummary !== "") {
         alert(validationSummary);
         return false;
     } else {
+        var dm = new Date(document.getElementById("DiscountMonth").value);
+        var firstDay = new Date(dm.getFullYear(), dm.getMonth(), 1);
         var data = {
             Index: document.getElementById("Index").value,
             Date: document.getElementById("Date").value,
-            DiscountMonth: document.getElementById("DiscountMonth").value,
+            DiscountMonth: firstDay,
             Initial: document.getElementById("Initial").checked,
             Estimated: document.getElementById("Estimated").checked,
             MeterID: document.getElementById("MeterID").value,

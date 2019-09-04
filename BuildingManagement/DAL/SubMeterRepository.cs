@@ -154,5 +154,15 @@ namespace BuildingManagement.DAL
             }
             return subMeters;
         }
+
+        public IEnumerable<int> GetSubMeterIDsByMeterIDNoDefect(int meterID)
+        {
+            return MainContext.SubMeters.Where(sm => sm.MeterID == meterID && !sm.Defect).Select(sm => sm.ID);
+        }
+
+        public IEnumerable<SubMeter> GetAllNoDefect()
+        {
+            return MainContext.SubMeters.Where(sm => !sm.Defect);
+        }
     }
 }

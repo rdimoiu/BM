@@ -88,7 +88,7 @@ namespace BuildingManagement.Controllers
                     {
                         PopulateSubMetersDropDownList(subSubMeter.SubMeterID);
                         PopulateDistributionModesDropDownList(subSubMeter.DistributionModeID);
-                        return new HttpStatusCodeResult(409, "A sub sub meter with this code already exists.");
+                        return new HttpStatusCodeResult(409, "A subsubmeter with this code already exists.");
                     }
                 }
                 var subMeter = _unitOfWork.SubMeterRepository.Get(subSubMeter.SubMeterID);
@@ -198,7 +198,7 @@ namespace BuildingManagement.Controllers
                     {
                         PopulateSubMetersDropDownList(subSubMeterToUpdate.SubMeterID);
                         PopulateDistributionModesDropDownList(subSubMeterToUpdate.DistributionModeID);
-                        return new HttpStatusCodeResult(409, "A sub sub meter with this code already exists.");
+                        return new HttpStatusCodeResult(409, "A subsubmeter with this code already exists.");
                     }
 
                     #region Update MeterTypes

@@ -97,5 +97,15 @@ namespace BuildingManagement.DAL
             }
             return subSubMeters;
         }
+
+        public IEnumerable<int> GetSubSubMeterIDsBySubMeterIDNoDefect(int subMeterID)
+        {
+            return MainContext.SubSubMeters.Where(ssm => ssm.SubMeterID == subMeterID && !ssm.Defect).Select(ssm => ssm.ID);
+        }
+
+        public IEnumerable<SubSubMeter> GetAllNoDefect()
+        {
+            return MainContext.SubSubMeters.Where(ssm => !ssm.Defect);
+        }
     }
 }

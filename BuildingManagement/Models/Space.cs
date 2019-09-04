@@ -12,7 +12,7 @@ namespace BuildingManagement.Models
         [StringLength(30)]
         public string Number { get; set; }
 
-        [Range(0, 9999999999999999.99)]
+        [Range(0.00, 9999999999999999.99)]
         public decimal Surface { get; set; }
 
         public int People { get; set; }
@@ -31,15 +31,11 @@ namespace BuildingManagement.Models
 
         public virtual SubClient SubClient { get; set; }
 
-        public virtual ICollection<Meter> Meters { get; set; }
-
-        public virtual ICollection<SubMeter> SubMeters { get; set; }
-
-        public virtual ICollection<SubSubMeter> SubSubMeters { get; set; }
+        public virtual ICollection<AbstractMeter> AbstractMeters { get; set; }
 
         public virtual ICollection<Service> Services { get; set; }
 
-        public virtual ICollection<Cost> Costs { get; set; }
+        public virtual ICollection<UncountedCost> Costs { get; set; }
 
         [NotMapped]
         public int ClientID { get; set; }

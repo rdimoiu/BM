@@ -266,8 +266,10 @@
     <Compile Include="Controllers\SubSubMeterController.cs" />
     <Compile Include="Controllers\SubSubMeterReadingController.cs" />
     <Compile Include="Controllers\UserManagementController.cs" />
-    <Compile Include="DAL\CostRepository.cs" />
-    <Compile Include="DAL\ICostRepository.cs" />
+    <Compile Include="DAL\ICountedCostRepository.cs" />
+    <Compile Include="DAL\CountedCostRepository.cs" />
+    <Compile Include="DAL\UncountedCostRepository.cs" />
+    <Compile Include="DAL\IUncountedCostRepository.cs" />
     <Compile Include="DAL\IInvoiceRepository.cs" />
     <Compile Include="DAL\IInvoiceTypeRepository.cs" />
     <Compile Include="DAL\ILevelRepository.cs" />
@@ -300,6 +302,10 @@
     <Compile Include="DAL\SubMeterRepository.cs" />
     <Compile Include="DAL\SubSubMeterReadingRepository.cs" />
     <Compile Include="DAL\SubSubMeterRepository.cs" />
+    <Compile Include="Models\AbstractMeter.cs" />
+    <Compile Include="Models\AbstractMeterReading.cs" />
+    <Compile Include="Models\CountedCost.cs" />
+    <Compile Include="Models\MeterReading.cs" />
     <Compile Include="Models\SubMeterReading.cs" />
     <Compile Include="Models\SubSubMeter.cs" />
     <Compile Include="Models\SubSubMeterReading.cs" />
@@ -332,7 +338,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Tree3D.cs" />
     <Compile Include="Models\Client.cs" />
-    <Compile Include="Models\Cost.cs" />
+    <Compile Include="Models\UncountedCost.cs" />
     <Compile Include="Models\DistributionMode.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Invoice.cs" />
@@ -346,7 +352,6 @@
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Meter.cs" />
-    <Compile Include="Models\MeterReading.cs" />
     <Compile Include="Models\MeterType.cs" />
     <Compile Include="Models\SubClientInvoice.cs" />
     <Compile Include="Models\TreeNode.cs" />
@@ -499,7 +504,6 @@
     <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\MeterReadingUtils.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -508,8 +512,8 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Scripts\MeterReadingUtils.js" />
     <Content Include="Scripts\MonthPicker.js" />
-    <Content Include="Scripts\ReadingUitls.js" />
     <Content Include="Scripts\SubMeterReadingUtils.js" />
     <Content Include="Scripts\SubSubMeterReadingUtils.js" />
     <Content Include="Scripts\ValidateClient.js" />
@@ -593,11 +597,6 @@
     <Content Include="Views\MeterType\Details.cshtml" />
     <Content Include="Views\MeterType\Edit.cshtml" />
     <Content Include="Views\MeterType\Index.cshtml" />
-    <Content Include="Views\MeterReading\Create.cshtml" />
-    <Content Include="Views\MeterReading\Delete.cshtml" />
-    <Content Include="Views\MeterReading\Details.cshtml" />
-    <Content Include="Views\MeterReading\Edit.cshtml" />
-    <Content Include="Views\MeterReading\Index.cshtml" />
     <Content Include="Views\Meter\Create.cshtml" />
     <Content Include="Views\Meter\Delete.cshtml" />
     <Content Include="Views\Meter\Details.cshtml" />
@@ -668,19 +667,24 @@
     <Content Include="Views\SubSubMeter\Details.cshtml" />
     <Content Include="Views\SubSubMeter\Edit.cshtml" />
     <Content Include="Views\SubSubMeter\Index.cshtml" />
-    <Content Include="Views\SubMeterReading\Index.cshtml" />
+    <Content Include="Views\CostsTable\Index.cshtml" />
+    <Content Include="Views\Service\Distribute.cshtml" />
+    <Content Include="Views\Language\Index.cshtml" />
     <Content Include="Views\SubMeterReading\Create.cshtml" />
     <Content Include="Views\SubMeterReading\Delete.cshtml" />
     <Content Include="Views\SubMeterReading\Details.cshtml" />
     <Content Include="Views\SubMeterReading\Edit.cshtml" />
+    <Content Include="Views\SubMeterReading\Index.cshtml" />
     <Content Include="Views\SubSubMeterReading\Create.cshtml" />
     <Content Include="Views\SubSubMeterReading\Delete.cshtml" />
     <Content Include="Views\SubSubMeterReading\Details.cshtml" />
     <Content Include="Views\SubSubMeterReading\Edit.cshtml" />
     <Content Include="Views\SubSubMeterReading\Index.cshtml" />
-    <Content Include="Views\CostsTable\Index.cshtml" />
-    <Content Include="Views\Service\Distribute.cshtml" />
-    <Content Include="Views\Language\Index.cshtml" />
+    <Content Include="Views\MeterReading\Create.cshtml" />
+    <Content Include="Views\MeterReading\Delete.cshtml" />
+    <Content Include="Views\MeterReading\Details.cshtml" />
+    <Content Include="Views\MeterReading\Edit.cshtml" />
+    <Content Include="Views\MeterReading\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -697,6 +701,7 @@
     <EmbeddedResource Include="Resources\Texts.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Texts.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

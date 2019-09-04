@@ -90,7 +90,7 @@
         var firstSection = new Option("Select...", "0");
         sectionList.append(firstSection);
 
-        var url = "../Costs/GetSectionsByClient/";
+        var url = "../ServiceCosts/GetSectionsByClient/";
 
         $.ajax({
             url: url,
@@ -125,6 +125,6 @@
     function GetCosts() {
         var discountMonth = document.getElementById("DiscountMonth").value;
         var sectionId = document.getElementById("SectionID").value;
-        window.location.href = "/Costs/Index/?discountMonth=" + discountMonth + "&sectionId=" + sectionId;
+        window.location.href = "/ServiceCosts/Index/?discountMonth=" + discountMonth + "&sectionId=" + sectionId;
     }
 </script>

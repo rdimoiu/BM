@@ -1,8 +1,8 @@
-﻿using BuildingManagement.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
+using BuildingManagement.Models;
+using System.Data.Entity;
 
 namespace BuildingManagement.DAL
 {
@@ -80,22 +80,22 @@ namespace BuildingManagement.DAL
             return meterReadings;
         }
 
-        public IEnumerable<MeterReading> GetLastMeterReading(int meterID, int meterTypeID, DateTime discountMonth)
+        public MeterReading GetMeterReadingByDiscountMonth(int meterID, int meterTypeID, DateTime discountMonth)
         {
             var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth >= firstDayOfMonth && mr.DiscountMonth <= lastDayOfMonth);
+            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).FirstOrDefault(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth >= firstDayOfMonth && mr.DiscountMonth <= lastDayOfMonth);
         }
 
-        public IEnumerable<MeterReading> GetPreviousMeterReading(int meterID, int meterTypeID, DateTime discountMonth)
+        public MeterReading GetPreviousMeterReading(int meterID, int meterTypeID, DateTime discountMonth)
         {
             var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
-            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth < firstDayOfMonth).Take(1);
+            return MainContext.MeterReadings.OrderByDescending(mr => mr.DiscountMonth).FirstOrDefault(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.DiscountMonth < firstDayOfMonth);
         }
 
-        public IEnumerable<MeterReading> GetInitialMeterReading(int meterID, int meterTypeID)
+        public MeterReading GetInitialMeterReading(int meterID, int meterTypeID)
         {
-            return MainContext.MeterReadings.Where(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.Initial);
+            return MainContext.MeterReadings.FirstOrDefault(mr => mr.MeterID == meterID && mr.MeterTypeID == meterTypeID && mr.Initial);
         }
     }
 }

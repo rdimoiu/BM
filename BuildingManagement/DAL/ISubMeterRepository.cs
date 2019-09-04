@@ -11,5 +11,7 @@ namespace BuildingManagement.DAL
         IEnumerable<SubMeter> GetAllSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(string sortOrder);
         IEnumerable<SubMeter> GetFilteredSubMetersIncludingMeterTypesAndDistributionModeAndMeterAndSectionsAndLevelsAndSpaces(string searchString, string sortOrder);
         IEnumerable<SubMeter> OrderSubMeters(IEnumerable<SubMeter> subMeters, string sortOrder);
+        IEnumerable<int> GetSubMeterIDsByMeterIDNoDefect(int meterID);
+        IEnumerable<SubMeter> GetAllNoDefect();
     }
 }

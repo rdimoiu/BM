@@ -130,5 +130,10 @@ namespace BuildingManagement.DAL
             }
             return services;
         }
+
+        public Service GetRestServiceByParent(int parentID)
+        {
+            return MainContext.Services.SingleOrDefault(s => s.ParentID == parentID);
+        }
     }
 }

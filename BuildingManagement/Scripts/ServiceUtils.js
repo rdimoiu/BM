@@ -35,8 +35,8 @@ function CountedOnChangeEvent() {
 };
 
 function DisableFieldsForRestService() {
-    var rest = document.getElementById("Rest").value;
-    if (rest == "True") {
+    var parentID = document.getElementById("ParentID").value;
+    if (parentID > 0) {
         document.getElementById("InvoiceID").disabled = true;
         document.getElementById("Name").disabled = true;
         document.getElementById("Quantity").disabled = true;
@@ -46,7 +46,6 @@ function DisableFieldsForRestService() {
         document.getElementById("Fixed").disabled = true;
         document.getElementById("Inhabited").disabled = true;
         document.getElementById("Counted").disabled = true;
-        document.getElementById("SpacesGroup").disabled = true;
     }
 }
 

@@ -14,6 +14,8 @@
         alert(validationSummary);
         return false;
     } else {
+        var dm = new Date(document.getElementById("DiscountMonth").value);
+        var firstDay = new Date(dm.getFullYear(), dm.getMonth(), 1);
         var data = {
             ClientID: document.getElementById("ClientID").value,
             ProviderID: document.getElementById("ProviderID").value,
@@ -24,7 +26,7 @@
             CheckQuantity: document.getElementById("CheckQuantity").value,
             CheckTotalValueWithoutTVA: document.getElementById("CheckTotalValueWithoutTVA").value,
             CheckTotalTVA: document.getElementById("CheckTotalTVA").value,
-            DiscountMonth: document.getElementById("DiscountMonth").value,
+            DiscountMonth: firstDay,
             //this is only for navigation
             PreviousPage: document.getElementById("PreviousPage").value
         };

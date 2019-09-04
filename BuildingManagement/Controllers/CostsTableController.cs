@@ -19,7 +19,7 @@ namespace BuildingManagement.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: Costs
+        // GET: ServiceCosts
         public ActionResult Index(DateTime? discountMonth, int? sectionId)
         {
             CostsIndexData costsIndexData = new CostsIndexData
@@ -28,7 +28,7 @@ namespace BuildingManagement.Controllers
                 Client = new Client(),
                 Section = new Section(),
                 Spaces = new List<Space>(),
-                Costs = new List<Cost>(),
+                Costs = new List<UncountedCost>(),
                 Invoices = new List<Invoice>(),
                 Services = new List<Service>(),
                 Cols = new Dictionary<string, string>(),
@@ -100,7 +100,7 @@ namespace BuildingManagement.Controllers
                         {
                             costsIndexData.Cols.Add(service.Name, "1");
                         }
-                        var cost = _unitOfWork.CostRepository.FirstOrDefault(c => c.ServiceID == service.ID && c.SpaceID == space.ID);
+                        var cost = _unitOfWork.UncountedCostRepository.FirstOrDefault(c => c.ServiceID == service.ID && c.SpaceID == space.ID);
                         if (cost != null)
                         {
                             col.Add(service.Name, cost.Value.ToString());

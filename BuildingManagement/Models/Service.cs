@@ -13,7 +13,7 @@ namespace BuildingManagement.Models
         public string Name { get; set; }
 
         [Required]
-        [Range(0, 9999999999999999.99)]
+        [Range(0.00, 9999999999999999.99)]
         public decimal Quantity { get; set; }
 
         [Required]
@@ -21,7 +21,7 @@ namespace BuildingManagement.Models
         public string Unit { get; set; }
 
         [Required]
-        [Range(0, 9999999999999999.99)]
+        [Range(0.00, 9999999999999999.99)]
         public decimal Price { get; set; }
 
         [Required]
@@ -35,7 +35,7 @@ namespace BuildingManagement.Models
 
         public bool Distributed { get; set; }
 
-        public bool Rest { get; set; }
+        public int ParentID { get; set; }
 
         public int InvoiceID { get; set; }
         public virtual Invoice Invoice { get; set; }
@@ -51,7 +51,7 @@ namespace BuildingManagement.Models
 
         public virtual ICollection<Section> Sections { get; set; }
 
-        public virtual ICollection<Cost> Costs { get; set; }
+        public virtual ICollection<UncountedCost> Costs { get; set; }
 
         [NotMapped]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:N2}")]

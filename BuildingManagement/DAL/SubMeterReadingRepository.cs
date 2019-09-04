@@ -1,8 +1,8 @@
-﻿using BuildingManagement.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using BuildingManagement.Models;
 
 namespace BuildingManagement.DAL
 {
@@ -81,22 +81,22 @@ namespace BuildingManagement.DAL
             return subMeterReadings;
         }
 
-        public IEnumerable<SubMeterReading> GetLastSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth)
+        public SubMeterReading GetSubMeterReadingByDiscountMonth(int subMeterID, int meterTypeID, DateTime discountMonth)
         {
             var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-            return MainContext.SubMeterReadings.OrderByDescending(smr => smr.DiscountMonth).Where(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.DiscountMonth >= firstDayOfMonth && smr.DiscountMonth <= lastDayOfMonth);
+            return MainContext.SubMeterReadings.OrderByDescending(smr => smr.DiscountMonth).FirstOrDefault(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.DiscountMonth >= firstDayOfMonth && smr.DiscountMonth <= lastDayOfMonth);
         }
 
-        public IEnumerable<SubMeterReading> GetPreviousSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth)
+        public SubMeterReading GetPreviousSubMeterReading(int subMeterID, int meterTypeID, DateTime discountMonth)
         {
             var firstDayOfMonth = new DateTime(discountMonth.Year, discountMonth.Month, 1);
-            return MainContext.SubMeterReadings.OrderByDescending(smr => smr.DiscountMonth).Where(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.DiscountMonth < firstDayOfMonth).Take(1);
+            return MainContext.SubMeterReadings.OrderByDescending(smr => smr.DiscountMonth).FirstOrDefault(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.DiscountMonth < firstDayOfMonth);
         }
 
-        public IEnumerable<SubMeterReading> GetInitialSubMeterReading(int subMeterID, int meterTypeID)
+        public SubMeterReading GetInitialSubMeterReading(int subMeterID, int meterTypeID)
         {
-            return MainContext.SubMeterReadings.Where(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.Initial);
+            return MainContext.SubMeterReadings.FirstOrDefault(smr => smr.SubMeterID == subMeterID && smr.MeterTypeID == meterTypeID && smr.Initial);
         }
     }
 }

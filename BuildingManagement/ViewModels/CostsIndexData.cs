@@ -29,7 +29,7 @@ namespace BuildingManagement.ViewModels
         public List<Space> Spaces { get; set; }
 
         [NotMapped]
-        public virtual IEnumerable<Cost> Costs { get; set; }
+        public virtual IEnumerable<UncountedCost> Costs { get; set; }
 
         [NotMapped]
         public virtual IEnumerable<Invoice> Invoices { get; set; }

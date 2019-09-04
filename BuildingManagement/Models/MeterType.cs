@@ -10,10 +10,6 @@ namespace BuildingManagement.Models
         [Required]
         public string Type { get; set; }
 
-        public virtual ICollection<Meter> Meters { get; set; }
-
-        public virtual ICollection<SubMeter> SubMeters { get; set; }
-
-        public virtual ICollection<SubSubMeter> SubSubMeters { get; set; }
+        public virtual ICollection<AbstractMeter> AbstractMeters { get; set; }
     }
 }

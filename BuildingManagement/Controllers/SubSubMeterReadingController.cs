@@ -1,4 +1,5 @@
-﻿using BuildingManagement.DAL;
+﻿using System;
+using BuildingManagement.DAL;
 using BuildingManagement.Models;
 using System.Collections.Generic;
 using System.Data;
@@ -107,6 +108,12 @@ namespace BuildingManagement.Controllers
                         PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
                         return new HttpStatusCodeResult(409, $"A subsubmeter reading on the same or later date and with a smaller index already exists. ({lowerIndexSubSubMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexSubSubMeterReading.Index})");
                     }
+                    if (!CheckParentConsumption(subSubMeterReading))
+                    {
+                        PopulateSubSubMetersDropDownList(subSubMeterReading.SubSubMeterID);
+                        PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
+                        return new HttpStatusCodeResult(409, "This subsubmeter plus its siblings consumption is greater than parent submeter consumption.");
+                    }
                 }
                 else
                 {
@@ -195,6 +202,12 @@ namespace BuildingManagement.Controllers
                             PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
                             return new HttpStatusCodeResult(409, $"A subsubmeter reading on the same or later date and with a smaller index already exists. ({lowerIndexSubSubMeterReading.Date.ToString("dd/MM/yyyy")} | {lowerIndexSubSubMeterReading.Index})");
                         }
+                        if (!CheckParentConsumption(subSubMeterReading))
+                        {
+                            PopulateSubSubMetersDropDownList(subSubMeterReading.SubSubMeterID);
+                            PopulateMeterTypesDropDownList(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID);
+                            return new HttpStatusCodeResult(409, "This subsubmeter plus its siblings consumption is greater than parent submeter consumption.");
+                        }
                     }
                     else
                     {
@@ -275,7 +288,7 @@ namespace BuildingManagement.Controllers
 
         private void PopulateSubSubMetersDropDownList(object selectedSubSubMeter = null)
         {
-            var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAll().ToList();
+            var subSubMeters = _unitOfWork.SubSubMeterRepository.GetAllNoDefect().ToList();
             ViewBag.SubSubMeterID = new SelectList(subSubMeters, "ID", "Code", selectedSubSubMeter);
         }
 
@@ -309,6 +322,78 @@ namespace BuildingManagement.Controllers
                 }
             }
             return list;
+        }
+
+        private decimal GetSubSubMeterConsumption(int subSubMeterId, int meterTypeId, DateTime? discountMonth, decimal index)
+        {
+            var consumption = 0.0m;
+            var previousReading = _unitOfWork.SubSubMeterReadingRepository.GetPreviousSubSubMeterReading(subSubMeterId, meterTypeId, (DateTime)discountMonth);
+            if (previousReading != null)
+            {
+                consumption = index - previousReading.Index;
+            }
+            else
+            {
+                var initialReading = _unitOfWork.SubSubMeterReadingRepository.GetInitialSubSubMeterReading(subSubMeterId, meterTypeId);
+                if (initialReading != null)
+                {
+                    consumption = index - initialReading.Index;
+                }
+            }
+
+            return consumption;
+        }
+
+        private bool CheckParentConsumption(SubSubMeterReading subSubMeterReading)
+        {
+            var siblingsConsumption = GetSubSubMeterConsumption(subSubMeterReading.SubSubMeterID, subSubMeterReading.MeterTypeID, subSubMeterReading.DiscountMonth, subSubMeterReading.Index);
+            var subSubMeter = _unitOfWork.SubSubMeterRepository.Get(subSubMeterReading.SubSubMeterID);
+            List<int> siblingIds = _unitOfWork.SubSubMeterRepository.GetSubSubMeterIDsBySubMeterIDNoDefect(subSubMeter.SubMeterID).ToList();
+            foreach (var siblingId in siblingIds)
+            {
+                var actualSiblingReading = _unitOfWork.SubSubMeterReadingRepository.GetSubSubMeterReadingByDiscountMonth(siblingId, subSubMeterReading.MeterTypeID, (DateTime)subSubMeterReading.DiscountMonth);
+                if (actualSiblingReading != null)
+                {
+                    var previousSiblingReading = _unitOfWork.SubSubMeterReadingRepository.GetPreviousSubSubMeterReading(siblingId, subSubMeterReading.MeterTypeID, (DateTime)subSubMeterReading.DiscountMonth);
+                    if (previousSiblingReading != null)
+                    {
+                        siblingsConsumption += actualSiblingReading.Index - previousSiblingReading.Index;
+                    }
+                    else
+                    {
+                        var initialSiblingReading = _unitOfWork.SubSubMeterReadingRepository.GetInitialSubSubMeterReading(siblingId, subSubMeterReading.MeterTypeID);
+                        if (initialSiblingReading != null)
+                        {
+                            siblingsConsumption += actualSiblingReading.Index - initialSiblingReading.Index;
+                        }
+                    }
+                }
+            }
+
+            var parentConsumption = 0.0m;
+            var actualParentReading = _unitOfWork.SubMeterReadingRepository.GetSubMeterReadingByDiscountMonth(subSubMeter.SubMeterID, subSubMeterReading.MeterTypeID, (DateTime)subSubMeterReading.DiscountMonth);
+            if (actualParentReading != null)
+            {
+                var previousParentReading = _unitOfWork.SubMeterReadingRepository.GetPreviousSubMeterReading(subSubMeter.SubMeterID, subSubMeterReading.MeterTypeID, (DateTime)subSubMeterReading.DiscountMonth);
+                if (previousParentReading != null)
+                {
+                    parentConsumption += actualParentReading.Index - previousParentReading.Index;
+                }
+                else
+                {
+                    var initialParentReading = _unitOfWork.SubMeterReadingRepository.GetInitialSubMeterReading(subSubMeter.SubMeterID, subSubMeterReading.MeterTypeID);
+                    if (initialParentReading != null)
+                    {
+                        parentConsumption += actualParentReading.Index - initialParentReading.Index;
+                    }
+                }
+            }
+
+            if (parentConsumption < siblingsConsumption)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
