@@ -349,11 +349,6 @@ namespace BuildingManagement.Controllers
                 {
                     return new HttpStatusCodeResult(409, "The service has costs. Undistribute service first.");
                 }
-                var rests = _unitOfWork.ServiceRepository.GetRestServiceByParent(service.ID);
-                if (rests != null)
-                {
-                    return new HttpStatusCodeResult(409, "The service has rest. Delete rest first.");
-                }
                 var invoice = _unitOfWork.InvoiceRepository.Get(service.InvoiceID);
                 if (invoice == null)
                 {
@@ -440,9 +435,9 @@ namespace BuildingManagement.Controllers
                                 if (totalMeterSpaces.Contains(space))
                                 {
                                     var cost = new CountedCost();
-                                    var quota = space.Surface / totalSurface;
+                                    var quota = Decimal.Round(space.Surface / totalSurface, 3);
                                     cost.Quota = quota;
-                                    cost.Value = quota * meterConsumption * service.Price;
+                                    cost.Value = Decimal.Round(quota * meterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                     cost.ServiceID = service.ID;
                                     cost.SpaceID = space.ID;
                                     cost.AbstractMeterID = meter.ID;
@@ -464,13 +459,13 @@ namespace BuildingManagement.Controllers
                                     if (totalMeterSpaces.Contains(space))
                                     {
                                         var cost = new CountedCost();
-                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        var quota = Decimal.Round(((decimal)space.People) / ((decimal)totalPeople), 3);
                                         cost.Quota = quota;
-                                        cost.Value = quota * meterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * meterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = meter.ID;
-                                        cost.Consumption = meterConsumption;
+                                        cost.Consumption = meterConsumption * quota;
                                         totalCost += cost.Value;
                                         serviceDistributeData.CountedCosts.Add(cost);
                                         _unitOfWork.CountedCostRepository.Add(cost);
@@ -490,7 +485,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new CountedCost();
                                         var quota = 1;
                                         cost.Quota = quota;
-                                        cost.Value = quota * meterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * meterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = meter.ID;
@@ -545,9 +540,9 @@ namespace BuildingManagement.Controllers
                                 if (totalSubMeterSpaces.Contains(space))
                                 {
                                     var cost = new CountedCost();
-                                    var quota = space.Surface / totalSurface;
+                                    var quota = Decimal.Round(space.Surface / totalSurface, 3);
                                     cost.Quota = quota;
-                                    cost.Value = quota * subMeterConsumption * service.Price;
+                                    cost.Value = Decimal.Round(quota * subMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                     cost.ServiceID = service.ID;
                                     cost.SpaceID = space.ID;
                                     cost.AbstractMeterID = subMeter.ID;
@@ -569,9 +564,9 @@ namespace BuildingManagement.Controllers
                                     if (totalSubMeterSpaces.Contains(space))
                                     {
                                         var cost = new CountedCost();
-                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        var quota = Decimal.Round(((decimal)space.People) / ((decimal)totalPeople), 3);
                                         cost.Quota = quota;
-                                        cost.Value = quota * subMeterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * subMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = subMeter.ID;
@@ -595,7 +590,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new CountedCost();
                                         var quota = 1;
                                         cost.Quota = quota;
-                                        cost.Value = quota * subMeterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * subMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = subMeter.ID;
@@ -650,9 +645,9 @@ namespace BuildingManagement.Controllers
                                 if (totalSubSubMeterSpaces.Contains(space))
                                 {
                                     var cost = new CountedCost();
-                                    var quota = space.Surface / totalSurface;
+                                    var quota = Decimal.Round(space.Surface / totalSurface,3);
                                     cost.Quota = quota;
-                                    cost.Value = quota * subSubMeterConsumption * service.Price;
+                                    cost.Value = Decimal.Round(quota * subSubMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                     cost.ServiceID = service.ID;
                                     cost.SpaceID = space.ID;
                                     cost.AbstractMeterID = subSubMeter.ID;
@@ -674,9 +669,9 @@ namespace BuildingManagement.Controllers
                                     if (totalSubSubMeterSpaces.Contains(space))
                                     {
                                         var cost = new CountedCost();
-                                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                                        var quota = Decimal.Round(((decimal)space.People) / ((decimal)totalPeople), 3);
                                         cost.Quota = quota;
-                                        cost.Value = quota * subSubMeterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * subSubMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = subSubMeter.ID;
@@ -700,7 +695,7 @@ namespace BuildingManagement.Controllers
                                         var cost = new CountedCost();
                                         var quota = 1;
                                         cost.Quota = quota;
-                                        cost.Value = quota * subSubMeterConsumption * service.Price;
+                                        cost.Value = Decimal.Round(quota * subSubMeterConsumption * service.Price * (1 + service.QuotaTVA), 2);
                                         cost.ServiceID = service.ID;
                                         cost.SpaceID = space.ID;
                                         cost.AbstractMeterID = subSubMeter.ID;
@@ -745,9 +740,9 @@ namespace BuildingManagement.Controllers
                     foreach (var space in totalServiceSpaces)
                     {
                         var cost = new UncountedCost();
-                        var quota = space.Surface / totalSurface;
+                        var quota = Decimal.Round(space.Surface / totalSurface, 3);
                         cost.Quota = quota;
-                        cost.Value = quota * valueWithTVA;
+                        cost.Value = Decimal.Round(quota * valueWithTVA, 2);
                         cost.ServiceID = service.ID;
                         cost.SpaceID = space.ID;
                         totalCost += cost.Value;
@@ -765,9 +760,9 @@ namespace BuildingManagement.Controllers
                     foreach (var space in totalServiceSpaces)
                     {
                         var cost = new UncountedCost();
-                        var quota = ((decimal)space.People) / ((decimal)totalPeople);
+                        var quota = Decimal.Round(((decimal)space.People) / ((decimal)totalPeople), 3);
                         cost.Quota = quota;
-                        cost.Value = quota * valueWithTVA;
+                        cost.Value = Decimal.Round(quota * valueWithTVA, 2);
                         cost.ServiceID = service.ID;
                         cost.SpaceID = space.ID;
                         totalCost += cost.Value;
@@ -970,6 +965,20 @@ namespace BuildingManagement.Controllers
             {
                 return HttpNotFound();
             }
+            var rest = _unitOfWork.ServiceRepository.GetRestServiceByParent(service.ID);
+            if (rest != null)
+            {
+                if (rest.Distributed)
+                {
+                    TempData["message"] = $"Service {service.Name} can not be undistributed. Undistribute rest service {rest.Name} first. ";
+                    if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
+                    {
+                        return RedirectToAction("Index", new { id, saveChangesError = true });
+                    }
+                    return RedirectToAction("Index", "InvoiceDistribution", new { id, saveChangesError = true });
+                }
+                _unitOfWork.ServiceRepository.Remove(rest);
+            }
             var uncountedCostscosts = _unitOfWork.UncountedCostRepository.GetCostsByService(service.ID).ToList();
             foreach (var cost in uncountedCostscosts)
             {
@@ -989,7 +998,11 @@ namespace BuildingManagement.Controllers
             catch (DataException)
             {
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be undistributed.";
-                return RedirectToAction("Index", new { id, saveChangesError = true });
+                if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
+                {
+                    return RedirectToAction("Index", new { id, saveChangesError = true});
+                }
+                return RedirectToAction("Index", "InvoiceDistribution", new { id, saveChangesError = true });
             }
             if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
             {

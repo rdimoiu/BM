@@ -241,19 +241,25 @@
                                     </td>
                                     <td>
                                         @Html.ActionLink("Details", "Details", "Service", new { id = service.ID }, new { @class = "details-icon" })
-                                        @if (!service.Distributed)
+                                        @if (!invoice.Closed)
                                         {
-                                            
-                                            @Html.ActionLink("Edit", "Edit", "Service", new { id = service.ID }, new { @class = "edit-icon" })
-                                            @Html.ActionLink("Delete", "Delete", "Service", new { id = service.ID }, new { @class = "delete-icon" })
-                                            if (service.Counted || service.DistributionModeID != null)
+                                            if (!service.Distributed)
                                             {
-                                                @Html.ActionLink("Distribute", "Distribute", "Service", new {id = service.ID}, new {@class = "distribute-icon"})
+
+                                                @Html.ActionLink("Edit", "Edit", "Service", new { id = service.ID }, new { @class = "edit-icon" })
+                                                if (service.ParentID < 1)
+                                                {
+                                                    @Html.ActionLink("Delete", "Delete", "Service", new { id = service.ID }, new { @class = "delete-icon" })
+                                                }
+                                                if (service.Counted || service.DistributionModeID != null)
+                                                {
+                                                    @Html.ActionLink("Distribute", "Distribute", "Service", new {id = service.ID}, new {@class = "distribute-icon"})
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            @Html.ActionLink("Undistribute", "Undistribute", "Service", new { id = service.ID }, new { @class = "undistribute-icon" })
+                                            else
+                                            {
+                                                @Html.ActionLink("Undistribute", "Undistribute", "Service", new { id = service.ID }, new { @class = "undistribute-icon" })
+                                            }
                                         }
                                     </td>
                                 </tr>

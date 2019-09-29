@@ -144,18 +144,24 @@
             </td>
             <td>
                 @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "details-icon" })
-                @if (!item.Distributed)
+                @if (!item.Invoice.Closed)
                 {
-                    if (item.Counted || item.DistributionModeID != null)
+                    if (!item.Distributed)
                     {
-                        @Html.ActionLink("Distribute", "Distribute", new { id = item.ID }, new { @class = "distribute-icon" })
+                        if (item.Counted || item.DistributionModeID != null)
+                        {
+                            @Html.ActionLink("Distribute", "Distribute", new { id = item.ID }, new { @class = "distribute-icon" })
+                        }
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
+                        if (item.ParentID < 1)
+                        {
+                            @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" })
+                        }
                     }
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "edit-icon" })
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "delete-icon" })
-                }
-                else
-                {
-                    @Html.ActionLink("Undistribute", "Undistribute", new { id = item.ID }, new { @class = "undistribute-icon" })
+                    else
+                    {
+                        @Html.ActionLink("Undistribute", "Undistribute", new { id = item.ID }, new { @class = "undistribute-icon" })
+                    }
                 }
             </td>
         </tr>

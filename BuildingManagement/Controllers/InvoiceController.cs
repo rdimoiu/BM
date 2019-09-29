@@ -246,12 +246,39 @@ namespace BuildingManagement.Controllers
             var totalCost = 0.0m;
             foreach (var service in invoice.Services)
             {
-                //tbd
+                if (service.Distributed)
+                {
+                    if (service.Counted)
+                    {
+                        var costs = _unitOfWork.CountedCostRepository.GetCostsByService(service.ID).ToList();
+                        foreach (var cost in costs)
+                        {
+                            totalCost += cost.Value;
+                        }
+                    }
+                    else
+                    {
+                        var costs = _unitOfWork.UncountedCostRepository.GetCostsByService(service.ID).ToList();
+                        foreach (var cost in costs)
+                        {
+                            totalCost += cost.Value;
+                        }
+                    }
+                }
+                else
+                {
+                    TempData["message"] = $"Invoice {invoice.Number} can not be closed. Service {service.Name} is not distributed.";
+                    if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    return RedirectToAction("Index", "InvoiceDistribution");
+                }
             }
-            invoice.Closed = true;
-            invoice.PaidDate = DateTime.Now;
-            if (totalCost == invoice.TotalValueWithoutTVA + invoice.TotalTVA)
+            if (Math.Abs(invoice.TotalValueWithoutTVA + invoice.TotalTVA - totalCost) < 0.5m)
             {
+                invoice.Closed = true;
+                invoice.PaidDate = DateTime.Now;
                 try
                 {
                     _unitOfWork.Save();
