@@ -780,7 +780,7 @@ namespace BuildingManagement.Controllers
             catch (DataException ex)
             {
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be distributed.";
-                return RedirectToAction("Index", new { id, saveChangesError = true });
+                return RedirectToAction("Index");
             }
             if (Request.UrlReferrer != null)
             {
@@ -973,9 +973,9 @@ namespace BuildingManagement.Controllers
                     TempData["message"] = $"Service {service.Name} can not be undistributed. Undistribute rest service {rest.Name} first. ";
                     if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
                     {
-                        return RedirectToAction("Index", new { id, saveChangesError = true });
+                        return RedirectToAction("Index");
                     }
-                    return RedirectToAction("Index", "InvoiceDistribution", new { id, saveChangesError = true });
+                    return RedirectToAction("Index", "InvoiceDistribution");
                 }
                 _unitOfWork.ServiceRepository.Remove(rest);
             }
@@ -1000,9 +1000,9 @@ namespace BuildingManagement.Controllers
                 TempData["message"] = $"Unexpected error occurred. Service {service.Name} can not be undistributed.";
                 if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
                 {
-                    return RedirectToAction("Index", new { id, saveChangesError = true});
+                    return RedirectToAction("Index");
                 }
-                return RedirectToAction("Index", "InvoiceDistribution", new { id, saveChangesError = true });
+                return RedirectToAction("Index", "InvoiceDistribution");
             }
             if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
             {

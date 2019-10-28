@@ -116,8 +116,15 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) 
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID })
+    @if (Request.UrlReferrer.AbsolutePath.Equals("/Invoice/Index"))
+    {
+        @Html.ActionLink("Back to List", "Index", "Invoice")
+    }
+    else
+    {
+        @Html.ActionLink("Back to List", "Index", "InvoiceDistribution")
+    }
 </p>
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>

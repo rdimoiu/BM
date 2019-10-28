@@ -148,7 +148,14 @@
 </div>
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
+    {
+        @Html.ActionLink("Back to List", "Index", "Service")
+    }
+    else
+    {
+        @Html.ActionLink("Back to List", "Index", "InvoiceDistribution")
+    }
 </div>
 
 @section Scripts {

@@ -146,14 +146,15 @@
 </div>
 <p>
     <div>
-        <a onclick="ReturnToPreviousPage()">Back to List</a>
+        @if (Request.UrlReferrer.AbsolutePath.Equals("/Service/Index"))
+        {
+            @Html.ActionLink("Back to List", "Index", "Service")
+        }
+        else
+        {
+            @Html.ActionLink("Back to List", "Index", "InvoiceDistribution")
+        }
     </div>
 </p>
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>
-
-<script>
-    function ReturnToPreviousPage() {
-        window.location.href = document.getElementById("PreviousPage").value;
-    }
-</script>
